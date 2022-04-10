@@ -1,6 +1,7 @@
 package yehor.budget.repository;
 
 import org.springframework.stereotype.Repository;
+import yehor.budget.util.model.Interval;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -24,4 +25,13 @@ public class SpendingRepository {
         return Optional.ofNullable(DUMMY_VALUES.get(date))
                 .orElse(0);
     }
+
+    public int findSumInInterval(LocalDate dateFrom, LocalDate dateTo) {
+        Interval interval = Interval.of(dateFrom, dateTo);
+        return DUMMY_VALUES.entrySet().stream()
+                .filter(entry -> interval.isWithin(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .reduce(0, Integer::sum);
+    }
+
 }
