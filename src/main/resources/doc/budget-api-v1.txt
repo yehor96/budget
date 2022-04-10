@@ -1,0 +1,34 @@
+Budget Api v1
+Api that allows getting information about spending per day, month.
+Adding spending for a selected day, delete or modify it. No categories for v1.
+No Budget Planning for v1. No regular/extra flag in v1.
+
+-------- Controller -> /spending ----------
+
+GET /spending?date={yyyy-MM-dd}
+400 -> Invalid Request
+200 ->
+{
+    "value":0
+}
+
+GET /spending/sum?dateFrom={yyyy-MM-dd}&dateTo={yyyy-MM-dd}
+400 -> Invalid Request
+200 ->
+{
+    "value":0
+}
+
+GET /spending/interval?dateFrom={yyyy-MM-dd}&dateTo={yyyy-MM-dd}
+400 -> Invalid Request
+200 ->
+{
+    "values": [0,0,0,0,0]
+}
+
+POST /spending?date={yyyy-MM-dd}
+body: {
+          "value":0
+      }
+400 -> Invalid Request
+200 -> Ok
