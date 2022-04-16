@@ -8,6 +8,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 public class Interval {
+
     private LocalDate startDate;
     private LocalDate endDate;
 

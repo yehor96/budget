@@ -14,13 +14,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExpenseService {
 
-    private static final ExpenseConverter EXPENSE_CONVERTER = new ExpenseConverter();
-
+    private final ExpenseConverter expenseConverter;
     private final ExpenseRepository expenseRepository;
 
     public DailyExpenseDto findByDate(LocalDate date) {
         DailyExpense expense = expenseRepository.findOne(date).orElseThrow();
-        return EXPENSE_CONVERTER.convertToDto(expense);
+        return expenseConverter.convertToDto(expense);
     }
 
     public int findSumInInterval(LocalDate dateFrom, LocalDate dateTo) {
@@ -30,7 +29,7 @@ public class ExpenseService {
     public List<DailyExpenseDto> findAllInInterval(LocalDate dateFrom, LocalDate dateTo) {
         List<DailyExpense> expenses = expenseRepository.findAllInInterval(dateFrom, dateTo);
         return expenses.stream()
-                .map(EXPENSE_CONVERTER::convertToDto)
+                .map(expenseConverter::convertToDto)
                 .toList();
     }
 }
