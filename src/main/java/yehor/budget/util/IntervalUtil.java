@@ -5,6 +5,7 @@ import yehor.budget.util.model.Interval;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import static yehor.budget.util.Constants.END_DATE;
 import static yehor.budget.util.Constants.START_DATE;
 
 public class IntervalUtil {
@@ -21,7 +22,7 @@ public class IntervalUtil {
 
     private static Interval getBudgetInterval() {
         if (Objects.isNull(budgetInterval)) {
-            budgetInterval = Interval.of(START_DATE, LocalDate.now());
+            budgetInterval = Interval.of(START_DATE, END_DATE);
         }
         return budgetInterval;
     }

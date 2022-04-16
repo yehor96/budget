@@ -7,4 +7,5 @@ import java.time.LocalDate;
 @UtilityClass
 public class Constants {
     public static final LocalDate START_DATE = LocalDate.of(2022, 3, 22);
+    public static final LocalDate END_DATE = LocalDate.of(2022, 3, 31);
 }

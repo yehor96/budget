@@ -1,8 +1,8 @@
 Budget Db
 v1:
 
-spending
-    spending_id ->  1
+expenses
+    expense_id ->  1
     date    ->  2022-04-10
     value   ->  1,300
 
