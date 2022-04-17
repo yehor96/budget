@@ -26,8 +26,9 @@ GET /expenses/interval?dateFrom={yyyy-MM-dd}&dateTo={yyyy-MM-dd}
     "values": [0,0,0,0,0]
 }
 
-POST /expenses?date={yyyy-MM-dd}
+POST /expenses
 body: {
+          "date":yyyy-MM-dd,
           "value":0
       }
 400 -> Invalid Request

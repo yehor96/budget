@@ -13,4 +13,11 @@ public class ExpenseConverter {
                 .date(dailyExpense.getDate())
                 .build();
     }
+
+    public DailyExpense convertToEntity(DailyExpenseDto dailyExpenseDto) {
+        return DailyExpense.builder()
+                .value(dailyExpenseDto.getValue())
+                .date(dailyExpenseDto.getDate())
+                .build();
+    }
 }

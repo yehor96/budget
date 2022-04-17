@@ -1,14 +1,14 @@
 package yehor.budget.exception;
 
-import java.time.LocalDate;
+import yehor.budget.manager.date.DateManager;
 
-import static yehor.budget.util.Constants.END_DATE;
-import static yehor.budget.util.Constants.START_DATE;
+import java.time.LocalDate;
 
 public class OutOfBudgetDateArgumentException extends RuntimeException {
 
     private static final String EXCEPTION_MESSAGE =
-            "Date is out of budget period. Start date is " + START_DATE + ", end date is " + END_DATE;
+            "Date is out of budget period. Start date is " + DateManager.START_DATE +
+                    ", end date is " + DateManager.getEndDate();
 
     public OutOfBudgetDateArgumentException(LocalDate date) {
         super(EXCEPTION_MESSAGE + ". Provided date is " + date);
