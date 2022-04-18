@@ -18,7 +18,8 @@ public class ExpenseService {
     private final ExpenseRepository expenseRepository;
 
     public DailyExpenseDto findByDate(LocalDate date) {
-        DailyExpense expense = expenseRepository.findOne(date).orElseThrow(); //TODO add custom exception
+        DailyExpense expense = expenseRepository.findOne(date)
+                .orElseThrow(() -> new IllegalArgumentException("Daily expense for " + date + " is not found."));
         return expenseConverter.convertToDto(expense);
     }
 
