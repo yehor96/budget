@@ -3,9 +3,10 @@ package yehor.budget.manager.date;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
-import yehor.budget.exception.OutOfBudgetDateArgumentException;
+import yehor.budget.exception.CustomExceptionManager;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 @Component
 public class DateManager {
@@ -15,6 +16,14 @@ public class DateManager {
     @Getter
     @Setter
     private static LocalDate endDate = LocalDate.of(2022, 3, 31);
+
+    public LocalDate parse(String value) {
+        try {
+            return LocalDate.parse(value);
+        } catch (DateTimeParseException e) {
+            throw CustomExceptionManager.getIllegalDateArgumentProvidedException(value);
+        }
+    }
 
     public boolean isWithinBudget(LocalDate date) {
         return Interval.of(START_DATE, endDate).isWithin(date);
@@ -26,19 +35,19 @@ public class DateManager {
 
     public void validateDateWithinBudget(LocalDate date) {
         if (!isWithinBudget(date)) {
-            throw new OutOfBudgetDateArgumentException(date);
+            throw CustomExceptionManager.getOutOfBudgetDateArgumentException(date);
         }
     }
 
     public void validateDateAfterStart(LocalDate date) {
         if (date.isBefore(START_DATE)) {
-            throw new OutOfBudgetDateArgumentException(date);
+            throw CustomExceptionManager.getOutOfBudgetDateArgumentException(date);
         }
     }
 
     public void validateDatesWithinBudget(LocalDate date1, LocalDate date2) {
         if (!areWithinBudget(date1, date2)) {
-            throw new OutOfBudgetDateArgumentException(date1, date2);
+            throw CustomExceptionManager.getOutOfBudgetDateArgumentException(date1, date2);
         }
     }
 

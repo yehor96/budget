@@ -3,6 +3,7 @@ package yehor.budget.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import yehor.budget.entity.DailyExpense;
+import yehor.budget.exception.CustomExceptionManager;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.web.converter.ExpenseConverter;
 import yehor.budget.web.dto.DailyExpenseDto;
@@ -19,7 +20,7 @@ public class ExpenseService {
 
     public DailyExpenseDto findByDate(LocalDate date) {
         DailyExpense expense = expenseRepository.findOne(date)
-                .orElseThrow(() -> new IllegalArgumentException("Daily expense for " + date + " is not found."));
+                .orElseThrow(() -> CustomExceptionManager.getDateNotFoundException(date));
         return expenseConverter.convertToDto(expense);
     }
 

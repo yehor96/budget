@@ -1,14 +1,16 @@
 package yehor.budget.web.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import yehor.budget.service.ExpenseService;
 import yehor.budget.manager.date.DateManager;
+import yehor.budget.service.ExpenseService;
 import yehor.budget.web.dto.DailyExpenseDto;
 
 import java.time.LocalDate;
@@ -23,12 +25,13 @@ public class ExpenseController {
     private final ExpenseService expenseService;
 
     @GetMapping
-    public DailyExpenseDto getDailyExpense(@RequestParam("date") String dateParam) {
-        LocalDate date = LocalDate.parse(dateParam);
+    public ResponseEntity<DailyExpenseDto> getDailyExpense(@RequestParam("date") String dateParam) {
+        LocalDate date = dateManager.parse(dateParam);
 
         dateManager.validateDateWithinBudget(date);
 
-        return expenseService.findByDate(date);
+        DailyExpenseDto dailyExpenseDto = expenseService.findByDate(date);
+        return new ResponseEntity<>(dailyExpenseDto, HttpStatus.OK);
     }
 
     @PostMapping
@@ -39,26 +42,28 @@ public class ExpenseController {
     }
 
     @GetMapping("/interval")
-    public List<DailyExpenseDto> getExpensesInInterval(@RequestParam("dateFrom") String dateFromParam,
+    public ResponseEntity<List<DailyExpenseDto>> getExpensesInInterval(@RequestParam("dateFrom") String dateFromParam,
                                                        @RequestParam("dateTo") String dateToParam) {
-        LocalDate dateFrom = LocalDate.parse(dateFromParam);
-        LocalDate dateTo = LocalDate.parse(dateToParam);
+        LocalDate dateFrom = dateManager.parse(dateFromParam);
+        LocalDate dateTo = dateManager.parse(dateToParam);
 
         dateManager.validateDatesInSequentialOrder(dateFrom, dateTo);
         dateManager.validateDatesWithinBudget(dateFrom, dateTo);
 
-        return expenseService.findAllInInterval(dateFrom, dateTo);
+        List<DailyExpenseDto> expenseDtoList = expenseService.findAllInInterval(dateFrom, dateTo);
+        return new ResponseEntity<>(expenseDtoList, HttpStatus.OK);
     }
 
     @GetMapping("/sum")
-    public int getExpensesSumInInterval(@RequestParam("dateFrom") String dateFromParam,
+    public ResponseEntity<Integer> getExpensesSumInInterval(@RequestParam("dateFrom") String dateFromParam,
                                         @RequestParam("dateTo") String dateToParam) {
-        LocalDate dateFrom = LocalDate.parse(dateFromParam);
-        LocalDate dateTo = LocalDate.parse(dateToParam);
+        LocalDate dateFrom = dateManager.parse(dateFromParam);
+        LocalDate dateTo = dateManager.parse(dateToParam);
 
         dateManager.validateDatesWithinBudget(dateFrom, dateTo);
 
-        return expenseService.findSumInInterval(dateFrom, dateTo);
+        int sum = expenseService.findSumInInterval(dateFrom, dateTo);
+        return new ResponseEntity<>(sum, HttpStatus.OK);
     }
 
 }

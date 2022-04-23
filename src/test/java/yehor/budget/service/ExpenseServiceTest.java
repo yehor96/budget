@@ -1,7 +1,9 @@
 package yehor.budget.service;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import yehor.budget.entity.DailyExpense;
+import yehor.budget.exception.CustomExceptionManager.CustomException;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.web.converter.ExpenseConverter;
 import yehor.budget.web.dto.DailyExpenseDto;
@@ -46,8 +48,10 @@ class ExpenseServiceTest {
             expenseService.findByDate(LocalDate.now());
             fail("Exception was not thrown");
         } catch (Exception e) {
-            assertEquals(IllegalArgumentException.class, e.getClass());
-            assertEquals("Daily expense for " + LocalDate.now() + " is not found.", e.getMessage());
+            assertEquals(CustomException.class, e.getClass());
+            CustomException exception = (CustomException) e;
+            assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+            assertEquals("Records for " + LocalDate.now() + " are not found.", exception.getReason());
         }
     }
 
