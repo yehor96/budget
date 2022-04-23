@@ -1,0 +1,17 @@
+Budget Db
+v2:
+- Add is_regular flag
+- Add categories
+
+expenses
+    expense_id      ->  1
+    date            ->  2022-04-10
+    value           ->  1,300
+    is_regular      ->  true/false
+    category        -> category_id
+
+-----------------------------------
+
+categories
+    category_id
+    name

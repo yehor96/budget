@@ -3,7 +3,7 @@ Api that allows getting information about daily. monthly expenses.
 Adding expenses for a selected day, delete or modify it. No categories for v1.
 No Budget Planning for v1. No regular/extra flag in v1.
 
--------- Controller -> /spending ----------
+-------- Controller -> /expenses ----------
 
 GET /expenses?date={yyyy-MM-dd}
 400 -> Invalid Request
