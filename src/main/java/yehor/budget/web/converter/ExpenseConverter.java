@@ -9,6 +9,7 @@ public class ExpenseConverter {
 
     public DailyExpenseDto convertToDto(DailyExpense dailyExpense) {
         return DailyExpenseDto.builder()
+                .id(dailyExpense.getId())
                 .value(dailyExpense.getValue())
                 .date(dailyExpense.getDate())
                 .build();

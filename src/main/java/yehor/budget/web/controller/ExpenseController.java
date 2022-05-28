@@ -38,12 +38,12 @@ public class ExpenseController {
     public void addDailyExpense(@RequestBody DailyExpenseDto dailyExpenseDto) {
         dateManager.validateDateAfterStart(dailyExpenseDto.getDate());
 
-        expenseService.addOne(dailyExpenseDto);
+        expenseService.save(dailyExpenseDto);
     }
 
     @GetMapping("/interval")
     public ResponseEntity<List<DailyExpenseDto>> getExpensesInInterval(@RequestParam("dateFrom") String dateFromParam,
-                                                       @RequestParam("dateTo") String dateToParam) {
+                                                                       @RequestParam("dateTo") String dateToParam) {
         LocalDate dateFrom = dateManager.parse(dateFromParam);
         LocalDate dateTo = dateManager.parse(dateToParam);
 
@@ -56,7 +56,7 @@ public class ExpenseController {
 
     @GetMapping("/sum")
     public ResponseEntity<Integer> getExpensesSumInInterval(@RequestParam("dateFrom") String dateFromParam,
-                                        @RequestParam("dateTo") String dateToParam) {
+                                                            @RequestParam("dateTo") String dateToParam) {
         LocalDate dateFrom = dateManager.parse(dateFromParam);
         LocalDate dateTo = dateManager.parse(dateToParam);
 

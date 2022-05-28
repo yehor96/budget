@@ -1,7 +1,6 @@
 package yehor.budget.manager.date;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.stereotype.Component;
 import yehor.budget.exception.CustomExceptionManager;
 
@@ -11,11 +10,18 @@ import java.time.format.DateTimeParseException;
 @Component
 public class DateManager {
 
-    public static final LocalDate START_DATE = LocalDate.of(2022, 3, 22);
-
+    //TODO
+    // Move startDate and endDate to db and edit them via api.
+    // Remove static things.
+    public static final LocalDate START_DATE = LocalDate.now().minusDays(30);
     @Getter
-    @Setter
-    private static LocalDate endDate = LocalDate.of(2022, 3, 31);
+    private static LocalDate endDate = LocalDate.now();
+
+    public static void updateEndDateIfNecessary(LocalDate date) {
+        if (date.isAfter(endDate)) {
+            endDate = date;
+        }
+    }
 
     public LocalDate parse(String value) {
         try {

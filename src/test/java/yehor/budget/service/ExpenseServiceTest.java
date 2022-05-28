@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import yehor.budget.entity.DailyExpense;
 import yehor.budget.exception.CustomExceptionManager.CustomException;
+import yehor.budget.manager.date.DateManager;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.web.converter.ExpenseConverter;
 import yehor.budget.web.dto.DailyExpenseDto;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -29,10 +31,10 @@ class ExpenseServiceTest {
 
     @Test
     void testFindByDate() {
-        DailyExpenseDto expectedDailyExpenseDto = new DailyExpenseDto(10, LocalDate.now());
-        DailyExpense dailyExpense = new DailyExpense(10, LocalDate.now());
+        DailyExpenseDto expectedDailyExpenseDto = getDailyExpenseDto(LocalDate.now(), 10);
+        DailyExpense dailyExpense = getDailyExpense(LocalDate.now(), 10);
 
-        when(expenseRepositoryMock.findOne(LocalDate.now())).thenReturn(Optional.of(dailyExpense));
+        when(expenseRepositoryMock.findByDate(LocalDate.now())).thenReturn(Optional.of(dailyExpense));
         when(expenseConverterMock.convertToDto(dailyExpense)).thenReturn(expectedDailyExpenseDto);
 
         DailyExpenseDto actualResultDto = expenseService.findByDate(LocalDate.now());
@@ -42,7 +44,7 @@ class ExpenseServiceTest {
 
     @Test
     void testFindByAbsentDate() {
-        when(expenseRepositoryMock.findOne(any())).thenReturn(Optional.empty());
+        when(expenseRepositoryMock.findByDate(any())).thenReturn(Optional.empty());
 
         try {
             expenseService.findByDate(LocalDate.now());
@@ -73,12 +75,12 @@ class ExpenseServiceTest {
         LocalDate date1 = LocalDate.now();
         LocalDate date2 = date1.plusDays(1);
 
-        DailyExpense dailyExpense1 = new DailyExpense(10, date1);
-        DailyExpense dailyExpense2 = new DailyExpense(10, date2);
+        DailyExpense dailyExpense1 = getDailyExpense(date1, 10);
+        DailyExpense dailyExpense2 = getDailyExpense(date2, 10);
         List<DailyExpense> expectedList = List.of(dailyExpense1, dailyExpense2);
 
-        DailyExpenseDto dailyExpenseDto1 = new DailyExpenseDto(10, date1);
-        DailyExpenseDto dailyExpenseDto2 = new DailyExpenseDto(10, date2);
+        DailyExpenseDto dailyExpenseDto1 = getDailyExpenseDto(date1, 10);
+        DailyExpenseDto dailyExpenseDto2 = getDailyExpenseDto(date2, 10);
         List<DailyExpenseDto> expectedDtoList = List.of(dailyExpenseDto1, dailyExpenseDto2);
 
         when(expenseRepositoryMock.findAllInInterval(date1, date2)).thenReturn(expectedList);
@@ -91,15 +93,70 @@ class ExpenseServiceTest {
     }
 
     @Test
-    void testAddOne() {
-        DailyExpense dailyExpense = new DailyExpense(10, LocalDate.now());
-        DailyExpenseDto dailyExpenseDto = new DailyExpenseDto(10, LocalDate.now());
+    void testSave() {
+        DailyExpense dailyExpense = getDailyExpense(LocalDate.now(), 10);
+        DailyExpenseDto dailyExpenseDto = getDailyExpenseDto(LocalDate.now(), 10);
 
         when(expenseConverterMock.convertToEntity(dailyExpenseDto)).thenReturn(dailyExpense);
 
-        expenseService.addOne(dailyExpenseDto);
+        expenseService.save(dailyExpenseDto);
 
         verify(expenseRepositoryMock, times(1))
-                .addOne(dailyExpense);
+                .save(dailyExpense);
+    }
+
+    @Test
+    void testSaveWithEndDateUpdate() {
+        LocalDate expectedFirstLatestDate = DateManager.getEndDate().plusDays(5);
+        DailyExpense dailyExpense1 = getDailyExpense(expectedFirstLatestDate, 10);
+        DailyExpenseDto dailyExpenseDto1 = getDailyExpenseDto(expectedFirstLatestDate, 10);
+
+        LocalDate expectedSecondLatestDate = DateManager.getEndDate().plusDays(10);
+        DailyExpense dailyExpense2 = getDailyExpense(expectedSecondLatestDate, 20);
+        DailyExpenseDto dailyExpenseDto2 = getDailyExpenseDto(expectedSecondLatestDate, 20);
+
+        when(expenseConverterMock.convertToEntity(dailyExpenseDto1)).thenReturn(dailyExpense1);
+        when(expenseConverterMock.convertToEntity(dailyExpenseDto2)).thenReturn(dailyExpense2);
+
+        expenseService.save(dailyExpenseDto1);
+        assertEquals(DateManager.getEndDate(), expectedFirstLatestDate);
+
+        expenseService.save(dailyExpenseDto2);
+        assertEquals(DateManager.getEndDate(), expectedSecondLatestDate);
+    }
+
+    @Test
+    void testSaveWithoutEndDateUpdate() {
+        LocalDate expectedLatestDate = DateManager.getEndDate().plusDays(5);
+        DailyExpense dailyExpense1 = getDailyExpense(expectedLatestDate, 10);
+        DailyExpenseDto dailyExpenseDto1 = getDailyExpenseDto(expectedLatestDate, 10);
+
+        LocalDate expectedNewerDate = DateManager.getEndDate().plusDays(3);
+        DailyExpense dailyExpense2 = getDailyExpense(expectedNewerDate, 20);
+        DailyExpenseDto dailyExpenseDto2 = getDailyExpenseDto(expectedNewerDate, 20);
+
+        when(expenseConverterMock.convertToEntity(dailyExpenseDto1)).thenReturn(dailyExpense1);
+        when(expenseConverterMock.convertToEntity(dailyExpenseDto2)).thenReturn(dailyExpense2);
+
+        expenseService.save(dailyExpenseDto1);
+        assertEquals(DateManager.getEndDate(), expectedLatestDate);
+
+        expenseService.save(dailyExpenseDto2);
+        assertNotEquals(DateManager.getEndDate(), expectedNewerDate);
+        assertEquals(DateManager.getEndDate(), expectedLatestDate);
+    }
+
+    private DailyExpense getDailyExpense(LocalDate date, int value) {
+        return DailyExpense.builder()
+                .date(date)
+                .value(value)
+                .build();
+    }
+
+    private DailyExpenseDto getDailyExpenseDto(LocalDate date, int value) {
+        return DailyExpenseDto.builder()
+                .date(date)
+                .value(value)
+                .build();
     }
 }
