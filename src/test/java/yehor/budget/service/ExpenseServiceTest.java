@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -144,6 +145,26 @@ class ExpenseServiceTest {
         expenseService.save(dailyExpenseDto2);
         assertNotEquals(DateManager.getEndDate(), expectedNewerDate);
         assertEquals(DateManager.getEndDate(), expectedLatestDate);
+    }
+
+    @Test
+    void testTrySavingWithExistingDate() {
+        LocalDate currentDate = LocalDate.now();
+        DailyExpense dailyExpense = getDailyExpense(LocalDate.now(), 10, true);
+        DailyExpenseDto dailyExpenseDto = getDailyExpenseDto(LocalDate.now(), 10, true);
+
+        when(expenseConverterMock.convertToEntity(dailyExpenseDto)).thenReturn(dailyExpense);
+        when(expenseRepositoryMock.findByDate(currentDate)).thenReturn(Optional.of(dailyExpense));
+
+        try {
+            expenseService.save(dailyExpenseDto);
+            fail("Exception was not thrown");
+        } catch (CustomException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals("Daily expense with provided date " + currentDate + " already exists.", e.getReason());
+            verify(expenseRepositoryMock, never())
+                    .save(dailyExpense);
+        }
     }
 
     private DailyExpense getDailyExpense(LocalDate date, int value, boolean isRegular) {

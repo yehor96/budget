@@ -31,6 +31,11 @@ public class CustomExceptionManager {
         return new CustomException(HttpStatus.NOT_FOUND, "Records for " + date + " are not found.");
     }
 
+    public static ResponseStatusException getExpenseInDateAlreadyExistsException(LocalDate date) {
+        return new CustomException(HttpStatus.BAD_REQUEST,
+                "Daily expense with provided date " + date + " already exists.");
+    }
+
     public static class CustomException extends ResponseStatusException {
         public CustomException(HttpStatus status, String message) {
             super(status, message);
