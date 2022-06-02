@@ -12,6 +12,7 @@ public class ExpenseConverter {
                 .id(dailyExpense.getId())
                 .value(dailyExpense.getValue())
                 .date(dailyExpense.getDate())
+                .isRegular(dailyExpense.isRegular())
                 .build();
     }
 
@@ -19,6 +20,7 @@ public class ExpenseConverter {
         return DailyExpense.builder()
                 .value(dailyExpenseDto.getValue())
                 .date(dailyExpenseDto.getDate())
+                .isRegular(dailyExpenseDto.isRegular())
                 .build();
     }
 }

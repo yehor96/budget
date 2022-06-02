@@ -14,4 +14,5 @@ public class DailyExpenseDto {
     private long id;
     private int value;
     private LocalDate date;
+    private boolean isRegular;
 }

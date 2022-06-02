@@ -31,8 +31,8 @@ class ExpenseServiceTest {
 
     @Test
     void testFindByDate() {
-        DailyExpenseDto expectedDailyExpenseDto = getDailyExpenseDto(LocalDate.now(), 10);
-        DailyExpense dailyExpense = getDailyExpense(LocalDate.now(), 10);
+        DailyExpenseDto expectedDailyExpenseDto = getDailyExpenseDto(LocalDate.now(), 10, true);
+        DailyExpense dailyExpense = getDailyExpense(LocalDate.now(), 10, true);
 
         when(expenseRepositoryMock.findByDate(LocalDate.now())).thenReturn(Optional.of(dailyExpense));
         when(expenseConverterMock.convertToDto(dailyExpense)).thenReturn(expectedDailyExpenseDto);
@@ -75,12 +75,12 @@ class ExpenseServiceTest {
         LocalDate date1 = LocalDate.now();
         LocalDate date2 = date1.plusDays(1);
 
-        DailyExpense dailyExpense1 = getDailyExpense(date1, 10);
-        DailyExpense dailyExpense2 = getDailyExpense(date2, 10);
+        DailyExpense dailyExpense1 = getDailyExpense(date1, 10, true);
+        DailyExpense dailyExpense2 = getDailyExpense(date2, 10, true);
         List<DailyExpense> expectedList = List.of(dailyExpense1, dailyExpense2);
 
-        DailyExpenseDto dailyExpenseDto1 = getDailyExpenseDto(date1, 10);
-        DailyExpenseDto dailyExpenseDto2 = getDailyExpenseDto(date2, 10);
+        DailyExpenseDto dailyExpenseDto1 = getDailyExpenseDto(date1, 10, true);
+        DailyExpenseDto dailyExpenseDto2 = getDailyExpenseDto(date2, 10, true);
         List<DailyExpenseDto> expectedDtoList = List.of(dailyExpenseDto1, dailyExpenseDto2);
 
         when(expenseRepositoryMock.findAllInInterval(date1, date2)).thenReturn(expectedList);
@@ -94,8 +94,8 @@ class ExpenseServiceTest {
 
     @Test
     void testSave() {
-        DailyExpense dailyExpense = getDailyExpense(LocalDate.now(), 10);
-        DailyExpenseDto dailyExpenseDto = getDailyExpenseDto(LocalDate.now(), 10);
+        DailyExpense dailyExpense = getDailyExpense(LocalDate.now(), 10, true);
+        DailyExpenseDto dailyExpenseDto = getDailyExpenseDto(LocalDate.now(), 10, true);
 
         when(expenseConverterMock.convertToEntity(dailyExpenseDto)).thenReturn(dailyExpense);
 
@@ -108,12 +108,12 @@ class ExpenseServiceTest {
     @Test
     void testSaveWithEndDateUpdate() {
         LocalDate expectedFirstLatestDate = DateManager.getEndDate().plusDays(5);
-        DailyExpense dailyExpense1 = getDailyExpense(expectedFirstLatestDate, 10);
-        DailyExpenseDto dailyExpenseDto1 = getDailyExpenseDto(expectedFirstLatestDate, 10);
+        DailyExpense dailyExpense1 = getDailyExpense(expectedFirstLatestDate, 10, true);
+        DailyExpenseDto dailyExpenseDto1 = getDailyExpenseDto(expectedFirstLatestDate, 10, true);
 
         LocalDate expectedSecondLatestDate = DateManager.getEndDate().plusDays(10);
-        DailyExpense dailyExpense2 = getDailyExpense(expectedSecondLatestDate, 20);
-        DailyExpenseDto dailyExpenseDto2 = getDailyExpenseDto(expectedSecondLatestDate, 20);
+        DailyExpense dailyExpense2 = getDailyExpense(expectedSecondLatestDate, 20, true);
+        DailyExpenseDto dailyExpenseDto2 = getDailyExpenseDto(expectedSecondLatestDate, 20, true);
 
         when(expenseConverterMock.convertToEntity(dailyExpenseDto1)).thenReturn(dailyExpense1);
         when(expenseConverterMock.convertToEntity(dailyExpenseDto2)).thenReturn(dailyExpense2);
@@ -128,12 +128,12 @@ class ExpenseServiceTest {
     @Test
     void testSaveWithoutEndDateUpdate() {
         LocalDate expectedLatestDate = DateManager.getEndDate().plusDays(5);
-        DailyExpense dailyExpense1 = getDailyExpense(expectedLatestDate, 10);
-        DailyExpenseDto dailyExpenseDto1 = getDailyExpenseDto(expectedLatestDate, 10);
+        DailyExpense dailyExpense1 = getDailyExpense(expectedLatestDate, 10, true);
+        DailyExpenseDto dailyExpenseDto1 = getDailyExpenseDto(expectedLatestDate, 10, true);
 
         LocalDate expectedNewerDate = DateManager.getEndDate().plusDays(3);
-        DailyExpense dailyExpense2 = getDailyExpense(expectedNewerDate, 20);
-        DailyExpenseDto dailyExpenseDto2 = getDailyExpenseDto(expectedNewerDate, 20);
+        DailyExpense dailyExpense2 = getDailyExpense(expectedNewerDate, 20, true);
+        DailyExpenseDto dailyExpenseDto2 = getDailyExpenseDto(expectedNewerDate, 20, true);
 
         when(expenseConverterMock.convertToEntity(dailyExpenseDto1)).thenReturn(dailyExpense1);
         when(expenseConverterMock.convertToEntity(dailyExpenseDto2)).thenReturn(dailyExpense2);
@@ -146,17 +146,19 @@ class ExpenseServiceTest {
         assertEquals(DateManager.getEndDate(), expectedLatestDate);
     }
 
-    private DailyExpense getDailyExpense(LocalDate date, int value) {
+    private DailyExpense getDailyExpense(LocalDate date, int value, boolean isRegular) {
         return DailyExpense.builder()
                 .date(date)
                 .value(value)
+                .isRegular(isRegular)
                 .build();
     }
 
-    private DailyExpenseDto getDailyExpenseDto(LocalDate date, int value) {
+    private DailyExpenseDto getDailyExpenseDto(LocalDate date, int value, boolean isRegular) {
         return DailyExpenseDto.builder()
                 .date(date)
                 .value(value)
+                .isRegular(isRegular)
                 .build();
     }
 }

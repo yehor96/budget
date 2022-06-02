@@ -33,4 +33,7 @@ public class DailyExpense {
 
     @Column(name = "date")
     private LocalDate date;
+
+    @Column(name = "is_regular")
+    private boolean isRegular;
 }
