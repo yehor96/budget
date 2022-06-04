@@ -167,6 +167,41 @@ class ExpenseServiceTest {
         }
     }
 
+    @Test
+    void testUpdate() {
+        LocalDate currentDate = LocalDate.now();
+        DailyExpense dailyExpense = getDailyExpense(currentDate, 10, true);
+        DailyExpenseDto dailyExpenseDto = getDailyExpenseDto(currentDate, 10, true);
+
+        when(expenseConverterMock.convertToEntity(dailyExpenseDto)).thenReturn(dailyExpense);
+        when(expenseRepositoryMock.findByDate(currentDate)).thenReturn(Optional.of(dailyExpense));
+
+        expenseService.updateByDate(dailyExpenseDto);
+
+        verify(expenseRepositoryMock, times(1))
+                .updateByDate(dailyExpense);
+    }
+
+    @Test
+    void testTryUpdatingWithNonExistingDate() {
+        LocalDate currentDate = LocalDate.now();
+        DailyExpense dailyExpense = getDailyExpense(LocalDate.now(), 10, true);
+        DailyExpenseDto dailyExpenseDto = getDailyExpenseDto(LocalDate.now(), 10, true);
+
+        when(expenseConverterMock.convertToEntity(dailyExpenseDto)).thenReturn(dailyExpense);
+        when(expenseRepositoryMock.findByDate(currentDate)).thenReturn(Optional.empty());
+
+        try {
+            expenseService.updateByDate(dailyExpenseDto);
+            fail("Exception was not thrown");
+        } catch (CustomException e) {
+            assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+            assertEquals("Records for " + currentDate + " are not found.", e.getReason());
+            verify(expenseRepositoryMock, never())
+                    .updateByDate(dailyExpense);
+        }
+    }
+
     private DailyExpense getDailyExpense(LocalDate date, int value, boolean isRegular) {
         return DailyExpense.builder()
                 .date(date)

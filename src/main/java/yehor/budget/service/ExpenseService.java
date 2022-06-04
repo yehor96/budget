@@ -45,10 +45,22 @@ public class ExpenseService {
         DateManager.updateEndDateIfNecessary(expense.getDate());
     }
 
+    @Transactional
+    public void updateByDate(DailyExpenseDto dailyExpenseDto) {
+        DailyExpense dailyExpense = expenseConverter.convertToEntity(dailyExpenseDto);
+        validateExpenseExists(dailyExpense);
+        expenseRepository.updateByDate(dailyExpense);
+    }
+
     private void validateExpenseDoNotExist(DailyExpense dailyExpense) {
         expenseRepository.findByDate(dailyExpense.getDate())
                 .ifPresent(e -> {
                     throw CustomExceptionManager.getExpenseInDateAlreadyExistsException(dailyExpense.getDate());
                 });
+    }
+
+    private void validateExpenseExists(DailyExpense dailyExpense) {
+        expenseRepository.findByDate(dailyExpense.getDate())
+                .orElseThrow(() -> CustomExceptionManager.getDateNotFoundException(dailyExpense.getDate()));
     }
 }
