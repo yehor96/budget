@@ -1,15 +1,21 @@
 package yehor.budget.service;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import yehor.budget.entity.Category;
+import yehor.budget.exception.CustomResponseStatusException;
 import yehor.budget.repository.CategoryRepository;
 import yehor.budget.web.converter.CategoryConverter;
 import yehor.budget.web.dto.CategoryDto;
 
 import java.util.List;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,6 +55,25 @@ class CategoryServiceTest {
 
         verify(categoryRepositoryMock, times(1))
                 .save(expectedCategory);
+    }
+
+    @Test
+    void testTrySavingExistingCategory() {
+        CategoryDto expectedCategoryDto = CategoryDto.builder().name("Food").build();
+        Category expectedCategory = Category.builder().name("Food").build();
+
+        when(categoryConverterMock.convertToEntity(expectedCategoryDto)).thenReturn(expectedCategory);
+        when(categoryRepositoryMock.findByName(expectedCategory.getName())).thenReturn(Optional.of(expectedCategory));
+
+        try {
+            categoryService.save(expectedCategoryDto);
+            fail("Exception was not thrown");
+        } catch (CustomResponseStatusException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals("Category " + expectedCategory.getName() + " already exists", e.getReason());
+            verify(categoryRepositoryMock, never())
+                    .save(expectedCategory);
+        }
     }
 
 }

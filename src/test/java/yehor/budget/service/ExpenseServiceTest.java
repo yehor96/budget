@@ -3,7 +3,7 @@ package yehor.budget.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import yehor.budget.entity.DailyExpense;
-import yehor.budget.exception.CustomExceptionManager.CustomException;
+import yehor.budget.exception.CustomResponseStatusException;
 import yehor.budget.manager.date.DateManager;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.web.converter.ExpenseConverter;
@@ -51,8 +51,8 @@ class ExpenseServiceTest {
             expenseService.findByDate(LocalDate.now());
             fail("Exception was not thrown");
         } catch (Exception e) {
-            assertEquals(CustomException.class, e.getClass());
-            CustomException exception = (CustomException) e;
+            assertEquals(CustomResponseStatusException.class, e.getClass());
+            CustomResponseStatusException exception = (CustomResponseStatusException) e;
             assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
             assertEquals("Records for " + LocalDate.now() + " are not found.", exception.getReason());
         }
@@ -159,7 +159,7 @@ class ExpenseServiceTest {
         try {
             expenseService.save(dailyExpenseDto);
             fail("Exception was not thrown");
-        } catch (CustomException e) {
+        } catch (CustomResponseStatusException e) {
             assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
             assertEquals("Daily expense with provided date " + currentDate + " already exists.", e.getReason());
             verify(expenseRepositoryMock, never())
@@ -194,7 +194,7 @@ class ExpenseServiceTest {
         try {
             expenseService.updateByDate(dailyExpenseDto);
             fail("Exception was not thrown");
-        } catch (CustomException e) {
+        } catch (CustomResponseStatusException e) {
             assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
             assertEquals("Records for " + currentDate + " are not found.", e.getReason());
             verify(expenseRepositoryMock, never())

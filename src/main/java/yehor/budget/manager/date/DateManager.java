@@ -2,7 +2,7 @@ package yehor.budget.manager.date;
 
 import lombok.Getter;
 import org.springframework.stereotype.Component;
-import yehor.budget.exception.CustomExceptionManager;
+import yehor.budget.exception.DateExceptionProvider;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -27,7 +27,7 @@ public class DateManager {
         try {
             return LocalDate.parse(value);
         } catch (DateTimeParseException e) {
-            throw CustomExceptionManager.getIllegalDateArgumentProvidedException(value);
+            throw DateExceptionProvider.getIllegalDateArgumentProvidedException(value);
         }
     }
 
@@ -41,19 +41,19 @@ public class DateManager {
 
     public void validateDateWithinBudget(LocalDate date) {
         if (!isWithinBudget(date)) {
-            throw CustomExceptionManager.getOutOfBudgetDateArgumentException(date);
+            throw DateExceptionProvider.getOutOfBudgetDateArgumentException(date);
         }
     }
 
     public void validateDateAfterStart(LocalDate date) {
         if (date.isBefore(START_DATE)) {
-            throw CustomExceptionManager.getOutOfBudgetDateArgumentException(date);
+            throw DateExceptionProvider.getOutOfBudgetDateArgumentException(date);
         }
     }
 
     public void validateDatesWithinBudget(LocalDate date1, LocalDate date2) {
         if (!areWithinBudget(date1, date2)) {
-            throw CustomExceptionManager.getOutOfBudgetDateArgumentException(date1, date2);
+            throw DateExceptionProvider.getOutOfBudgetDateArgumentException(date1, date2);
         }
     }
 

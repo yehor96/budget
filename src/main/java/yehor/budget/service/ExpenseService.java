@@ -3,7 +3,7 @@ package yehor.budget.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import yehor.budget.entity.DailyExpense;
-import yehor.budget.exception.CustomExceptionManager;
+import yehor.budget.exception.ExpenseExceptionProvider;
 import yehor.budget.manager.date.DateManager;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.web.converter.ExpenseConverter;
@@ -22,7 +22,7 @@ public class ExpenseService {
 
     public DailyExpenseDto findByDate(LocalDate date) {
         DailyExpense expense = expenseRepository.findByDate(date)
-                .orElseThrow(() -> CustomExceptionManager.getDateNotFoundException(date));
+                .orElseThrow(() -> ExpenseExceptionProvider.getNoExpenseForDateException(date));
         return expenseConverter.convertToDto(expense);
     }
 
@@ -55,12 +55,12 @@ public class ExpenseService {
     private void validateExpenseDoNotExist(DailyExpense dailyExpense) {
         expenseRepository.findByDate(dailyExpense.getDate())
                 .ifPresent(e -> {
-                    throw CustomExceptionManager.getExpenseInDateAlreadyExistsException(dailyExpense.getDate());
+                    throw ExpenseExceptionProvider.getExpenseInDateAlreadyExistsException(dailyExpense.getDate());
                 });
     }
 
     private void validateExpenseExists(DailyExpense dailyExpense) {
         expenseRepository.findByDate(dailyExpense.getDate())
-                .orElseThrow(() -> CustomExceptionManager.getDateNotFoundException(dailyExpense.getDate()));
+                .orElseThrow(() -> ExpenseExceptionProvider.getNoExpenseForDateException(dailyExpense.getDate()));
     }
 }
