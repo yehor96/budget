@@ -1,6 +1,7 @@
 package yehor.budget.service;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import yehor.budget.entity.Category;
 import yehor.budget.exception.CustomResponseStatusException;
@@ -14,6 +15,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -73,6 +75,28 @@ class CategoryServiceTest {
             assertEquals("Category " + expectedCategory.getName() + " already exists", e.getReason());
             verify(categoryRepositoryMock, never())
                     .save(expectedCategory);
+        }
+    }
+
+    @Test
+    void testDeleteCategory() {
+        categoryService.delete(1L);
+        verify(categoryRepositoryMock, times(1))
+                .deleteById(1L);
+    }
+
+    @Test
+    void testTryDeletingNotExistingCategory() {
+        doThrow(new EmptyResultDataAccessException(1)).when(categoryRepositoryMock).deleteById(1L);
+
+        try {
+            categoryService.delete(1L);
+            fail("Exception was not thrown");
+        } catch (CustomResponseStatusException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals("Category with id " + 1L + " does not exist", e.getReason());
+            verify(categoryRepositoryMock, times(1))
+                    .deleteById(1L);
         }
     }
 

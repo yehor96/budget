@@ -6,7 +6,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 @UtilityClass
 public class CategoryExceptionProvider {
-    public static ResponseStatusException getCategoryAlreadyExists(String name) {
+    public static ResponseStatusException getCategoryAlreadyExistsException(String name) {
         return new CustomResponseStatusException(HttpStatus.BAD_REQUEST, "Category " + name + " already exists");
+    }
+
+    public static ResponseStatusException getCategoryDoesNotExistException(Long id) {
+        return new CustomResponseStatusException(HttpStatus.BAD_REQUEST, "Category with id " + id + " does not exist");
     }
 }
