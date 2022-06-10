@@ -37,7 +37,6 @@ public class ExpenseService {
                 .toList();
     }
 
-    @Transactional
     public void save(DailyExpenseDto dailyExpenseDto) {
         DailyExpense expense = expenseConverter.convertToEntity(dailyExpenseDto);
         validateExpenseDoNotExist(expense);

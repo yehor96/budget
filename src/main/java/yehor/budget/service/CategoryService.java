@@ -9,6 +9,7 @@ import yehor.budget.repository.CategoryRepository;
 import yehor.budget.web.converter.CategoryConverter;
 import yehor.budget.web.dto.CategoryDto;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -40,10 +41,23 @@ public class CategoryService {
         }
     }
 
+    @Transactional
+    public void update(CategoryDto categoryDto) {
+        validateCategoryExists(categoryDto.getId());
+        Category category = categoryConverter.convertToEntity(categoryDto);
+        categoryRepository.update(category);
+    }
+
     private void validateCategoryDoNotExist(Category category) {
         categoryRepository.findByName(category.getName())
                 .ifPresent(e -> {
                     throw CategoryExceptionProvider.getCategoryAlreadyExistsException(category.getName());
                 });
+    }
+
+    private void validateCategoryExists(Long id) {
+        if (!categoryRepository.existsById(id)) {
+            throw CategoryExceptionProvider.getCategoryDoesNotExistException(id);
+        }
     }
 }

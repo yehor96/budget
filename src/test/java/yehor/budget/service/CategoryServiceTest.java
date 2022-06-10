@@ -100,4 +100,37 @@ class CategoryServiceTest {
         }
     }
 
+    @Test
+    void testUpdateCategory() {
+        CategoryDto expectedCategoryDto = CategoryDto.builder().name("Food").build();
+        Category expectedCategory = Category.builder().name("Food").build();
+
+        when(categoryConverterMock.convertToEntity(expectedCategoryDto)).thenReturn(expectedCategory);
+        when(categoryRepositoryMock.existsById(expectedCategoryDto.getId())).thenReturn(true);
+
+        categoryService.update(expectedCategoryDto);
+
+        verify(categoryRepositoryMock, times(1))
+                .update(expectedCategory);
+    }
+
+    @Test
+    void testTryUpdatingNotExistingCategory() {
+        CategoryDto expectedCategoryDto = CategoryDto.builder().name("Food").build();
+        Category expectedCategory = Category.builder().name("Food").build();
+
+        when(categoryConverterMock.convertToEntity(expectedCategoryDto)).thenReturn(expectedCategory);
+        when(categoryRepositoryMock.existsById(expectedCategoryDto.getId())).thenReturn(false);
+
+        try {
+            categoryService.update(expectedCategoryDto);
+            fail("Exception was not thrown");
+        } catch (CustomResponseStatusException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals("Category with id " + expectedCategoryDto.getId() + " does not exist", e.getReason());
+            verify(categoryRepositoryMock, never())
+                    .update(expectedCategory);
+        }
+    }
+
 }
