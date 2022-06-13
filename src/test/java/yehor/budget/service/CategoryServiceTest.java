@@ -37,8 +37,8 @@ class CategoryServiceTest {
         Category expectedCategory2 = Category.builder().name("Meds").build();
 
         when(categoryRepositoryMock.findAll()).thenReturn(List.of(expectedCategory1, expectedCategory2));
-        when(categoryConverterMock.convertToDto(expectedCategory1)).thenReturn(expectedCategoryDto1);
-        when(categoryConverterMock.convertToDto(expectedCategory2)).thenReturn(expectedCategoryDto2);
+        when(categoryConverterMock.convert(expectedCategory1)).thenReturn(expectedCategoryDto1);
+        when(categoryConverterMock.convert(expectedCategory2)).thenReturn(expectedCategoryDto2);
 
         List<CategoryDto> categories = categoryService.getAll();
 
@@ -51,7 +51,7 @@ class CategoryServiceTest {
         CategoryDto expectedCategoryDto = CategoryDto.builder().name("Food").build();
         Category expectedCategory = Category.builder().name("Food").build();
 
-        when(categoryConverterMock.convertToEntity(expectedCategoryDto)).thenReturn(expectedCategory);
+        when(categoryConverterMock.convert(expectedCategoryDto)).thenReturn(expectedCategory);
 
         categoryService.save(expectedCategoryDto);
 
@@ -64,7 +64,7 @@ class CategoryServiceTest {
         CategoryDto expectedCategoryDto = CategoryDto.builder().name("Food").build();
         Category expectedCategory = Category.builder().name("Food").build();
 
-        when(categoryConverterMock.convertToEntity(expectedCategoryDto)).thenReturn(expectedCategory);
+        when(categoryConverterMock.convert(expectedCategoryDto)).thenReturn(expectedCategory);
         when(categoryRepositoryMock.findByName(expectedCategory.getName())).thenReturn(Optional.of(expectedCategory));
 
         try {
@@ -105,7 +105,7 @@ class CategoryServiceTest {
         CategoryDto expectedCategoryDto = CategoryDto.builder().name("Food").build();
         Category expectedCategory = Category.builder().name("Food").build();
 
-        when(categoryConverterMock.convertToEntity(expectedCategoryDto)).thenReturn(expectedCategory);
+        when(categoryConverterMock.convert(expectedCategoryDto)).thenReturn(expectedCategory);
         when(categoryRepositoryMock.existsById(expectedCategoryDto.getId())).thenReturn(true);
 
         categoryService.update(expectedCategoryDto);
@@ -119,7 +119,7 @@ class CategoryServiceTest {
         CategoryDto expectedCategoryDto = CategoryDto.builder().name("Food").build();
         Category expectedCategory = Category.builder().name("Food").build();
 
-        when(categoryConverterMock.convertToEntity(expectedCategoryDto)).thenReturn(expectedCategory);
+        when(categoryConverterMock.convert(expectedCategoryDto)).thenReturn(expectedCategory);
         when(categoryRepositoryMock.existsById(expectedCategoryDto.getId())).thenReturn(false);
 
         try {

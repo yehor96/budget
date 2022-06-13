@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-public class DailyExpenseDto {
+public class ExpenseDto {
 
     @Hidden
     private long id;

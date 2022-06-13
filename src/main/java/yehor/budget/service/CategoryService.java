@@ -23,12 +23,12 @@ public class CategoryService {
     public List<CategoryDto> getAll() {
         Iterable<Category> categories = categoryRepository.findAll();
         return StreamSupport.stream(categories.spliterator(), false)
-                .map(categoryConverter::convertToDto)
+                .map(categoryConverter::convert)
                 .toList();
     }
 
     public void save(CategoryDto categoryDto) {
-        Category category = categoryConverter.convertToEntity(categoryDto);
+        Category category = categoryConverter.convert(categoryDto);
         validateCategoryDoNotExist(category);
         categoryRepository.save(category);
     }
@@ -44,7 +44,7 @@ public class CategoryService {
     @Transactional
     public void update(CategoryDto categoryDto) {
         validateCategoryExists(categoryDto.getId());
-        Category category = categoryConverter.convertToEntity(categoryDto);
+        Category category = categoryConverter.convert(categoryDto);
         categoryRepository.update(category);
     }
 

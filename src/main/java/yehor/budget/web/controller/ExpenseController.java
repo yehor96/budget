@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import yehor.budget.manager.date.DateManager;
 import yehor.budget.service.ExpenseService;
-import yehor.budget.web.dto.DailyExpenseDto;
+import yehor.budget.web.dto.ExpenseDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,41 +26,38 @@ public class ExpenseController {
     private final ExpenseService expenseService;
 
     @GetMapping
-    public ResponseEntity<DailyExpenseDto> getDailyExpense(@RequestParam("date") String dateParam) {
-        LocalDate date = dateManager.parse(dateParam);
-
-        dateManager.validateDateWithinBudget(date);
-
-        DailyExpenseDto dailyExpenseDto = expenseService.findByDate(date);
-        return new ResponseEntity<>(dailyExpenseDto, HttpStatus.OK);
+    public ResponseEntity<ExpenseDto> getExpense(@RequestParam("date") Long id) {
+        ExpenseDto expenseDto = expenseService.findById(id);
+        return new ResponseEntity<>(expenseDto, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<DailyExpenseDto> saveDailyExpense(@RequestBody DailyExpenseDto dailyExpenseDto) {
-        dateManager.validateDateAfterStart(dailyExpenseDto.getDate());
+    public ResponseEntity<ExpenseDto> saveExpense(@RequestBody ExpenseDto expenseDto) {
+        dateManager.validateDateAfterStart(expenseDto.getDate());
 
-        expenseService.save(dailyExpenseDto);
+        expenseService.save(expenseDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping
-    public ResponseEntity<DailyExpenseDto> updateDailyExpense(@RequestBody DailyExpenseDto dailyExpenseDto) {
-        dateManager.validateDateWithinBudget(dailyExpenseDto.getDate());
+    @PutMapping("/{id}")
+    public ResponseEntity<ExpenseDto> updateExpense(@RequestParam("id") Long id,
+                                                    @RequestBody ExpenseDto expenseDto) {
+        dateManager.validateDateWithinBudget(expenseDto.getDate());
 
-        expenseService.updateByDate(dailyExpenseDto);
+        expenseService.updateById(id, expenseDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/interval")
-    public ResponseEntity<List<DailyExpenseDto>> getExpensesInInterval(@RequestParam("dateFrom") String dateFromParam,
-                                                                       @RequestParam("dateTo") String dateToParam) {
+    public ResponseEntity<List<ExpenseDto>> getExpensesInInterval(@RequestParam("dateFrom") String dateFromParam,
+                                                                  @RequestParam("dateTo") String dateToParam) {
         LocalDate dateFrom = dateManager.parse(dateFromParam);
         LocalDate dateTo = dateManager.parse(dateToParam);
 
         dateManager.validateDatesInSequentialOrder(dateFrom, dateTo);
         dateManager.validateDatesWithinBudget(dateFrom, dateTo);
 
-        List<DailyExpenseDto> expenseDtoList = expenseService.findAllInInterval(dateFrom, dateTo);
+        List<ExpenseDto> expenseDtoList = expenseService.findAllInInterval(dateFrom, dateTo);
         return new ResponseEntity<>(expenseDtoList, HttpStatus.OK);
     }
 

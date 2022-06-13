@@ -1,26 +1,26 @@
 package yehor.budget.web.converter;
 
 import org.springframework.stereotype.Component;
-import yehor.budget.entity.DailyExpense;
-import yehor.budget.web.dto.DailyExpenseDto;
+import yehor.budget.entity.Expense;
+import yehor.budget.web.dto.ExpenseDto;
 
 @Component
 public class ExpenseConverter {
 
-    public DailyExpenseDto convertToDto(DailyExpense dailyExpense) {
-        return DailyExpenseDto.builder()
-                .id(dailyExpense.getId())
-                .value(dailyExpense.getValue())
-                .date(dailyExpense.getDate())
-                .isRegular(dailyExpense.isRegular())
+    public ExpenseDto convert(Expense expense) {
+        return ExpenseDto.builder()
+                .id(expense.getId())
+                .value(expense.getValue())
+                .date(expense.getDate())
+                .isRegular(expense.isRegular())
                 .build();
     }
 
-    public DailyExpense convertToEntity(DailyExpenseDto dailyExpenseDto) {
-        return DailyExpense.builder()
-                .value(dailyExpenseDto.getValue())
-                .date(dailyExpenseDto.getDate())
-                .isRegular(dailyExpenseDto.isRegular())
+    public Expense convert(ExpenseDto expenseDto) {
+        return Expense.builder()
+                .value(expenseDto.getValue())
+                .date(expenseDto.getDate())
+                .isRegular(expenseDto.isRegular())
                 .build();
     }
 }

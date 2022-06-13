@@ -4,17 +4,14 @@ import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
-
 @UtilityClass
 public class ExpenseExceptionProvider {
 
-    public static ResponseStatusException getNoExpenseForDateException(LocalDate date) {
-        return new CustomResponseStatusException(HttpStatus.NOT_FOUND, "Records for " + date + " are not found.");
+    public static ResponseStatusException getExpenseWithIdDoesNotExistException(Long id) {
+        return new CustomResponseStatusException(HttpStatus.NOT_FOUND, "Expense with id " + id + " not found");
     }
 
-        public static ResponseStatusException getExpenseInDateAlreadyExistsException(LocalDate date) {
-            return new CustomResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Daily expense with provided date " + date + " already exists.");
+    public static ResponseStatusException getExpenseWithIdExistsException(Long id) {
+        return new CustomResponseStatusException(HttpStatus.BAD_REQUEST, "Expense with id " + id + " already exists");
     }
 }

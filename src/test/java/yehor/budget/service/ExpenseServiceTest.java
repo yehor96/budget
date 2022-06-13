@@ -2,12 +2,12 @@ package yehor.budget.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import yehor.budget.entity.DailyExpense;
+import yehor.budget.entity.Expense;
 import yehor.budget.exception.CustomResponseStatusException;
 import yehor.budget.manager.date.DateManager;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.web.converter.ExpenseConverter;
-import yehor.budget.web.dto.DailyExpenseDto;
+import yehor.budget.web.dto.ExpenseDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,7 +16,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -31,30 +30,33 @@ class ExpenseServiceTest {
     private final ExpenseService expenseService = new ExpenseService(expenseConverterMock, expenseRepositoryMock);
 
     @Test
-    void testFindByDate() {
-        DailyExpenseDto expectedDailyExpenseDto = getDailyExpenseDto(LocalDate.now(), 10, true);
-        DailyExpense dailyExpense = getDailyExpense(LocalDate.now(), 10, true);
+    void testFindById() {
+        Long id = 1L;
+        Expense expense = getDailyExpense(id, LocalDate.now(), 10, true);
+        ExpenseDto expectedExpenseDto = getDailyExpenseDto(id, LocalDate.now(), 10, true);
 
-        when(expenseRepositoryMock.findByDate(LocalDate.now())).thenReturn(Optional.of(dailyExpense));
-        when(expenseConverterMock.convertToDto(dailyExpense)).thenReturn(expectedDailyExpenseDto);
+        when(expenseRepositoryMock.findById(id)).thenReturn(Optional.of(expense));
+        when(expenseConverterMock.convert(expense)).thenReturn(expectedExpenseDto);
 
-        DailyExpenseDto actualResultDto = expenseService.findByDate(LocalDate.now());
+        ExpenseDto actualResultDto = expenseService.findById(id);
 
-        assertEquals(expectedDailyExpenseDto, actualResultDto);
+        assertEquals(expectedExpenseDto, actualResultDto);
     }
 
     @Test
-    void testFindByAbsentDate() {
-        when(expenseRepositoryMock.findByDate(any())).thenReturn(Optional.empty());
+    void testFindByAbsentId() {
+        Long id = 1L;
+
+        when(expenseRepositoryMock.findById(id)).thenReturn(Optional.empty());
 
         try {
-            expenseService.findByDate(LocalDate.now());
+            expenseService.findById(id);
             fail("Exception was not thrown");
         } catch (Exception e) {
             assertEquals(CustomResponseStatusException.class, e.getClass());
             CustomResponseStatusException exception = (CustomResponseStatusException) e;
             assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-            assertEquals("Records for " + LocalDate.now() + " are not found.", exception.getReason());
+            assertEquals("Expense with id " + id + " not found", exception.getReason());
         }
     }
 
@@ -76,142 +78,144 @@ class ExpenseServiceTest {
         LocalDate date1 = LocalDate.now();
         LocalDate date2 = date1.plusDays(1);
 
-        DailyExpense dailyExpense1 = getDailyExpense(date1, 10, true);
-        DailyExpense dailyExpense2 = getDailyExpense(date2, 10, true);
-        List<DailyExpense> expectedList = List.of(dailyExpense1, dailyExpense2);
+        Expense expense1 = getDailyExpense(1L, date1, 10, true);
+        Expense expense2 = getDailyExpense(1L, date2, 10, true);
+        List<Expense> expectedList = List.of(expense1, expense2);
 
-        DailyExpenseDto dailyExpenseDto1 = getDailyExpenseDto(date1, 10, true);
-        DailyExpenseDto dailyExpenseDto2 = getDailyExpenseDto(date2, 10, true);
-        List<DailyExpenseDto> expectedDtoList = List.of(dailyExpenseDto1, dailyExpenseDto2);
+        ExpenseDto expenseDto1 = getDailyExpenseDto(1L, date1, 10, true);
+        ExpenseDto expenseDto2 = getDailyExpenseDto(1L, date2, 10, true);
+        List<ExpenseDto> expectedDtoList = List.of(expenseDto1, expenseDto2);
 
         when(expenseRepositoryMock.findAllInInterval(date1, date2)).thenReturn(expectedList);
-        when(expenseConverterMock.convertToDto(dailyExpense1)).thenReturn(dailyExpenseDto1);
-        when(expenseConverterMock.convertToDto(dailyExpense2)).thenReturn(dailyExpenseDto2);
+        when(expenseConverterMock.convert(expense1)).thenReturn(expenseDto1);
+        when(expenseConverterMock.convert(expense2)).thenReturn(expenseDto2);
 
-        List<DailyExpenseDto> actualDtoList = expenseService.findAllInInterval(date1, date2);
+        List<ExpenseDto> actualDtoList = expenseService.findAllInInterval(date1, date2);
 
         assertEquals(expectedDtoList, actualDtoList);
     }
 
     @Test
     void testSave() {
-        DailyExpense dailyExpense = getDailyExpense(LocalDate.now(), 10, true);
-        DailyExpenseDto dailyExpenseDto = getDailyExpenseDto(LocalDate.now(), 10, true);
+        Expense expense = getDailyExpense(1L, LocalDate.now(), 10, true);
+        ExpenseDto expenseDto = getDailyExpenseDto(1L, LocalDate.now(), 10, true);
 
-        when(expenseConverterMock.convertToEntity(dailyExpenseDto)).thenReturn(dailyExpense);
+        when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
 
-        expenseService.save(dailyExpenseDto);
+        expenseService.save(expenseDto);
 
         verify(expenseRepositoryMock, times(1))
-                .save(dailyExpense);
+                .save(expense);
     }
 
     @Test
     void testSaveWithEndDateUpdate() {
         LocalDate expectedFirstLatestDate = DateManager.getEndDate().plusDays(5);
-        DailyExpense dailyExpense1 = getDailyExpense(expectedFirstLatestDate, 10, true);
-        DailyExpenseDto dailyExpenseDto1 = getDailyExpenseDto(expectedFirstLatestDate, 10, true);
+        Expense expense1 = getDailyExpense(1L, expectedFirstLatestDate, 10, true);
+        ExpenseDto expenseDto1 = getDailyExpenseDto(1L, expectedFirstLatestDate, 10, true);
 
         LocalDate expectedSecondLatestDate = DateManager.getEndDate().plusDays(10);
-        DailyExpense dailyExpense2 = getDailyExpense(expectedSecondLatestDate, 20, true);
-        DailyExpenseDto dailyExpenseDto2 = getDailyExpenseDto(expectedSecondLatestDate, 20, true);
+        Expense expense2 = getDailyExpense(1L, expectedSecondLatestDate, 20, true);
+        ExpenseDto expenseDto2 = getDailyExpenseDto(1L, expectedSecondLatestDate, 20, true);
 
-        when(expenseConverterMock.convertToEntity(dailyExpenseDto1)).thenReturn(dailyExpense1);
-        when(expenseConverterMock.convertToEntity(dailyExpenseDto2)).thenReturn(dailyExpense2);
+        when(expenseConverterMock.convert(expenseDto1)).thenReturn(expense1);
+        when(expenseConverterMock.convert(expenseDto2)).thenReturn(expense2);
 
-        expenseService.save(dailyExpenseDto1);
+        expenseService.save(expenseDto1);
         assertEquals(DateManager.getEndDate(), expectedFirstLatestDate);
 
-        expenseService.save(dailyExpenseDto2);
+        expenseService.save(expenseDto2);
         assertEquals(DateManager.getEndDate(), expectedSecondLatestDate);
     }
 
     @Test
     void testSaveWithoutEndDateUpdate() {
         LocalDate expectedLatestDate = DateManager.getEndDate().plusDays(5);
-        DailyExpense dailyExpense1 = getDailyExpense(expectedLatestDate, 10, true);
-        DailyExpenseDto dailyExpenseDto1 = getDailyExpenseDto(expectedLatestDate, 10, true);
+        Expense expense1 = getDailyExpense(1L, expectedLatestDate, 10, true);
+        ExpenseDto expenseDto1 = getDailyExpenseDto(1L, expectedLatestDate, 10, true);
 
         LocalDate expectedNewerDate = DateManager.getEndDate().plusDays(3);
-        DailyExpense dailyExpense2 = getDailyExpense(expectedNewerDate, 20, true);
-        DailyExpenseDto dailyExpenseDto2 = getDailyExpenseDto(expectedNewerDate, 20, true);
+        Expense expense2 = getDailyExpense(1L, expectedNewerDate, 20, true);
+        ExpenseDto expenseDto2 = getDailyExpenseDto(1L, expectedNewerDate, 20, true);
 
-        when(expenseConverterMock.convertToEntity(dailyExpenseDto1)).thenReturn(dailyExpense1);
-        when(expenseConverterMock.convertToEntity(dailyExpenseDto2)).thenReturn(dailyExpense2);
+        when(expenseConverterMock.convert(expenseDto1)).thenReturn(expense1);
+        when(expenseConverterMock.convert(expenseDto2)).thenReturn(expense2);
 
-        expenseService.save(dailyExpenseDto1);
+        expenseService.save(expenseDto1);
         assertEquals(DateManager.getEndDate(), expectedLatestDate);
 
-        expenseService.save(dailyExpenseDto2);
+        expenseService.save(expenseDto2);
         assertNotEquals(DateManager.getEndDate(), expectedNewerDate);
         assertEquals(DateManager.getEndDate(), expectedLatestDate);
     }
 
     @Test
-    void testTrySavingWithExistingDate() {
-        LocalDate currentDate = LocalDate.now();
-        DailyExpense dailyExpense = getDailyExpense(LocalDate.now(), 10, true);
-        DailyExpenseDto dailyExpenseDto = getDailyExpenseDto(LocalDate.now(), 10, true);
+    void testTrySavingWithExistingId() {
+        Long id = 1L;
+        Expense expense = getDailyExpense(id, LocalDate.now(), 10, true);
+        ExpenseDto expenseDto = getDailyExpenseDto(id, LocalDate.now(), 10, true);
 
-        when(expenseConverterMock.convertToEntity(dailyExpenseDto)).thenReturn(dailyExpense);
-        when(expenseRepositoryMock.findByDate(currentDate)).thenReturn(Optional.of(dailyExpense));
+        when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
+        when(expenseRepositoryMock.existsById(id)).thenReturn(true);
 
         try {
-            expenseService.save(dailyExpenseDto);
+            expenseService.save(expenseDto);
             fail("Exception was not thrown");
         } catch (CustomResponseStatusException e) {
             assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-            assertEquals("Daily expense with provided date " + currentDate + " already exists.", e.getReason());
+            assertEquals("Expense with id " + id + " already exists", e.getReason());
             verify(expenseRepositoryMock, never())
-                    .save(dailyExpense);
+                    .save(expense);
         }
     }
 
     @Test
     void testUpdate() {
-        LocalDate currentDate = LocalDate.now();
-        DailyExpense dailyExpense = getDailyExpense(currentDate, 10, true);
-        DailyExpenseDto dailyExpenseDto = getDailyExpenseDto(currentDate, 10, true);
+        Long id = 1L;
+        Expense expense = getDailyExpense(id, LocalDate.now(), 10, true);
+        ExpenseDto expenseDto = getDailyExpenseDto(id, LocalDate.now(), 10, true);
 
-        when(expenseConverterMock.convertToEntity(dailyExpenseDto)).thenReturn(dailyExpense);
-        when(expenseRepositoryMock.findByDate(currentDate)).thenReturn(Optional.of(dailyExpense));
+        when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
+        when(expenseRepositoryMock.existsById(id)).thenReturn(true);
 
-        expenseService.updateByDate(dailyExpenseDto);
+        expenseService.updateById(id, expenseDto);
 
         verify(expenseRepositoryMock, times(1))
-                .updateByDate(dailyExpense);
+                .updateById(expense);
     }
 
     @Test
-    void testTryUpdatingWithNonExistingDate() {
-        LocalDate currentDate = LocalDate.now();
-        DailyExpense dailyExpense = getDailyExpense(LocalDate.now(), 10, true);
-        DailyExpenseDto dailyExpenseDto = getDailyExpenseDto(LocalDate.now(), 10, true);
+    void testTryUpdatingWithExistingId() {
+        Long id = 1L;
+        Expense expense = getDailyExpense(id, LocalDate.now(), 10, true);
+        ExpenseDto expenseDto = getDailyExpenseDto(id, LocalDate.now(), 10, true);
 
-        when(expenseConverterMock.convertToEntity(dailyExpenseDto)).thenReturn(dailyExpense);
-        when(expenseRepositoryMock.findByDate(currentDate)).thenReturn(Optional.empty());
+        when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
+        when(expenseRepositoryMock.existsById(id)).thenReturn(false);
 
         try {
-            expenseService.updateByDate(dailyExpenseDto);
+            expenseService.updateById(id, expenseDto);
             fail("Exception was not thrown");
         } catch (CustomResponseStatusException e) {
             assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-            assertEquals("Records for " + currentDate + " are not found.", e.getReason());
+            assertEquals("Expense with id " + id + " not found", e.getReason());
             verify(expenseRepositoryMock, never())
-                    .updateByDate(dailyExpense);
+                    .updateById(expense);
         }
     }
 
-    private DailyExpense getDailyExpense(LocalDate date, int value, boolean isRegular) {
-        return DailyExpense.builder()
+    private Expense getDailyExpense(Long id, LocalDate date, int value, boolean isRegular) {
+        return Expense.builder()
+                .id(id)
                 .date(date)
                 .value(value)
                 .isRegular(isRegular)
                 .build();
     }
 
-    private DailyExpenseDto getDailyExpenseDto(LocalDate date, int value, boolean isRegular) {
-        return DailyExpenseDto.builder()
+    private ExpenseDto getDailyExpenseDto(Long id, LocalDate date, int value, boolean isRegular) {
+        return ExpenseDto.builder()
+                .id(id)
                 .date(date)
                 .value(value)
                 .isRegular(isRegular)

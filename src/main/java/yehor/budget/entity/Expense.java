@@ -20,7 +20,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "expenses")
-public class DailyExpense {
+public class Expense {
 
     @Id
     @SequenceGenerator(name = "expenses_sequence", sequenceName = "expenses_expense_id_seq", allocationSize = 1)

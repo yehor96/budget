@@ -7,8 +7,7 @@ CREATE TABLE expenses (
     				   value INTEGER,
     				   is_regular BOOLEAN DEFAULT FALSE,
 
-    				   CONSTRAINT expenses_pk PRIMARY KEY (expense_id),
-    				   CONSTRAINT date_uq UNIQUE (date)
+    				   CONSTRAINT expenses_pk PRIMARY KEY (expense_id)
     				   );
 CREATE TABLE categories (
                        category_id BIGSERIAL NOT NULL,

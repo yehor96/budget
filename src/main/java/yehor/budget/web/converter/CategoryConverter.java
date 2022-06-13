@@ -7,14 +7,14 @@ import yehor.budget.web.dto.CategoryDto;
 @Component
 public class CategoryConverter {
 
-    public CategoryDto convertToDto(Category category) {
+    public CategoryDto convert(Category category) {
         return CategoryDto.builder()
                 .id(category.getId())
                 .name(category.getName())
                 .build();
     }
 
-    public Category convertToEntity(CategoryDto categoryDto) {
+    public Category convert(CategoryDto categoryDto) {
         return Category.builder()
                 .id(categoryDto.getId())
                 .name(categoryDto.getName())
