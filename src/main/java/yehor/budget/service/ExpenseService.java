@@ -32,9 +32,7 @@ public class ExpenseService {
     }
 
     public void save(ExpenseDto expenseDto) {
-        if (expenseRepository.existsById(expenseDto.getId())) {
-            throw ExpenseExceptionProvider.getExpenseWithIdExistsException(expenseDto.getId());
-        }
+        validateDoNotExist(expenseDto.getId());
         Expense expense = expenseConverter.convert(expenseDto);
         expenseRepository.save(expense);
         DateManager.updateEndDateIfNecessary(expense.getDate());
@@ -48,11 +46,26 @@ public class ExpenseService {
 
     @Transactional
     public void updateById(Long id, ExpenseDto expenseDto) {
-        if (!expenseRepository.existsById(id)) {
-            throw ExpenseExceptionProvider.getExpenseWithIdDoesNotExistException(id);
-        }
+        validateExists(id);
         Expense expense = expenseConverter.convert(expenseDto);
         expense.setId(id);
         expenseRepository.updateById(expense);
+    }
+
+    public void deleteById(Long id) {
+        validateExists(id);
+        expenseRepository.deleteById(id);
+    }
+
+    private void validateExists(Long id) {
+        if (!expenseRepository.existsById(id)) {
+            throw ExpenseExceptionProvider.getExpenseWithIdDoesNotExistException(id);
+        }
+    }
+
+    private void validateDoNotExist(Long id) {
+        if (expenseRepository.existsById(id)) {
+            throw ExpenseExceptionProvider.getExpenseWithIdExistsException(id);
+        }
     }
 }

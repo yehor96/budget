@@ -3,6 +3,7 @@ package yehor.budget.web.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -71,6 +72,12 @@ public class ExpenseController {
 
         int sum = expenseService.findSumInInterval(dateFrom, dateTo);
         return new ResponseEntity<>(sum, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ExpenseDto> deleteExpense(@RequestParam("id") Long id) {
+        expenseService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

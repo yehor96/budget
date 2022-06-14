@@ -204,6 +204,35 @@ class ExpenseServiceTest {
         }
     }
 
+    @Test
+    void testDeleteById() {
+        Long id = 1L;
+
+        when(expenseRepositoryMock.existsById(id)).thenReturn(true);
+
+        expenseService.deleteById(id);
+
+        verify(expenseRepositoryMock, times(1))
+                .deleteById(id);
+    }
+
+    @Test
+    void testTryDeletingWithNotExistingId() {
+        Long id = 1L;
+
+        when(expenseRepositoryMock.existsById(id)).thenReturn(false);
+
+        try {
+            expenseService.deleteById(id);
+            fail("Exception was not thrown");
+        } catch (CustomResponseStatusException e) {
+            assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+            assertEquals("Expense with id " + id + " not found", e.getReason());
+            verify(expenseRepositoryMock, never())
+                    .deleteById(id);
+        }
+    }
+
     private Expense getDailyExpense(Long id, LocalDate date, int value, boolean isRegular) {
         return Expense.builder()
                 .id(id)
