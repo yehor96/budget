@@ -1,10 +1,12 @@
 package yehor.budget.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,12 +29,14 @@ public class ExpenseController {
     private final ExpenseService expenseService;
 
     @GetMapping
+    @Operation(description = "Get expense by id")
     public ResponseEntity<ExpenseDto> getExpense(@RequestParam("date") Long id) {
         ExpenseDto expenseDto = expenseService.findById(id);
         return new ResponseEntity<>(expenseDto, HttpStatus.OK);
     }
 
     @PostMapping
+    @Operation(description = "Get expense by id")
     public ResponseEntity<ExpenseDto> saveExpense(@RequestBody ExpenseDto expenseDto) {
         dateManager.validateDateAfterStart(expenseDto.getDate());
 
@@ -41,7 +45,8 @@ public class ExpenseController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ExpenseDto> updateExpense(@RequestParam("id") Long id,
+    @Operation(description = "Update expense by id")
+    public ResponseEntity<ExpenseDto> updateExpense(@PathVariable("id") Long id,
                                                     @RequestBody ExpenseDto expenseDto) {
         dateManager.validateDateWithinBudget(expenseDto.getDate());
 
@@ -50,6 +55,7 @@ public class ExpenseController {
     }
 
     @GetMapping("/interval")
+    @Operation(description = "Get list of expenses within dates interval")
     public ResponseEntity<List<ExpenseDto>> getExpensesInInterval(@RequestParam("dateFrom") String dateFromParam,
                                                                   @RequestParam("dateTo") String dateToParam) {
         LocalDate dateFrom = dateManager.parse(dateFromParam);
@@ -63,6 +69,7 @@ public class ExpenseController {
     }
 
     @GetMapping("/sum")
+    @Operation(description = "Get sum of expenses within dates interval")
     public ResponseEntity<Integer> getExpensesSumInInterval(@RequestParam("dateFrom") String dateFromParam,
                                                             @RequestParam("dateTo") String dateToParam) {
         LocalDate dateFrom = dateManager.parse(dateFromParam);
@@ -75,7 +82,8 @@ public class ExpenseController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ExpenseDto> deleteExpense(@RequestParam("id") Long id) {
+    @Operation(description = "Delete expense by id")
+    public ResponseEntity<ExpenseDto> deleteExpense(@PathVariable("id") Long id) {
         expenseService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
