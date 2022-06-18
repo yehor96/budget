@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -29,7 +30,7 @@ public class Expense {
     private long id;
 
     @Column(name = "value")
-    private int value;
+    private BigDecimal value;
 
     @Column(name = "date")
     private LocalDate date;

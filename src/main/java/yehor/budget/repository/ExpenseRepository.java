@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import yehor.budget.entity.Expense;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -14,8 +15,8 @@ import java.util.List;
 public interface ExpenseRepository extends CrudRepository<Expense, Long> {
 
     @Query("SELECT SUM(e.value) FROM Expense e WHERE e.date BETWEEN :dateFrom AND :dateTo")
-    int findSumInInterval(@Param("dateFrom") LocalDate dateFrom,
-                          @Param("dateTo") LocalDate dateTo);
+    BigDecimal findSumInInterval(@Param("dateFrom") LocalDate dateFrom,
+                                 @Param("dateTo") LocalDate dateTo);
 
     @Query("SELECT e FROM Expense e WHERE e.date BETWEEN :dateFrom AND :dateTo")
     List<Expense> findAllInInterval(@Param("dateFrom") LocalDate dateFrom,

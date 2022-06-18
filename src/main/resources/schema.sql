@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS categories;
 CREATE TABLE expenses (
     				   expense_id BIGSERIAL NOT NULL,
     				   date DATE NOT NULL,
-    				   value INTEGER,
+    				   value NUMERIC(11,2) NOT NULL,
     				   is_regular BOOLEAN DEFAULT FALSE,
 
     				   CONSTRAINT expenses_pk PRIMARY KEY (expense_id)

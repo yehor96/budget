@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -12,7 +13,7 @@ public class ExpenseDto {
 
     @Hidden
     private long id;
-    private int value;
+    private BigDecimal value;
     private LocalDate date;
     private boolean isRegular;
 }

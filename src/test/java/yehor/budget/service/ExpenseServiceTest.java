@@ -9,6 +9,7 @@ import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.web.converter.ExpenseConverter;
 import yehor.budget.web.dto.ExpenseDto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +33,8 @@ class ExpenseServiceTest {
     @Test
     void testFindById() {
         Long id = 1L;
-        Expense expense = getDailyExpense(id, LocalDate.now(), 10, true);
-        ExpenseDto expectedExpenseDto = getDailyExpenseDto(id, LocalDate.now(), 10, true);
+        Expense expense = getDailyExpense(id, LocalDate.now(), BigDecimal.TEN, true);
+        ExpenseDto expectedExpenseDto = getDailyExpenseDto(id, LocalDate.now(), BigDecimal.TEN, true);
 
         when(expenseRepositoryMock.findById(id)).thenReturn(Optional.of(expense));
         when(expenseConverterMock.convert(expense)).thenReturn(expectedExpenseDto);
@@ -62,13 +63,13 @@ class ExpenseServiceTest {
 
     @Test
     void testFindSumInInterval() {
-        int expectedSum = 100;
+        BigDecimal expectedSum = BigDecimal.valueOf(100);
         LocalDate date1 = LocalDate.now();
         LocalDate date2 = date1.plusDays(1);
 
         when(expenseRepositoryMock.findSumInInterval(date1, date2)).thenReturn(expectedSum);
 
-        int actualSum = expenseService.findSumInInterval(date1, date2);
+        BigDecimal actualSum = expenseService.findSumInInterval(date1, date2);
 
         assertEquals(expectedSum, actualSum);
     }
@@ -78,12 +79,12 @@ class ExpenseServiceTest {
         LocalDate date1 = LocalDate.now();
         LocalDate date2 = date1.plusDays(1);
 
-        Expense expense1 = getDailyExpense(1L, date1, 10, true);
-        Expense expense2 = getDailyExpense(1L, date2, 10, true);
+        Expense expense1 = getDailyExpense(1L, date1, BigDecimal.TEN, true);
+        Expense expense2 = getDailyExpense(1L, date2, BigDecimal.TEN, true);
         List<Expense> expectedList = List.of(expense1, expense2);
 
-        ExpenseDto expenseDto1 = getDailyExpenseDto(1L, date1, 10, true);
-        ExpenseDto expenseDto2 = getDailyExpenseDto(1L, date2, 10, true);
+        ExpenseDto expenseDto1 = getDailyExpenseDto(1L, date1, BigDecimal.TEN, true);
+        ExpenseDto expenseDto2 = getDailyExpenseDto(1L, date2, BigDecimal.TEN, true);
         List<ExpenseDto> expectedDtoList = List.of(expenseDto1, expenseDto2);
 
         when(expenseRepositoryMock.findAllInInterval(date1, date2)).thenReturn(expectedList);
@@ -97,8 +98,8 @@ class ExpenseServiceTest {
 
     @Test
     void testSave() {
-        Expense expense = getDailyExpense(1L, LocalDate.now(), 10, true);
-        ExpenseDto expenseDto = getDailyExpenseDto(1L, LocalDate.now(), 10, true);
+        Expense expense = getDailyExpense(1L, LocalDate.now(), BigDecimal.TEN, true);
+        ExpenseDto expenseDto = getDailyExpenseDto(1L, LocalDate.now(), BigDecimal.TEN, true);
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
 
@@ -111,12 +112,12 @@ class ExpenseServiceTest {
     @Test
     void testSaveWithEndDateUpdate() {
         LocalDate expectedFirstLatestDate = DateManager.getEndDate().plusDays(5);
-        Expense expense1 = getDailyExpense(1L, expectedFirstLatestDate, 10, true);
-        ExpenseDto expenseDto1 = getDailyExpenseDto(1L, expectedFirstLatestDate, 10, true);
+        Expense expense1 = getDailyExpense(1L, expectedFirstLatestDate, BigDecimal.TEN, true);
+        ExpenseDto expenseDto1 = getDailyExpenseDto(1L, expectedFirstLatestDate, BigDecimal.TEN, true);
 
         LocalDate expectedSecondLatestDate = DateManager.getEndDate().plusDays(10);
-        Expense expense2 = getDailyExpense(1L, expectedSecondLatestDate, 20, true);
-        ExpenseDto expenseDto2 = getDailyExpenseDto(1L, expectedSecondLatestDate, 20, true);
+        Expense expense2 = getDailyExpense(1L, expectedSecondLatestDate, BigDecimal.ONE, true);
+        ExpenseDto expenseDto2 = getDailyExpenseDto(1L, expectedSecondLatestDate, BigDecimal.ONE, true);
 
         when(expenseConverterMock.convert(expenseDto1)).thenReturn(expense1);
         when(expenseConverterMock.convert(expenseDto2)).thenReturn(expense2);
@@ -131,12 +132,12 @@ class ExpenseServiceTest {
     @Test
     void testSaveWithoutEndDateUpdate() {
         LocalDate expectedLatestDate = DateManager.getEndDate().plusDays(5);
-        Expense expense1 = getDailyExpense(1L, expectedLatestDate, 10, true);
-        ExpenseDto expenseDto1 = getDailyExpenseDto(1L, expectedLatestDate, 10, true);
+        Expense expense1 = getDailyExpense(1L, expectedLatestDate, BigDecimal.TEN, true);
+        ExpenseDto expenseDto1 = getDailyExpenseDto(1L, expectedLatestDate, BigDecimal.TEN, true);
 
         LocalDate expectedNewerDate = DateManager.getEndDate().plusDays(3);
-        Expense expense2 = getDailyExpense(1L, expectedNewerDate, 20, true);
-        ExpenseDto expenseDto2 = getDailyExpenseDto(1L, expectedNewerDate, 20, true);
+        Expense expense2 = getDailyExpense(1L, expectedNewerDate, BigDecimal.ONE, true);
+        ExpenseDto expenseDto2 = getDailyExpenseDto(1L, expectedNewerDate, BigDecimal.ONE, true);
 
         when(expenseConverterMock.convert(expenseDto1)).thenReturn(expense1);
         when(expenseConverterMock.convert(expenseDto2)).thenReturn(expense2);
@@ -152,8 +153,8 @@ class ExpenseServiceTest {
     @Test
     void testTrySavingWithExistingId() {
         Long id = 1L;
-        Expense expense = getDailyExpense(id, LocalDate.now(), 10, true);
-        ExpenseDto expenseDto = getDailyExpenseDto(id, LocalDate.now(), 10, true);
+        Expense expense = getDailyExpense(id, LocalDate.now(), BigDecimal.TEN, true);
+        ExpenseDto expenseDto = getDailyExpenseDto(id, LocalDate.now(), BigDecimal.TEN, true);
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
         when(expenseRepositoryMock.existsById(id)).thenReturn(true);
@@ -172,8 +173,8 @@ class ExpenseServiceTest {
     @Test
     void testUpdate() {
         Long id = 1L;
-        Expense expense = getDailyExpense(id, LocalDate.now(), 10, true);
-        ExpenseDto expenseDto = getDailyExpenseDto(id, LocalDate.now(), 10, true);
+        Expense expense = getDailyExpense(id, LocalDate.now(), BigDecimal.TEN, true);
+        ExpenseDto expenseDto = getDailyExpenseDto(id, LocalDate.now(), BigDecimal.TEN, true);
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
         when(expenseRepositoryMock.existsById(id)).thenReturn(true);
@@ -187,8 +188,8 @@ class ExpenseServiceTest {
     @Test
     void testTryUpdatingWithExistingId() {
         Long id = 1L;
-        Expense expense = getDailyExpense(id, LocalDate.now(), 10, true);
-        ExpenseDto expenseDto = getDailyExpenseDto(id, LocalDate.now(), 10, true);
+        Expense expense = getDailyExpense(id, LocalDate.now(), BigDecimal.TEN, true);
+        ExpenseDto expenseDto = getDailyExpenseDto(id, LocalDate.now(), BigDecimal.TEN, true);
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
         when(expenseRepositoryMock.existsById(id)).thenReturn(false);
@@ -233,7 +234,7 @@ class ExpenseServiceTest {
         }
     }
 
-    private Expense getDailyExpense(Long id, LocalDate date, int value, boolean isRegular) {
+    private Expense getDailyExpense(Long id, LocalDate date, BigDecimal value, boolean isRegular) {
         return Expense.builder()
                 .id(id)
                 .date(date)
@@ -242,7 +243,7 @@ class ExpenseServiceTest {
                 .build();
     }
 
-    private ExpenseDto getDailyExpenseDto(Long id, LocalDate date, int value, boolean isRegular) {
+    private ExpenseDto getDailyExpenseDto(Long id, LocalDate date, BigDecimal value, boolean isRegular) {
         return ExpenseDto.builder()
                 .id(id)
                 .date(date)

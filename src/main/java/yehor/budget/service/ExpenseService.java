@@ -10,6 +10,7 @@ import yehor.budget.web.converter.ExpenseConverter;
 import yehor.budget.web.dto.ExpenseDto;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class ExpenseService {
     private final ExpenseConverter expenseConverter;
     private final ExpenseRepository expenseRepository;
 
-    public int findSumInInterval(LocalDate dateFrom, LocalDate dateTo) {
+    public BigDecimal findSumInInterval(LocalDate dateFrom, LocalDate dateTo) {
         return expenseRepository.findSumInInterval(dateFrom, dateTo);
     }
 

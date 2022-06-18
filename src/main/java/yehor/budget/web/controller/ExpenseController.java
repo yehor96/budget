@@ -18,6 +18,7 @@ import yehor.budget.manager.date.DateManager;
 import yehor.budget.service.ExpenseService;
 import yehor.budget.web.dto.ExpenseDto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class ExpenseController {
     }
 
     @PostMapping
-    @Operation(summary = "Get expense by id")
+    @Operation(summary = "Save expense")
     public ResponseEntity<ExpenseDto> saveExpense(@RequestBody ExpenseDto expenseDto) {
         dateManager.validateDateAfterStart(expenseDto.getDate());
 
@@ -73,14 +74,14 @@ public class ExpenseController {
 
     @GetMapping("/sum")
     @Operation(summary = "Get sum of expenses within dates interval")
-    public ResponseEntity<Integer> getExpensesSumInInterval(@RequestParam("dateFrom") String dateFromParam,
-                                                            @RequestParam("dateTo") String dateToParam) {
+    public ResponseEntity<BigDecimal> getExpensesSumInInterval(@RequestParam("dateFrom") String dateFromParam,
+                                                               @RequestParam("dateTo") String dateToParam) {
         LocalDate dateFrom = dateManager.parse(dateFromParam);
         LocalDate dateTo = dateManager.parse(dateToParam);
 
         dateManager.validateDatesWithinBudget(dateFrom, dateTo);
 
-        int sum = expenseService.findSumInInterval(dateFrom, dateTo);
+        BigDecimal sum = expenseService.findSumInInterval(dateFrom, dateTo);
         return new ResponseEntity<>(sum, HttpStatus.OK);
     }
 
