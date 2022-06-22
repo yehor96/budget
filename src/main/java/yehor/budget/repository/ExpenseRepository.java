@@ -26,7 +26,8 @@ public interface ExpenseRepository extends CrudRepository<Expense, Long> {
     @Query("UPDATE Expense e " +
             "SET e.value = :#{#expense.value}, " +
             "e.isRegular = :#{#expense.isRegular}, " +
-            "e.date = :#{#expense.date} " +
+            "e.date = :#{#expense.date}, " +
+            "e.category = :#{#expense.category} " +
             "WHERE e.id = :#{#expense.id}")
     void updateById(@Param("expense") Expense expense);
 }

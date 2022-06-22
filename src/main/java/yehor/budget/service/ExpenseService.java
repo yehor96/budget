@@ -2,9 +2,10 @@ package yehor.budget.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import yehor.budget.entity.Category;
 import yehor.budget.entity.Expense;
-import yehor.budget.exception.ExpenseExceptionProvider;
 import yehor.budget.manager.date.DateManager;
+import yehor.budget.repository.CategoryRepository;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.web.converter.ExpenseConverter;
 import yehor.budget.web.dto.ExpenseDto;
@@ -14,12 +15,16 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import static yehor.budget.exception.CategoryExceptionProvider.categoryDoesNotExistException;
+import static yehor.budget.exception.ExpenseExceptionProvider.expenseWithIdDoesNotExistException;
+
 @Service
 @RequiredArgsConstructor
 public class ExpenseService {
 
     private final ExpenseConverter expenseConverter;
     private final ExpenseRepository expenseRepository;
+    private final CategoryRepository categoryRepository;
 
     public BigDecimal findSumInInterval(LocalDate dateFrom, LocalDate dateTo) {
         return expenseRepository.findSumInInterval(dateFrom, dateTo);
@@ -33,24 +38,31 @@ public class ExpenseService {
     }
 
     public void save(ExpenseDto expenseDto) {
-        validateDoNotExist(expenseDto.getId());
+        Category category = findCategoryById(expenseDto.getCategoryId());
         Expense expense = expenseConverter.convert(expenseDto);
+        expense.setCategory(category);
         expenseRepository.save(expense);
         DateManager.updateEndDateIfNecessary(expense.getDate());
     }
 
     public ExpenseDto findById(Long id) {
         Expense expense = expenseRepository.findById(id)
-                .orElseThrow(() -> ExpenseExceptionProvider.getExpenseWithIdDoesNotExistException(id));
-        return expenseConverter.convert(expense);
+                .orElseThrow(() -> expenseWithIdDoesNotExistException(id));
+        Category category = findCategoryById(expense.getCategory().getId());
+        ExpenseDto expenseDto = expenseConverter.convert(expense);
+        expenseDto.setCategoryId(category.getId());
+        return expenseDto;
     }
 
     @Transactional
     public void updateById(Long id, ExpenseDto expenseDto) {
         validateExists(id);
+        Category category = findCategoryById(expenseDto.getCategoryId());
         Expense expense = expenseConverter.convert(expenseDto);
         expense.setId(id);
+        expense.setCategory(category);
         expenseRepository.updateById(expense);
+        DateManager.updateEndDateIfNecessary(expense.getDate());
     }
 
     public void deleteById(Long id) {
@@ -60,13 +72,12 @@ public class ExpenseService {
 
     private void validateExists(Long id) {
         if (!expenseRepository.existsById(id)) {
-            throw ExpenseExceptionProvider.getExpenseWithIdDoesNotExistException(id);
+            throw expenseWithIdDoesNotExistException(id);
         }
     }
 
-    private void validateDoNotExist(Long id) {
-        if (expenseRepository.existsById(id)) {
-            throw ExpenseExceptionProvider.getExpenseWithIdExistsException(id);
-        }
+    private Category findCategoryById(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> categoryDoesNotExistException(id));
     }
 }

@@ -2,17 +2,17 @@ package yehor.budget.manager.date;
 
 import lombok.Getter;
 import org.springframework.stereotype.Component;
-import yehor.budget.exception.DateExceptionProvider;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
+import static yehor.budget.exception.DateExceptionProvider.illegalDateArgumentProvidedException;
+import static yehor.budget.exception.DateExceptionProvider.outOfBudgetDateArgumentException;
+import static yehor.budget.exception.DateExceptionProvider.reversedOrderOfDatesException;
+
 @Component
 public class DateManager {
 
-    //TODO
-    // Move startDate and endDate to db and edit them via api.
-    // Remove static things.
     public static final LocalDate START_DATE = LocalDate.now().minusDays(30);
     @Getter
     private static LocalDate endDate = LocalDate.now();
@@ -27,7 +27,7 @@ public class DateManager {
         try {
             return LocalDate.parse(value);
         } catch (DateTimeParseException e) {
-            throw DateExceptionProvider.getIllegalDateArgumentProvidedException(value);
+            throw illegalDateArgumentProvidedException(value);
         }
     }
 
@@ -41,25 +41,25 @@ public class DateManager {
 
     public void validateDateWithinBudget(LocalDate date) {
         if (!isWithinBudget(date)) {
-            throw DateExceptionProvider.getOutOfBudgetDateArgumentException(date);
+            throw outOfBudgetDateArgumentException(date);
         }
     }
 
     public void validateDateAfterStart(LocalDate date) {
         if (date.isBefore(START_DATE)) {
-            throw DateExceptionProvider.getOutOfBudgetDateArgumentException(date);
+            throw outOfBudgetDateArgumentException(date);
         }
     }
 
     public void validateDatesWithinBudget(LocalDate date1, LocalDate date2) {
         if (!areWithinBudget(date1, date2)) {
-            throw DateExceptionProvider.getOutOfBudgetDateArgumentException(date1, date2);
+            throw outOfBudgetDateArgumentException(date1, date2);
         }
     }
 
     public void validateDatesInSequentialOrder(LocalDate date1, LocalDate date2) {
         if (date1.isAfter(date2)) {
-            throw new IllegalArgumentException("Reversed order of provided dates: " + date1 + " and " + date2);
+            throw reversedOrderOfDatesException(date1, date2);
         }
     }
 

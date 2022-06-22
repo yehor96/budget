@@ -1,6 +1,7 @@
 package yehor.budget.service;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import yehor.budget.entity.Category;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -93,7 +95,7 @@ class CategoryServiceTest {
             categoryService.delete(1L);
             fail("Exception was not thrown");
         } catch (CustomResponseStatusException e) {
-            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
             assertEquals("Category with id " + 1L + " does not exist", e.getReason());
             verify(categoryRepositoryMock, times(1))
                     .deleteById(1L);
@@ -126,10 +128,27 @@ class CategoryServiceTest {
             categoryService.update(expectedCategoryDto);
             fail("Exception was not thrown");
         } catch (CustomResponseStatusException e) {
-            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
             assertEquals("Category with id " + expectedCategoryDto.getId() + " does not exist", e.getReason());
             verify(categoryRepositoryMock, never())
                     .update(expectedCategory);
+        }
+    }
+
+    @Test
+    void testTryDeletingCategoryWithDependentExpenses() {
+        Long id = 1L;
+
+        doThrow(new DataIntegrityViolationException("")).when(categoryRepositoryMock).deleteById(1L);
+
+        try {
+            categoryService.delete(id);
+            fail("Exception was not thrown");
+        } catch (CustomResponseStatusException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+            assertEquals("Cannot delete category with dependent expenses", e.getReason());
+            verify(categoryRepositoryMock, times(1))
+                    .deleteById(id);
         }
     }
 

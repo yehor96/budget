@@ -21,6 +21,9 @@ import yehor.budget.web.dto.ExpenseDto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+
+import static yehor.budget.exception.CategoryExceptionProvider.invalidCategoryIdException;
 
 @RestController
 @RequestMapping("/api/v1/expenses")
@@ -28,13 +31,12 @@ import java.util.List;
 @Tag(name = "Expense Controller")
 public class ExpenseController {
 
-
     private final DateManager dateManager;
     private final ExpenseService expenseService;
 
     @GetMapping
     @Operation(summary = "Get expense by id")
-    public ResponseEntity<ExpenseDto> getExpense(@RequestParam("date") Long id) {
+    public ResponseEntity<ExpenseDto> getExpense(@RequestParam("id") Long id) {
         ExpenseDto expenseDto = expenseService.findById(id);
         return new ResponseEntity<>(expenseDto, HttpStatus.OK);
     }
@@ -43,6 +45,7 @@ public class ExpenseController {
     @Operation(summary = "Save expense")
     public ResponseEntity<ExpenseDto> saveExpense(@RequestBody ExpenseDto expenseDto) {
         dateManager.validateDateAfterStart(expenseDto.getDate());
+        validateCategoryId(expenseDto);
 
         expenseService.save(expenseDto);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -52,7 +55,8 @@ public class ExpenseController {
     @Operation(summary = "Update expense by id")
     public ResponseEntity<ExpenseDto> updateExpense(@PathVariable("id") Long id,
                                                     @RequestBody ExpenseDto expenseDto) {
-        dateManager.validateDateWithinBudget(expenseDto.getDate());
+        dateManager.validateDateAfterStart(expenseDto.getDate());
+        validateCategoryId(expenseDto);
 
         expenseService.updateById(id, expenseDto);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -79,6 +83,7 @@ public class ExpenseController {
         LocalDate dateFrom = dateManager.parse(dateFromParam);
         LocalDate dateTo = dateManager.parse(dateToParam);
 
+        dateManager.validateDatesInSequentialOrder(dateFrom, dateTo);
         dateManager.validateDatesWithinBudget(dateFrom, dateTo);
 
         BigDecimal sum = expenseService.findSumInInterval(dateFrom, dateTo);
@@ -90,6 +95,13 @@ public class ExpenseController {
     public ResponseEntity<ExpenseDto> deleteExpense(@PathVariable("id") Long id) {
         expenseService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private void validateCategoryId(ExpenseDto expenseDto) {
+        Long categoryId = expenseDto.getCategoryId();
+        if (Objects.isNull(categoryId) || categoryId < 1) {
+            throw invalidCategoryIdException(categoryId);
+        }
     }
 
 }

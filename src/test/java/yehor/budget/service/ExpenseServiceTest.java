@@ -2,9 +2,11 @@ package yehor.budget.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import yehor.budget.entity.Category;
 import yehor.budget.entity.Expense;
 import yehor.budget.exception.CustomResponseStatusException;
 import yehor.budget.manager.date.DateManager;
+import yehor.budget.repository.CategoryRepository;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.web.converter.ExpenseConverter;
 import yehor.budget.web.dto.ExpenseDto;
@@ -27,17 +29,22 @@ class ExpenseServiceTest {
 
     private final ExpenseRepository expenseRepositoryMock = mock(ExpenseRepository.class);
     private final ExpenseConverter expenseConverterMock = mock(ExpenseConverter.class);
+    private final CategoryRepository categoryRepositoryMock = mock(CategoryRepository.class);
 
-    private final ExpenseService expenseService = new ExpenseService(expenseConverterMock, expenseRepositoryMock);
+    private final ExpenseService expenseService = new ExpenseService(
+            expenseConverterMock, expenseRepositoryMock, categoryRepositoryMock);
 
     @Test
     void testFindById() {
         Long id = 1L;
         Expense expense = getDailyExpense(id, LocalDate.now(), BigDecimal.TEN, true);
         ExpenseDto expectedExpenseDto = getDailyExpenseDto(id, LocalDate.now(), BigDecimal.TEN, true);
+        Category category = Category.builder().id(1L).name("Food").build();
+        expense.setCategory(category);
 
         when(expenseRepositoryMock.findById(id)).thenReturn(Optional.of(expense));
         when(expenseConverterMock.convert(expense)).thenReturn(expectedExpenseDto);
+        when(categoryRepositoryMock.findById(id)).thenReturn(Optional.of(category));
 
         ExpenseDto actualResultDto = expenseService.findById(id);
 
@@ -98,10 +105,13 @@ class ExpenseServiceTest {
 
     @Test
     void testSave() {
-        Expense expense = getDailyExpense(1L, LocalDate.now(), BigDecimal.TEN, true);
-        ExpenseDto expenseDto = getDailyExpenseDto(1L, LocalDate.now(), BigDecimal.TEN, true);
+        Long categoryId = 1L;
+        Expense expense = Expense.builder().date(LocalDate.now()).value(BigDecimal.TEN).build();
+        ExpenseDto expenseDto = ExpenseDto.builder().id(1L).date(LocalDate.now()).value(BigDecimal.TEN).isRegular(true).categoryId(categoryId).build();
+        Category category = Category.builder().id(categoryId).name("Food").build();
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
+        when(categoryRepositoryMock.findById(categoryId)).thenReturn(Optional.of(category));
 
         expenseService.save(expenseDto);
 
@@ -111,16 +121,22 @@ class ExpenseServiceTest {
 
     @Test
     void testSaveWithEndDateUpdate() {
+        Long categoryId1 = 1L;
+        Category category1 = Category.builder().id(categoryId1).name("Food").build();
         LocalDate expectedFirstLatestDate = DateManager.getEndDate().plusDays(5);
         Expense expense1 = getDailyExpense(1L, expectedFirstLatestDate, BigDecimal.TEN, true);
-        ExpenseDto expenseDto1 = getDailyExpenseDto(1L, expectedFirstLatestDate, BigDecimal.TEN, true);
+        ExpenseDto expenseDto1 = ExpenseDto.builder().id(1L).date(expectedFirstLatestDate).value(BigDecimal.TEN).isRegular(true).categoryId(categoryId1).build();
 
+        Long categoryId2 = 2L;
+        Category category2 = Category.builder().id(categoryId2).name("Meds").build();
         LocalDate expectedSecondLatestDate = DateManager.getEndDate().plusDays(10);
-        Expense expense2 = getDailyExpense(1L, expectedSecondLatestDate, BigDecimal.ONE, true);
-        ExpenseDto expenseDto2 = getDailyExpenseDto(1L, expectedSecondLatestDate, BigDecimal.ONE, true);
+        Expense expense2 = getDailyExpense(2L, expectedSecondLatestDate, BigDecimal.ONE, true);
+        ExpenseDto expenseDto2 = ExpenseDto.builder().id(2L).date(expectedSecondLatestDate).value(BigDecimal.ONE).isRegular(true).categoryId(categoryId2).build();
 
         when(expenseConverterMock.convert(expenseDto1)).thenReturn(expense1);
         when(expenseConverterMock.convert(expenseDto2)).thenReturn(expense2);
+        when(categoryRepositoryMock.findById(categoryId1)).thenReturn(Optional.of(category1));
+        when(categoryRepositoryMock.findById(categoryId2)).thenReturn(Optional.of(category2));
 
         expenseService.save(expenseDto1);
         assertEquals(DateManager.getEndDate(), expectedFirstLatestDate);
@@ -131,16 +147,22 @@ class ExpenseServiceTest {
 
     @Test
     void testSaveWithoutEndDateUpdate() {
+        Long categoryId1 = 1L;
+        Category category1 = Category.builder().id(categoryId1).name("Food").build();
         LocalDate expectedLatestDate = DateManager.getEndDate().plusDays(5);
         Expense expense1 = getDailyExpense(1L, expectedLatestDate, BigDecimal.TEN, true);
-        ExpenseDto expenseDto1 = getDailyExpenseDto(1L, expectedLatestDate, BigDecimal.TEN, true);
+        ExpenseDto expenseDto1 = ExpenseDto.builder().id(1L).date(expectedLatestDate).value(BigDecimal.TEN).isRegular(true).categoryId(categoryId1).build();
 
+        Long categoryId2 = 2L;
+        Category category2 = Category.builder().id(categoryId2).name("Meds").build();
         LocalDate expectedNewerDate = DateManager.getEndDate().plusDays(3);
         Expense expense2 = getDailyExpense(1L, expectedNewerDate, BigDecimal.ONE, true);
-        ExpenseDto expenseDto2 = getDailyExpenseDto(1L, expectedNewerDate, BigDecimal.ONE, true);
+        ExpenseDto expenseDto2 = ExpenseDto.builder().id(2L).date(expectedNewerDate).value(BigDecimal.ONE).isRegular(true).categoryId(categoryId2).build();
 
         when(expenseConverterMock.convert(expenseDto1)).thenReturn(expense1);
         when(expenseConverterMock.convert(expenseDto2)).thenReturn(expense2);
+        when(categoryRepositoryMock.findById(categoryId1)).thenReturn(Optional.of(category1));
+        when(categoryRepositoryMock.findById(categoryId2)).thenReturn(Optional.of(category2));
 
         expenseService.save(expenseDto1);
         assertEquals(DateManager.getEndDate(), expectedLatestDate);
@@ -151,33 +173,37 @@ class ExpenseServiceTest {
     }
 
     @Test
-    void testTrySavingWithExistingId() {
+    void testTrySavingWithAbsentCategoryId() {
         Long id = 1L;
-        Expense expense = getDailyExpense(id, LocalDate.now(), BigDecimal.TEN, true);
-        ExpenseDto expenseDto = getDailyExpenseDto(id, LocalDate.now(), BigDecimal.TEN, true);
+        Long categoryId = 2L;
+        ExpenseDto expenseDto = ExpenseDto.builder().id(id).date(LocalDate.now()).value(BigDecimal.TEN).isRegular(true).categoryId(categoryId).build();
 
-        when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
-        when(expenseRepositoryMock.existsById(id)).thenReturn(true);
+        when(expenseRepositoryMock.existsById(id)).thenReturn(false);
+        when(categoryRepositoryMock.findById(categoryId)).thenReturn(Optional.empty());
 
         try {
             expenseService.save(expenseDto);
             fail("Exception was not thrown");
-        } catch (CustomResponseStatusException e) {
-            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-            assertEquals("Expense with id " + id + " already exists", e.getReason());
-            verify(expenseRepositoryMock, never())
-                    .save(expense);
+        } catch (Exception e) {
+            assertEquals(CustomResponseStatusException.class, e.getClass());
+            CustomResponseStatusException exception = (CustomResponseStatusException) e;
+            assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+            assertEquals("Category with id " + categoryId + " does not exist", exception.getReason());
         }
     }
 
     @Test
     void testUpdate() {
         Long id = 1L;
-        Expense expense = getDailyExpense(id, LocalDate.now(), BigDecimal.TEN, true);
-        ExpenseDto expenseDto = getDailyExpenseDto(id, LocalDate.now(), BigDecimal.TEN, true);
+        Long categoryId = 1L;
+        Expense expense = Expense.builder().date(LocalDate.now()).value(BigDecimal.TEN).build();
+        ExpenseDto expenseDto = ExpenseDto.builder().id(id).date(LocalDate.now()).value(BigDecimal.TEN).isRegular(true).categoryId(categoryId).build();
+        Category category = Category.builder().id(1L).name("Food").build();
+        expense.setCategory(category);
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
         when(expenseRepositoryMock.existsById(id)).thenReturn(true);
+        when(categoryRepositoryMock.findById(categoryId)).thenReturn(Optional.of(category));
 
         expenseService.updateById(id, expenseDto);
 
@@ -202,6 +228,26 @@ class ExpenseServiceTest {
             assertEquals("Expense with id " + id + " not found", e.getReason());
             verify(expenseRepositoryMock, never())
                     .updateById(expense);
+        }
+    }
+
+    @Test
+    void testTryUpdatingWithAbsentCategoryId() {
+        Long id = 1L;
+        Long categoryId = 2L;
+        ExpenseDto expenseDto = ExpenseDto.builder().id(id).date(LocalDate.now()).value(BigDecimal.TEN).isRegular(true).categoryId(categoryId).build();
+
+        when(expenseRepositoryMock.existsById(id)).thenReturn(true);
+        when(categoryRepositoryMock.findById(categoryId)).thenReturn(Optional.empty());
+
+        try {
+            expenseService.updateById(id, expenseDto);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(CustomResponseStatusException.class, e.getClass());
+            CustomResponseStatusException exception = (CustomResponseStatusException) e;
+            assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+            assertEquals("Category with id " + categoryId + " does not exist", exception.getReason());
         }
     }
 
@@ -234,7 +280,7 @@ class ExpenseServiceTest {
         }
     }
 
-    private Expense getDailyExpense(Long id, LocalDate date, BigDecimal value, boolean isRegular) {
+    private Expense getDailyExpense(Long id, LocalDate date, BigDecimal value, Boolean isRegular) {
         return Expense.builder()
                 .id(id)
                 .date(date)
@@ -243,7 +289,7 @@ class ExpenseServiceTest {
                 .build();
     }
 
-    private ExpenseDto getDailyExpenseDto(Long id, LocalDate date, BigDecimal value, boolean isRegular) {
+    private ExpenseDto getDailyExpenseDto(Long id, LocalDate date, BigDecimal value, Boolean isRegular) {
         return ExpenseDto.builder()
                 .id(id)
                 .date(date)

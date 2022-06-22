@@ -12,7 +12,8 @@ public class ExpenseConverter {
                 .id(expense.getId())
                 .value(expense.getValue())
                 .date(expense.getDate())
-                .isRegular(expense.isRegular())
+                .isRegular(expense.getIsRegular())
+                .categoryId(expense.getCategory().getId())
                 .build();
     }
 
@@ -20,7 +21,7 @@ public class ExpenseConverter {
         return Expense.builder()
                 .value(expenseDto.getValue())
                 .date(expenseDto.getDate())
-                .isRegular(expenseDto.isRegular())
+                .isRegular(expenseDto.getIsRegular())
                 .build();
     }
 }

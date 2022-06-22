@@ -12,8 +12,9 @@ import java.time.LocalDate;
 public class ExpenseDto {
 
     @Hidden
-    private long id;
+    private Long id;
     private BigDecimal value;
     private LocalDate date;
-    private boolean isRegular;
+    private Boolean isRegular;
+    private Long categoryId;
 }

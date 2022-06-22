@@ -1,10 +1,10 @@
 package yehor.budget.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import yehor.budget.entity.Category;
-import yehor.budget.exception.CategoryExceptionProvider;
 import yehor.budget.repository.CategoryRepository;
 import yehor.budget.web.converter.CategoryConverter;
 import yehor.budget.web.dto.CategoryDto;
@@ -12,6 +12,10 @@ import yehor.budget.web.dto.CategoryDto;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.StreamSupport;
+
+import static yehor.budget.exception.CategoryExceptionProvider.cannotDeleteCategoryWithDependentExpensesException;
+import static yehor.budget.exception.CategoryExceptionProvider.categoryAlreadyExistsException;
+import static yehor.budget.exception.CategoryExceptionProvider.categoryDoesNotExistException;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +41,9 @@ public class CategoryService {
         try {
             categoryRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw CategoryExceptionProvider.getCategoryDoesNotExistException(id);
+            throw categoryDoesNotExistException(id);
+        } catch (DataIntegrityViolationException e) {
+            throw cannotDeleteCategoryWithDependentExpensesException();
         }
     }
 
@@ -51,13 +57,13 @@ public class CategoryService {
     private void validateCategoryDoNotExist(Category category) {
         categoryRepository.findByName(category.getName())
                 .ifPresent(e -> {
-                    throw CategoryExceptionProvider.getCategoryAlreadyExistsException(category.getName());
+                    throw categoryAlreadyExistsException(category.getName());
                 });
     }
 
     private void validateCategoryExists(Long id) {
         if (!categoryRepository.existsById(id)) {
-            throw CategoryExceptionProvider.getCategoryDoesNotExistException(id);
+            throw categoryDoesNotExistException(id);
         }
     }
 }

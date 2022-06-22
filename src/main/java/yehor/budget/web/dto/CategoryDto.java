@@ -9,6 +9,6 @@ import lombok.Data;
 public class CategoryDto {
 
     @Hidden
-    private long id;
+    private Long id;
     private String name;
 }

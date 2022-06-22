@@ -10,8 +10,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import java.util.List;
 
 @Data
 @Builder
@@ -25,8 +27,11 @@ public class Category {
     @SequenceGenerator(name = "categories_sequence", sequenceName = "categories_category_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "categories_sequence")
     @Column(name = "category_id")
-    private long id;
+    private Long id;
 
     @Column(name = "name")
     private String name;
+
+    @OneToMany(mappedBy = "category")
+    private List<Expense> expenses;
 }
