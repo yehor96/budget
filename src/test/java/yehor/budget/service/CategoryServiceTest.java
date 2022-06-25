@@ -8,7 +8,8 @@ import yehor.budget.entity.Category;
 import yehor.budget.exception.CustomResponseStatusException;
 import yehor.budget.repository.CategoryRepository;
 import yehor.budget.web.converter.CategoryConverter;
-import yehor.budget.web.dto.CategoryDto;
+import yehor.budget.web.dto.full.CategoryFullDto;
+import yehor.budget.web.dto.limited.CategoryLimitedDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +17,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -33,16 +33,16 @@ class CategoryServiceTest {
 
     @Test
     void testGetAll() {
-        CategoryDto expectedCategoryDto1 = CategoryDto.builder().name("Food").build();
-        CategoryDto expectedCategoryDto2 = CategoryDto.builder().name("Meds").build();
-        Category expectedCategory1 = Category.builder().name("Food").build();
-        Category expectedCategory2 = Category.builder().name("Meds").build();
+        CategoryFullDto expectedCategoryDto1 = CategoryFullDto.builder().id(1L).name("Food").build();
+        CategoryFullDto expectedCategoryDto2 = CategoryFullDto.builder().id(2L).name("Meds").build();
+        Category expectedCategory1 = Category.builder().id(1L).name("Food").build();
+        Category expectedCategory2 = Category.builder().id(2L).name("Meds").build();
 
         when(categoryRepositoryMock.findAll()).thenReturn(List.of(expectedCategory1, expectedCategory2));
         when(categoryConverterMock.convert(expectedCategory1)).thenReturn(expectedCategoryDto1);
         when(categoryConverterMock.convert(expectedCategory2)).thenReturn(expectedCategoryDto2);
 
-        List<CategoryDto> categories = categoryService.getAll();
+        List<CategoryFullDto> categories = categoryService.getAll();
 
         assertTrue(categories.contains(expectedCategoryDto1));
         assertTrue(categories.contains(expectedCategoryDto2));
@@ -50,7 +50,7 @@ class CategoryServiceTest {
 
     @Test
     void testSave() {
-        CategoryDto expectedCategoryDto = CategoryDto.builder().name("Food").build();
+        CategoryLimitedDto expectedCategoryDto = CategoryLimitedDto.builder().name("Food").build();
         Category expectedCategory = Category.builder().name("Food").build();
 
         when(categoryConverterMock.convert(expectedCategoryDto)).thenReturn(expectedCategory);
@@ -63,7 +63,7 @@ class CategoryServiceTest {
 
     @Test
     void testTrySavingExistingCategory() {
-        CategoryDto expectedCategoryDto = CategoryDto.builder().name("Food").build();
+        CategoryLimitedDto expectedCategoryDto = CategoryLimitedDto.builder().name("Food").build();
         Category expectedCategory = Category.builder().name("Food").build();
 
         when(categoryConverterMock.convert(expectedCategoryDto)).thenReturn(expectedCategory);
@@ -104,8 +104,8 @@ class CategoryServiceTest {
 
     @Test
     void testUpdateCategory() {
-        CategoryDto expectedCategoryDto = CategoryDto.builder().name("Food").build();
-        Category expectedCategory = Category.builder().name("Food").build();
+        CategoryFullDto expectedCategoryDto = CategoryFullDto.builder().id(1L).name("Food").build();
+        Category expectedCategory = Category.builder().id(1L).name("Food").build();
 
         when(categoryConverterMock.convert(expectedCategoryDto)).thenReturn(expectedCategory);
         when(categoryRepositoryMock.existsById(expectedCategoryDto.getId())).thenReturn(true);
@@ -118,8 +118,8 @@ class CategoryServiceTest {
 
     @Test
     void testTryUpdatingNotExistingCategory() {
-        CategoryDto expectedCategoryDto = CategoryDto.builder().name("Food").build();
-        Category expectedCategory = Category.builder().name("Food").build();
+        CategoryFullDto expectedCategoryDto = CategoryFullDto.builder().id(1L).name("Food").build();
+        Category expectedCategory = Category.builder().id(1L).name("Food").build();
 
         when(categoryConverterMock.convert(expectedCategoryDto)).thenReturn(expectedCategory);
         when(categoryRepositoryMock.existsById(expectedCategoryDto.getId())).thenReturn(false);

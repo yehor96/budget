@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import yehor.budget.entity.Category;
 import yehor.budget.repository.CategoryRepository;
 import yehor.budget.web.converter.CategoryConverter;
-import yehor.budget.web.dto.CategoryDto;
+import yehor.budget.web.dto.limited.CategoryLimitedDto;
+import yehor.budget.web.dto.full.CategoryFullDto;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -24,14 +25,14 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryConverter categoryConverter;
 
-    public List<CategoryDto> getAll() {
+    public List<CategoryFullDto> getAll() {
         Iterable<Category> categories = categoryRepository.findAll();
         return StreamSupport.stream(categories.spliterator(), false)
                 .map(categoryConverter::convert)
                 .toList();
     }
 
-    public void save(CategoryDto categoryDto) {
+    public void save(CategoryLimitedDto categoryDto) {
         Category category = categoryConverter.convert(categoryDto);
         validateCategoryDoNotExist(category);
         categoryRepository.save(category);
@@ -48,7 +49,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public void update(CategoryDto categoryDto) {
+    public void update(CategoryFullDto categoryDto) {
         validateCategoryExists(categoryDto.getId());
         Category category = categoryConverter.convert(categoryDto);
         categoryRepository.update(category);

@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import yehor.budget.service.CategoryService;
-import yehor.budget.web.dto.CategoryDto;
+import yehor.budget.web.dto.full.CategoryFullDto;
+import yehor.budget.web.dto.limited.CategoryLimitedDto;
 
 import java.util.List;
 
@@ -28,29 +29,27 @@ public class CategoryController {
 
     @GetMapping
     @Operation(summary = "Get all categories")
-    public List<CategoryDto> getAllCategories() {
+    public List<CategoryFullDto> getAllCategories() {
         return categoryService.getAll();
     }
 
     @PostMapping
     @Operation(summary = "Save category")
-    public ResponseEntity<CategoryDto> saveCategory(@RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryLimitedDto> saveCategory(@RequestBody CategoryLimitedDto categoryDto) {
         categoryService.save(categoryDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete category by id")
-    public ResponseEntity<CategoryDto> deleteCategory(@PathVariable("id") Long id) {
+    public ResponseEntity<CategoryLimitedDto> deleteCategory(@PathVariable("id") Long id) {
         categoryService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update category by id")
-    public ResponseEntity<CategoryDto> updateCategory(@PathVariable("id") Long id,
-                                                      @RequestBody CategoryDto categoryDto) {
-        categoryDto.setId(id);
+    public ResponseEntity<CategoryFullDto> updateCategory(@RequestBody CategoryFullDto categoryDto) {
         categoryService.update(categoryDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
