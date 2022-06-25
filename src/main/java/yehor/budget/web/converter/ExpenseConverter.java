@@ -2,13 +2,14 @@ package yehor.budget.web.converter;
 
 import org.springframework.stereotype.Component;
 import yehor.budget.entity.Expense;
-import yehor.budget.web.dto.ExpenseDto;
+import yehor.budget.web.dto.full.ExpenseFullDto;
+import yehor.budget.web.dto.limited.ExpenseLimitedDto;
 
 @Component
 public class ExpenseConverter {
 
-    public ExpenseDto convert(Expense expense) {
-        return ExpenseDto.builder()
+    public ExpenseFullDto convert(Expense expense) {
+        return ExpenseFullDto.builder()
                 .id(expense.getId())
                 .value(expense.getValue())
                 .date(expense.getDate())
@@ -17,8 +18,17 @@ public class ExpenseConverter {
                 .build();
     }
 
-    public Expense convert(ExpenseDto expenseDto) {
+    public Expense convert(ExpenseLimitedDto expenseDto) {
         return Expense.builder()
+                .value(expenseDto.getValue())
+                .date(expenseDto.getDate())
+                .isRegular(expenseDto.getIsRegular())
+                .build();
+    }
+
+    public Expense convert(ExpenseFullDto expenseDto) {
+        return Expense.builder()
+                .id(expenseDto.getId())
                 .value(expenseDto.getValue())
                 .date(expenseDto.getDate())
                 .isRegular(expenseDto.getIsRegular())

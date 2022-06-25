@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import yehor.budget.manager.date.DateManager;
 import yehor.budget.service.ExpenseService;
-import yehor.budget.web.dto.ExpenseDto;
+import yehor.budget.web.dto.full.ExpenseFullDto;
+import yehor.budget.web.dto.limited.ExpenseLimitedDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -36,35 +37,34 @@ public class ExpenseController {
 
     @GetMapping
     @Operation(summary = "Get expense by id")
-    public ResponseEntity<ExpenseDto> getExpense(@RequestParam("id") Long id) {
-        ExpenseDto expenseDto = expenseService.findById(id);
+    public ResponseEntity<ExpenseFullDto> getExpense(@RequestParam("id") Long id) {
+        ExpenseFullDto expenseDto = expenseService.findById(id);
         return new ResponseEntity<>(expenseDto, HttpStatus.OK);
     }
 
     @PostMapping
     @Operation(summary = "Save expense")
-    public ResponseEntity<ExpenseDto> saveExpense(@RequestBody ExpenseDto expenseDto) {
+    public ResponseEntity<ExpenseLimitedDto> saveExpense(@RequestBody ExpenseLimitedDto expenseDto) {
         dateManager.validateDateAfterStart(expenseDto.getDate());
-        validateCategoryId(expenseDto);
+        validateCategoryId(expenseDto.getCategoryId());
 
         expenseService.save(expenseDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping
     @Operation(summary = "Update expense by id")
-    public ResponseEntity<ExpenseDto> updateExpense(@PathVariable("id") Long id,
-                                                    @RequestBody ExpenseDto expenseDto) {
+    public ResponseEntity<ExpenseFullDto> updateExpense(@RequestBody ExpenseFullDto expenseDto) {
         dateManager.validateDateAfterStart(expenseDto.getDate());
-        validateCategoryId(expenseDto);
+        validateCategoryId(expenseDto.getCategoryId());
 
-        expenseService.updateById(id, expenseDto);
+        expenseService.updateById(expenseDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/interval")
     @Operation(summary = "Get list of expenses within dates interval")
-    public ResponseEntity<List<ExpenseDto>> getExpensesInInterval(@RequestParam("dateFrom") String dateFromParam,
+    public ResponseEntity<List<ExpenseFullDto>> getExpensesInInterval(@RequestParam("dateFrom") String dateFromParam,
                                                                   @RequestParam("dateTo") String dateToParam) {
         LocalDate dateFrom = dateManager.parse(dateFromParam);
         LocalDate dateTo = dateManager.parse(dateToParam);
@@ -72,7 +72,7 @@ public class ExpenseController {
         dateManager.validateDatesInSequentialOrder(dateFrom, dateTo);
         dateManager.validateDatesWithinBudget(dateFrom, dateTo);
 
-        List<ExpenseDto> expenseDtoList = expenseService.findAllInInterval(dateFrom, dateTo);
+        List<ExpenseFullDto> expenseDtoList = expenseService.findAllInInterval(dateFrom, dateTo);
         return new ResponseEntity<>(expenseDtoList, HttpStatus.OK);
     }
 
@@ -92,13 +92,12 @@ public class ExpenseController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete expense by id")
-    public ResponseEntity<ExpenseDto> deleteExpense(@PathVariable("id") Long id) {
+    public ResponseEntity<ExpenseFullDto> deleteExpense(@PathVariable("id") Long id) {
         expenseService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private void validateCategoryId(ExpenseDto expenseDto) {
-        Long categoryId = expenseDto.getCategoryId();
+    private void validateCategoryId(Long categoryId) {
         if (Objects.isNull(categoryId) || categoryId < 1) {
             throw invalidCategoryIdException(categoryId);
         }

@@ -8,7 +8,8 @@ import yehor.budget.manager.date.DateManager;
 import yehor.budget.repository.CategoryRepository;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.web.converter.ExpenseConverter;
-import yehor.budget.web.dto.ExpenseDto;
+import yehor.budget.web.dto.full.ExpenseFullDto;
+import yehor.budget.web.dto.limited.ExpenseLimitedDto;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
@@ -30,37 +31,37 @@ public class ExpenseService {
         return expenseRepository.findSumInInterval(dateFrom, dateTo);
     }
 
-    public List<ExpenseDto> findAllInInterval(LocalDate dateFrom, LocalDate dateTo) {
+    public List<ExpenseFullDto> findAllInInterval(LocalDate dateFrom, LocalDate dateTo) {
         List<Expense> expenses = expenseRepository.findAllInInterval(dateFrom, dateTo);
         return expenses.stream()
                 .map(expenseConverter::convert)
                 .toList();
     }
 
-    public void save(ExpenseDto expenseDto) {
-        Category category = findCategoryById(expenseDto.getCategoryId());
+    public void save(ExpenseLimitedDto expenseDto) {
         Expense expense = expenseConverter.convert(expenseDto);
+
+        Category category = findCategoryById(expenseDto.getCategoryId());
         expense.setCategory(category);
+
         expenseRepository.save(expense);
         DateManager.updateEndDateIfNecessary(expense.getDate());
     }
 
-    public ExpenseDto findById(Long id) {
+    public ExpenseFullDto findById(Long id) {
         Expense expense = expenseRepository.findById(id)
                 .orElseThrow(() -> expenseWithIdDoesNotExistException(id));
-        Category category = findCategoryById(expense.getCategory().getId());
-        ExpenseDto expenseDto = expenseConverter.convert(expense);
-        expenseDto.setCategoryId(category.getId());
-        return expenseDto;
+        return expenseConverter.convert(expense);
     }
 
     @Transactional
-    public void updateById(Long id, ExpenseDto expenseDto) {
-        validateExists(id);
-        Category category = findCategoryById(expenseDto.getCategoryId());
+    public void updateById(ExpenseFullDto expenseDto) {
+        validateExists(expenseDto.getId());
         Expense expense = expenseConverter.convert(expenseDto);
-        expense.setId(id);
+
+        Category category = findCategoryById(expenseDto.getCategoryId());
         expense.setCategory(category);
+
         expenseRepository.updateById(expense);
         DateManager.updateEndDateIfNecessary(expense.getDate());
     }

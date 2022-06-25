@@ -1,6 +1,5 @@
-package yehor.budget.web.dto;
+package yehor.budget.web.dto.limited;
 
-import io.swagger.v3.oas.annotations.Hidden;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,10 +8,7 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-public class ExpenseDto {
-
-    @Hidden
-    private Long id;
+public class ExpenseLimitedDto {
     private BigDecimal value;
     private LocalDate date;
     private Boolean isRegular;
