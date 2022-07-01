@@ -1,6 +1,8 @@
 package yehor.budget.manager.date;
 
 import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -13,12 +15,15 @@ import static yehor.budget.exception.DateExceptionProvider.reversedOrderOfDatesE
 @Component
 public class DateManager {
 
+    private static final Logger LOG = LogManager.getLogger(DateManager.class);
+
     public static final LocalDate START_DATE = LocalDate.now().minusDays(30);
     @Getter
     private static LocalDate endDate = LocalDate.now();
 
     public static void updateEndDateIfNecessary(LocalDate date) {
         if (date.isAfter(endDate)) {
+            LOG.info("End date is changed from {} to {}", endDate, date);
             endDate = date;
         }
     }
@@ -37,12 +42,6 @@ public class DateManager {
 
     public boolean areWithinBudget(LocalDate date1, LocalDate date2) {
         return isWithinBudget(date1) && isWithinBudget(date2);
-    }
-
-    public void validateDateWithinBudget(LocalDate date) {
-        if (!isWithinBudget(date)) {
-            throw outOfBudgetDateArgumentException(date);
-        }
     }
 
     public void validateDateAfterStart(LocalDate date) {

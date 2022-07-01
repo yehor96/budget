@@ -1,6 +1,8 @@
 package yehor.budget.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ import static yehor.budget.exception.CategoryExceptionProvider.categoryDoesNotEx
 @RequiredArgsConstructor
 public class CategoryService {
 
+    private static final Logger LOG = LogManager.getLogger(CategoryService.class);
+
     private final CategoryRepository categoryRepository;
     private final CategoryConverter categoryConverter;
 
@@ -36,11 +40,13 @@ public class CategoryService {
         Category category = categoryConverter.convert(categoryDto);
         validateCategoryDoNotExist(category);
         categoryRepository.save(category);
+        LOG.info("{} is saved", category);
     }
 
     public void delete(Long id) {
         try {
             categoryRepository.deleteById(id);
+            LOG.info("Category with id {} is deleted", id);
         } catch (EmptyResultDataAccessException e) {
             throw categoryDoesNotExistException(id);
         } catch (DataIntegrityViolationException e) {
@@ -53,6 +59,7 @@ public class CategoryService {
         validateCategoryExists(categoryDto.getId());
         Category category = categoryConverter.convert(categoryDto);
         categoryRepository.update(category);
+        LOG.info("{} is updated", category);
     }
 
     private void validateCategoryDoNotExist(Category category) {
