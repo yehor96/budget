@@ -3,7 +3,7 @@ package yehor.budget.exception;
 import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-import yehor.budget.manager.date.DateManager;
+import yehor.budget.date.DateManager;
 
 import java.time.LocalDate;
 

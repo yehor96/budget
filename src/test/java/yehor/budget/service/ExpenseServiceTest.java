@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import yehor.budget.entity.Category;
 import yehor.budget.entity.Expense;
 import yehor.budget.exception.CustomResponseStatusException;
-import yehor.budget.manager.date.DateManager;
+import yehor.budget.date.DateManager;
 import yehor.budget.repository.CategoryRepository;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.web.converter.ExpenseConverter;

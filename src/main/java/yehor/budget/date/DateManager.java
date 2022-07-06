@@ -1,4 +1,4 @@
-package yehor.budget.manager.date;
+package yehor.budget.date;
 
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
@@ -59,6 +59,27 @@ public class DateManager {
     public void validateDatesInSequentialOrder(LocalDate date1, LocalDate date2) {
         if (date1.isAfter(date2)) {
             throw reversedOrderOfDatesException(date1, date2);
+        }
+    }
+
+    public void validateMonthWithinBudget(FullMonth fullMonth) {
+        Integer year = fullMonth.getYear();
+        int month = fullMonth.getMonth().getValue();
+        int startYear = START_DATE.getYear();
+        int endYear = endDate.getYear();
+        int startMonth = START_DATE.getMonthValue();
+        int endMonth = endDate.getMonthValue();
+
+        if (startYear > year || endYear < year) {
+            throw new RuntimeException("Invalid year"); //TODO custom exception
+        }
+
+        if (startYear == year && startMonth > month) {
+            throw new RuntimeException("invalid month within valid year"); //TODO custom exception
+        }
+
+        if (endYear == year && endMonth < month) {
+            throw new RuntimeException("invalid month within valid year"); //TODO custom exception
         }
     }
 
