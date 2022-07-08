@@ -14,4 +14,17 @@ public class FullMonth {
     public static FullMonth of(java.time.Month month, Integer year) {
         return new FullMonth(month, year);
     }
+
+    @Override
+    public String toString() {
+        return "[" + month.name() + ", " + year + "]";
+    }
+
+    public FullMonth next() {
+        if (month.getValue() == 12) {
+            return new FullMonth(Month.JANUARY, year + 1);
+        } else {
+            return new FullMonth(month.plus(1), year);
+        }
+    }
 }

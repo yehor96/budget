@@ -7,10 +7,14 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static yehor.budget.exception.DateExceptionProvider.illegalDateArgumentProvidedException;
+import static yehor.budget.exception.DateExceptionProvider.invalidFullMonthException;
 import static yehor.budget.exception.DateExceptionProvider.outOfBudgetDateArgumentException;
 import static yehor.budget.exception.DateExceptionProvider.reversedOrderOfDatesException;
+import static yehor.budget.exception.DateExceptionProvider.reversedOrderOfMonthsException;
 
 @Component
 public class DateManager {
@@ -44,6 +48,17 @@ public class DateManager {
         return isWithinBudget(date1) && isWithinBudget(date2);
     }
 
+    public List<FullMonth> getMonthsListIn(FullMonth startMonth, FullMonth endMonth) {
+        List<FullMonth> months = new ArrayList<>();
+        FullMonth currentMonth = startMonth;
+        while (!currentMonth.equals(endMonth)) {
+            months.add(currentMonth);
+            currentMonth = currentMonth.next();
+        }
+        months.add(currentMonth);
+        return months;
+    }
+
     public void validateDateAfterStart(LocalDate date) {
         if (date.isBefore(START_DATE)) {
             throw outOfBudgetDateArgumentException(date);
@@ -71,16 +86,25 @@ public class DateManager {
         int endMonth = endDate.getMonthValue();
 
         if (startYear > year || endYear < year) {
-            throw new RuntimeException("Invalid year"); //TODO custom exception
+            throw invalidFullMonthException(fullMonth);
         }
-
         if (startYear == year && startMonth > month) {
-            throw new RuntimeException("invalid month within valid year"); //TODO custom exception
+            throw invalidFullMonthException(fullMonth);
         }
-
         if (endYear == year && endMonth < month) {
-            throw new RuntimeException("invalid month within valid year"); //TODO custom exception
+            throw invalidFullMonthException(fullMonth);
         }
     }
 
+    public void validateMonthsInSequentialOrder(FullMonth startMonth, FullMonth endMonth) {
+        int startYearValue = startMonth.getYear();
+        int endYearValue = endMonth.getYear();
+        int startMonthValue = startMonth.getMonth().getValue();
+        int endMonthValue = endMonth.getMonth().getValue();
+
+        if (startYearValue > endYearValue ||
+                (startYearValue == endYearValue && startMonthValue > endMonthValue)) {
+            throw reversedOrderOfMonthsException(startMonth, endMonth);
+        }
+    }
 }

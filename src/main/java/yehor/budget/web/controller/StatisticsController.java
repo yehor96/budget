@@ -10,6 +10,7 @@ import yehor.budget.date.DateManager;
 import yehor.budget.date.FullMonth;
 import yehor.budget.service.StatisticsService;
 import yehor.budget.web.dto.MonthlyStatistics;
+import yehor.budget.web.dto.PeriodStatistics;
 
 import java.time.Month;
 
@@ -26,7 +27,24 @@ public class StatisticsController {
     public MonthlyStatistics getMonthlyStatistics(@RequestParam("month") Month month,
                                                   @RequestParam("year") Integer year) {
         FullMonth fullMonth = FullMonth.of(month, year);
+
         dateManager.validateMonthWithinBudget(fullMonth);
+
         return statisticsService.getMonthlyStatistics(fullMonth);
+    }
+
+    @GetMapping("/period")
+    public PeriodStatistics getPeriodStatistics(@RequestParam("startMonth") Month startMonth,
+                                                @RequestParam("startYear") Integer startYear,
+                                                @RequestParam("endMonth") Month endMonth,
+                                                @RequestParam("endYear") Integer endYear) {
+        FullMonth startFullMonth = FullMonth.of(startMonth, startYear);
+        FullMonth endFullMonth = FullMonth.of(endMonth, endYear);
+
+        dateManager.validateMonthsInSequentialOrder(startFullMonth, endFullMonth);
+        dateManager.validateMonthWithinBudget(startFullMonth);
+        dateManager.validateMonthWithinBudget(endFullMonth);
+
+        return statisticsService.getPeriodStatistics(startFullMonth, endFullMonth);
     }
 }
