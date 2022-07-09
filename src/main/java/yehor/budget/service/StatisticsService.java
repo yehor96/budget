@@ -8,7 +8,7 @@ import yehor.budget.entity.Expense;
 import yehor.budget.helper.CalculatorHelper;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.web.dto.MonthlyStatistics;
-import yehor.budget.web.dto.PeriodStatistics;
+import yehor.budget.web.dto.PeriodicStatistics;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -42,8 +42,8 @@ public class StatisticsService {
         return statistics;
     }
 
-    public PeriodStatistics getPeriodStatistics(FullMonth startFullMonth, FullMonth endFullMonth) {
-        PeriodStatistics periodStatistics = new PeriodStatistics();
+    public PeriodicStatistics getPeriodicStatistics(FullMonth startFullMonth, FullMonth endFullMonth) {
+        PeriodicStatistics periodicStatistics = new PeriodicStatistics();
         Map<FullMonth, MonthlyStatistics> monthToMonthlyStatisticsMap =
                 getMonthToMonthlyStatisticsMap(startFullMonth, endFullMonth);
 
@@ -57,19 +57,18 @@ public class StatisticsService {
             totalExpenses.add(statistics.getTotalExpense());
         }
 
-        periodStatistics.setAvgMonthlyTotalRegular(calculatorHelper.average(totalRegulars));
-        periodStatistics.setAvgMonthlyTotalNonRegular(calculatorHelper.average(totalNonRegulars));
-        periodStatistics.setAvgMonthlyTotalExpense(calculatorHelper.average(totalExpenses));
-        periodStatistics.setMonthToMonthlyStatisticsMap(monthToMonthlyStatisticsMap);
-        periodStatistics.setTotalExpense(calculatorHelper.sum(totalExpenses));
+        periodicStatistics.setAvgMonthlyTotalRegular(calculatorHelper.average(totalRegulars));
+        periodicStatistics.setAvgMonthlyTotalNonRegular(calculatorHelper.average(totalNonRegulars));
+        periodicStatistics.setAvgMonthlyTotalExpense(calculatorHelper.average(totalExpenses));
+        periodicStatistics.setMonthToMonthlyStatisticsMap(monthToMonthlyStatisticsMap);
+        periodicStatistics.setTotalExpense(calculatorHelper.sum(totalExpenses));
 
-        return periodStatistics;
+        return periodicStatistics;
     }
 
     private Map<FullMonth, MonthlyStatistics> getMonthToMonthlyStatisticsMap(FullMonth startFullMonth, FullMonth endFullMonth) {
         List<FullMonth> monthsList = dateManager.getMonthsListIn(startFullMonth, endFullMonth);
         Map<FullMonth, MonthlyStatistics> monthToMonthlyStatisticsMap = new LinkedHashMap<>();
-        //TODO add new getMonthlyStatistics to make sure there is only one request to db:
         monthsList.forEach(fullMonth -> monthToMonthlyStatisticsMap.put(fullMonth, getMonthlyStatistics(fullMonth)));
         return monthToMonthlyStatisticsMap;
     }

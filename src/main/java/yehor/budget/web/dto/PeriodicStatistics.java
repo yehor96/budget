@@ -13,7 +13,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PeriodStatistics {
+public class PeriodicStatistics {
     private BigDecimal totalExpense = BigDecimal.ZERO;
     private BigDecimal avgMonthlyTotalExpense = BigDecimal.ZERO;
     private BigDecimal avgMonthlyTotalRegular = BigDecimal.ZERO;
