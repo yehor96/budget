@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import yehor.budget.date.DateManager;
+import yehor.budget.common.date.DateManager;
 import yehor.budget.service.ExpenseService;
 import yehor.budget.web.dto.full.ExpenseFullDto;
 import yehor.budget.web.dto.limited.ExpenseLimitedDto;
@@ -24,7 +24,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-import static yehor.budget.exception.CategoryExceptionProvider.invalidCategoryIdException;
+import static yehor.budget.web.exception.CategoryExceptionProvider.invalidCategoryIdException;
 
 @RestController
 @RequestMapping("/api/v1/expenses")

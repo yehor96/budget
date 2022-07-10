@@ -1,4 +1,4 @@
-package yehor.budget.date;
+package yehor.budget.common.date;
 
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
@@ -10,11 +10,11 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static yehor.budget.exception.DateExceptionProvider.illegalDateArgumentProvidedException;
-import static yehor.budget.exception.DateExceptionProvider.invalidFullMonthException;
-import static yehor.budget.exception.DateExceptionProvider.outOfBudgetDateArgumentException;
-import static yehor.budget.exception.DateExceptionProvider.reversedOrderOfDatesException;
-import static yehor.budget.exception.DateExceptionProvider.reversedOrderOfMonthsException;
+import static yehor.budget.web.exception.DateExceptionProvider.illegalDateArgumentProvidedException;
+import static yehor.budget.web.exception.DateExceptionProvider.invalidFullMonthException;
+import static yehor.budget.web.exception.DateExceptionProvider.outOfBudgetDateArgumentException;
+import static yehor.budget.web.exception.DateExceptionProvider.reversedOrderOfDatesException;
+import static yehor.budget.web.exception.DateExceptionProvider.reversedOrderOfMonthsException;
 
 @Component
 public class DateManager {

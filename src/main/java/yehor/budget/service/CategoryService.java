@@ -16,9 +16,9 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-import static yehor.budget.exception.CategoryExceptionProvider.cannotDeleteCategoryWithDependentExpensesException;
-import static yehor.budget.exception.CategoryExceptionProvider.categoryAlreadyExistsException;
-import static yehor.budget.exception.CategoryExceptionProvider.categoryDoesNotExistException;
+import static yehor.budget.web.exception.CategoryExceptionProvider.cannotDeleteCategoryWithDependentExpensesException;
+import static yehor.budget.web.exception.CategoryExceptionProvider.categoryAlreadyExistsException;
+import static yehor.budget.web.exception.CategoryExceptionProvider.categoryDoesNotExistException;
 
 @Service
 @RequiredArgsConstructor

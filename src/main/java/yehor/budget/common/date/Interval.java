@@ -1,4 +1,4 @@
-package yehor.budget.date;
+package yehor.budget.common.date;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

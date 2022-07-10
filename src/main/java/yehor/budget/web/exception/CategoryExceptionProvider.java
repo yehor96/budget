@@ -1,4 +1,4 @@
-package yehor.budget.exception;
+package yehor.budget.web.exception;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpStatus;

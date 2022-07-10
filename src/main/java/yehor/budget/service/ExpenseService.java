@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
-import yehor.budget.date.DateManager;
+import yehor.budget.common.date.DateManager;
 import yehor.budget.entity.Category;
 import yehor.budget.entity.Expense;
 import yehor.budget.repository.CategoryRepository;
@@ -18,8 +18,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static yehor.budget.exception.CategoryExceptionProvider.categoryDoesNotExistException;
-import static yehor.budget.exception.ExpenseExceptionProvider.expenseWithIdDoesNotExistException;
+import static yehor.budget.web.exception.CategoryExceptionProvider.categoryDoesNotExistException;
+import static yehor.budget.web.exception.ExpenseExceptionProvider.expenseWithIdDoesNotExistException;
 
 @Service
 @RequiredArgsConstructor

@@ -5,7 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import yehor.budget.entity.Category;
-import yehor.budget.exception.CustomResponseStatusException;
+import yehor.budget.web.exception.CustomResponseStatusException;
 import yehor.budget.repository.CategoryRepository;
 import yehor.budget.web.converter.CategoryConverter;
 import yehor.budget.web.dto.full.CategoryFullDto;

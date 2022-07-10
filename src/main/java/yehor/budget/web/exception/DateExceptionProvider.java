@@ -1,10 +1,10 @@
-package yehor.budget.exception;
+package yehor.budget.web.exception;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-import yehor.budget.date.DateManager;
-import yehor.budget.date.FullMonth;
+import yehor.budget.common.date.DateManager;
+import yehor.budget.common.date.FullMonth;
 
 import java.time.LocalDate;
 
