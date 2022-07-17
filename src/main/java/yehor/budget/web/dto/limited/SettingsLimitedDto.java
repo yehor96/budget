@@ -7,6 +7,6 @@ import lombok.extern.jackson.Jacksonized;
 @Data
 @Builder
 @Jacksonized //annotation used when Dto only contains one field
-public class CategoryLimitedDto {
-    private String name;
+public class SettingsLimitedDto {
+    private boolean isBudgetDateValidation;
 }
