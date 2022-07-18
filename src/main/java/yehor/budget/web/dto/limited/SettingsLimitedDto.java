@@ -8,5 +8,5 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @Jacksonized //annotation used when Dto only contains one field
 public class SettingsLimitedDto {
-    private boolean isBudgetDateValidation;
+    private Boolean isBudgetDateValidation;
 }

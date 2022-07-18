@@ -14,6 +14,8 @@ import yehor.budget.web.dto.full.SettingsFullDto;
 import yehor.budget.web.dto.limited.SettingsLimitedDto;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -27,37 +29,69 @@ public class SettingsService implements InitializingBean {
     private final SettingsConverter settingsConverter;
 
     public SettingsFullDto getSettings() {
-        Settings settings = settingsRepository.findById(SETTING_ID)
-                .orElseThrow(() -> new IllegalStateException("Settings have not been initialized in database"));
+        Settings settings = getSettingsEntity();
         return settingsConverter.convert(settings);
+    }
+
+    public Settings getSettingsEntity() {
+        return settingsRepository.getById(SETTING_ID);
     }
 
     @Transactional
     public void updateSettings(SettingsLimitedDto settingsLimitedDto) {
-        Settings settings = settingsConverter.convert(settingsLimitedDto);
-        settings.setId(SETTING_ID);
-        LOG.info("Updating settings: {}", settingsLimitedDto);
-        settingsRepository.saveById(settings);
+        Settings newSettings = settingsConverter.convert(settingsLimitedDto);
+        updateSettings(newSettings);
+    }
+
+    @Transactional
+    public void updateSettings(Settings newSettings) {
+        Settings existingSettings = settingsRepository.getById(SETTING_ID);
+        Settings settings = mergeSettings(newSettings, existingSettings); //TODO test 2 dif kinds of merge
+        LOG.info("Updating settings: {}", settings);
+        DateManager.updateWithSettings(settings);
+        settingsRepository.updateById(settings);
     }
 
     @Override
     public void afterPropertiesSet() {
-        if (settingsRepository.findById(SETTING_ID).isEmpty()) {
-            Settings defaultSettings = defaultSettings();
+        if (settingsRepository.findById(SETTING_ID).isEmpty()) { //TODO test
+            Settings defaultSettings = defaultSettings(); //TODO test
             LOG.info("Initializing default settings: {}", defaultSettings);
             settingsRepository.save(defaultSettings);
         }
     }
 
     private Settings defaultSettings() {
-        boolean budgetDateValidation = Boolean.TRUE.equals(
+        Boolean budgetDateValidation = Boolean.TRUE.equals(
                 environment.getProperty("budget.date.validation", Boolean.class));
 
         return Settings.builder()
                 .id(SETTING_ID)
                 .isBudgetDateValidation(budgetDateValidation)
-                .budgetStartDate(DateManager.START_DATE)
-                .budgetEndDate(DateManager.getEndDate())
+                .budgetStartDate(LocalDate.now().minusDays(30))
+                .budgetEndDate(LocalDate.now())
                 .build();
+    }
+
+    private Settings mergeSettings(Settings newSettings, Settings existingSettings) {
+        Settings settings = new Settings();
+        settings.setId(SETTING_ID);
+
+        if (Objects.isNull(newSettings.getBudgetStartDate())) {
+            settings.setBudgetStartDate(existingSettings.getBudgetStartDate());
+        } else {
+            settings.setBudgetStartDate(newSettings.getBudgetStartDate());
+        }
+        if (Objects.isNull(newSettings.getBudgetEndDate())) {
+            settings.setBudgetEndDate(existingSettings.getBudgetEndDate());
+        } else {
+            settings.setBudgetEndDate(newSettings.getBudgetEndDate());
+        }
+        if (Objects.isNull(newSettings.getIsBudgetDateValidation())) {
+            settings.setIsBudgetDateValidation(existingSettings.getIsBudgetDateValidation());
+        } else {
+            settings.setIsBudgetDateValidation(newSettings.getIsBudgetDateValidation());
+        }
+        return settings;
     }
 }

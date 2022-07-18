@@ -4,6 +4,8 @@ import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
+import yehor.budget.entity.Settings;
+import yehor.budget.service.SettingsService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -21,14 +23,36 @@ public class DateManager {
 
     private static final Logger LOG = LogManager.getLogger(DateManager.class);
 
-    public static final LocalDate START_DATE = LocalDate.now().minusDays(30);
-    @Getter
-    private static LocalDate endDate = LocalDate.now();
+    private final SettingsService settingsService;
 
-    public static void updateEndDateIfNecessary(LocalDate date) {
+    private static Boolean isBudgetDateValidation;
+    @Getter
+    private LocalDate startDate;
+    @Getter
+    private LocalDate endDate;
+
+    public DateManager(SettingsService settingsService) {
+        this.settingsService = settingsService;
+        Settings settings = settingsService.getSettingsEntity();
+        startDate = settings.getBudgetStartDate();
+        endDate = settings.getBudgetEndDate();
+        isBudgetDateValidation = settings.getIsBudgetDateValidation();
+    }
+
+    public void updateBudgetDatesIfNecessary(LocalDate date) {
+        boolean shouldUpdateDb = false;
         if (date.isAfter(endDate)) {
             LOG.info("End date is changed from {} to {}", endDate, date);
             endDate = date;
+            shouldUpdateDb = true;
+        } else if (date.isBefore(startDate)) {
+            LOG.info("Start date is changed from {} to {}", startDate, date); //TODO test
+            startDate = date;
+            shouldUpdateDb = true;
+        }
+
+        if (shouldUpdateDb) {
+            notifySettingsUpdate();
         }
     }
 
@@ -40,11 +64,17 @@ public class DateManager {
         }
     }
 
-    public boolean isWithinBudget(LocalDate date) {
-        return Interval.of(START_DATE, endDate).isWithin(date);
+    public boolean isWithinBudget(LocalDate date) { //TODO test
+        if (Boolean.FALSE.equals(isBudgetDateValidation)) {
+            return true;
+        }
+        return Interval.of(startDate, endDate).isWithin(date);
     }
 
-    public boolean areWithinBudget(LocalDate date1, LocalDate date2) {
+    public boolean areWithinBudget(LocalDate date1, LocalDate date2) { //TODO test
+        if (Boolean.FALSE.equals(isBudgetDateValidation)) {
+            return true;
+        }
         return isWithinBudget(date1) && isWithinBudget(date2);
     }
 
@@ -60,12 +90,18 @@ public class DateManager {
     }
 
     public void validateDateAfterStart(LocalDate date) {
-        if (date.isBefore(START_DATE)) {
+        if (Boolean.FALSE.equals(isBudgetDateValidation)) { //TODO test
+            return;
+        }
+        if (date.isBefore(startDate)) {
             throw outOfBudgetDateArgumentException(date);
         }
     }
 
     public void validateDatesWithinBudget(LocalDate date1, LocalDate date2) {
+        if (Boolean.FALSE.equals(isBudgetDateValidation)) { //TODO test
+            return;
+        }
         if (!areWithinBudget(date1, date2)) {
             throw outOfBudgetDateArgumentException(date1, date2);
         }
@@ -78,11 +114,15 @@ public class DateManager {
     }
 
     public void validateMonthWithinBudget(FullMonth fullMonth) {
+        if (Boolean.FALSE.equals(isBudgetDateValidation)) { //TODO test
+            return;
+        }
+
         Integer year = fullMonth.getYear();
         int month = fullMonth.getMonth().getValue();
-        int startYear = START_DATE.getYear();
+        int startYear = startDate.getYear();
         int endYear = endDate.getYear();
-        int startMonth = START_DATE.getMonthValue();
+        int startMonth = startDate.getMonthValue();
         int endMonth = endDate.getMonthValue();
 
         if (startYear > year || endYear < year) {
@@ -106,5 +146,17 @@ public class DateManager {
                 (startYearValue == endYearValue && startMonthValue > endMonthValue)) {
             throw reversedOrderOfMonthsException(startMonth, endMonth);
         }
+    }
+
+    public static void updateWithSettings(Settings settings) {
+        isBudgetDateValidation = settings.getIsBudgetDateValidation();
+    }
+
+    private void notifySettingsUpdate() {
+        Settings settings = Settings.builder()
+                .budgetEndDate(endDate)
+                .budgetStartDate(startDate)
+                .build();
+        settingsService.updateSettings(settings);
     }
 }

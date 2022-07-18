@@ -1,5 +1,6 @@
 package yehor.budget.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface ExpenseRepository extends CrudRepository<Expense, Long> {
+public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     @Query("SELECT SUM(e.value) FROM Expense e WHERE e.date BETWEEN :dateFrom AND :dateTo")
     BigDecimal findSumInInterval(@Param("dateFrom") LocalDate dateFrom,

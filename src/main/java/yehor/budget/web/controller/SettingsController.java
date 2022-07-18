@@ -17,6 +17,8 @@ import yehor.budget.web.dto.full.SettingsFullDto;
 import yehor.budget.web.dto.limited.SettingsLimitedDto;
 import yehor.budget.web.exception.CustomResponseStatusException;
 
+import javax.persistence.EntityNotFoundException;
+
 @RestController
 @RequestMapping("/api/v1/settings")
 @RequiredArgsConstructor
@@ -33,7 +35,7 @@ public class SettingsController {
         try {
             SettingsFullDto settingsDto = settingsService.getSettings();
             return new ResponseEntity<>(settingsDto, HttpStatus.OK);
-        } catch (IllegalStateException e) {
+        } catch (EntityNotFoundException e) {
             LOG.error("Error getting settings. {}", e.getMessage());
             throw new CustomResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }

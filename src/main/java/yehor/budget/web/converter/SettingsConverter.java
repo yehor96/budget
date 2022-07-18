@@ -10,7 +10,7 @@ public class SettingsConverter {
 
     public SettingsFullDto convert(Settings settings) {
         return SettingsFullDto.builder()
-                .isBudgetDateValidation(settings.isBudgetDateValidation())
+                .isBudgetDateValidation(settings.getIsBudgetDateValidation())
                 .budgetStartDate(settings.getBudgetStartDate())
                 .budgetEndDate(settings.getBudgetEndDate())
                 .build();
@@ -18,7 +18,7 @@ public class SettingsConverter {
 
     public Settings convert(SettingsLimitedDto settingsLimitedDto) {
         return Settings.builder()
-                .isBudgetDateValidation(settingsLimitedDto.isBudgetDateValidation())
+                .isBudgetDateValidation(settingsLimitedDto.getIsBudgetDateValidation())
                 .build();
     }
 }

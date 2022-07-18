@@ -9,12 +9,11 @@ import org.springframework.stereotype.Service;
 import yehor.budget.entity.Category;
 import yehor.budget.repository.CategoryRepository;
 import yehor.budget.web.converter.CategoryConverter;
-import yehor.budget.web.dto.limited.CategoryLimitedDto;
 import yehor.budget.web.dto.full.CategoryFullDto;
+import yehor.budget.web.dto.limited.CategoryLimitedDto;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.stream.StreamSupport;
 
 import static yehor.budget.web.exception.CategoryExceptionProvider.cannotDeleteCategoryWithDependentExpensesException;
 import static yehor.budget.web.exception.CategoryExceptionProvider.categoryAlreadyExistsException;
@@ -30,8 +29,8 @@ public class CategoryService {
     private final CategoryConverter categoryConverter;
 
     public List<CategoryFullDto> getAll() {
-        Iterable<Category> categories = categoryRepository.findAll();
-        return StreamSupport.stream(categories.spliterator(), false)
+        List<Category> categories = categoryRepository.findAll();
+        return categories.stream()
                 .map(categoryConverter::convert)
                 .toList();
     }
@@ -63,7 +62,7 @@ public class CategoryService {
     }
 
     private void validateCategoryDoNotExist(Category category) {
-        categoryRepository.findByName(category.getName())
+        categoryRepository.findByName(category.getName()) //TODO use getById and catch EntityNotFoundException
                 .ifPresent(e -> {
                     throw categoryAlreadyExistsException(category.getName());
                 });

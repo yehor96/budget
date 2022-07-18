@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Proxy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 @Entity
+@Proxy(lazy = false)
 @Table(name = "settings")
 public class Settings {
 
@@ -35,5 +37,5 @@ public class Settings {
     private LocalDate budgetEndDate;
 
     @Column(name = "budget_date_validation")
-    private boolean isBudgetDateValidation;
+    private Boolean isBudgetDateValidation;
 }

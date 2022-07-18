@@ -30,6 +30,7 @@ public class ExpenseService {
     private final ExpenseConverter expenseConverter;
     private final ExpenseRepository expenseRepository;
     private final CategoryRepository categoryRepository;
+    private final DateManager dateManager;
 
     public BigDecimal findSumInInterval(LocalDate dateFrom, LocalDate dateTo) {
         return expenseRepository.findSumInInterval(dateFrom, dateTo);
@@ -50,7 +51,7 @@ public class ExpenseService {
 
         expenseRepository.save(expense);
         LOG.info("{} is saved", expense);
-        DateManager.updateEndDateIfNecessary(expense.getDate());
+        dateManager.updateBudgetDatesIfNecessary(expense.getDate());
     }
 
     public ExpenseFullDto findById(Long id) {
@@ -69,7 +70,7 @@ public class ExpenseService {
 
         expenseRepository.updateById(expense);
         LOG.info("{} is updated", expense);
-        DateManager.updateEndDateIfNecessary(expense.getDate());
+        dateManager.updateBudgetDatesIfNecessary(expense.getDate());
     }
 
     public void deleteById(Long id) {
