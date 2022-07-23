@@ -2,7 +2,9 @@ package yehor.budget.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.common.date.DateManager;
+import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.entity.Category;
 import yehor.budget.entity.Expense;
 import yehor.budget.repository.CategoryRepository;
@@ -10,8 +12,8 @@ import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.web.converter.ExpenseConverter;
 import yehor.budget.web.dto.full.ExpenseFullDto;
 import yehor.budget.web.dto.limited.ExpenseLimitedDto;
-import yehor.budget.web.exception.CustomResponseStatusException;
 
+import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -36,35 +38,32 @@ class ExpenseServiceTest {
             expenseConverterMock, expenseRepositoryMock, categoryRepositoryMock, dateManagerMock);
 
     @Test
-    void testFindById() {
+    void testGetById() {
         Long id = 1L;
         Expense expense = getDailyExpense(id, LocalDate.now(), BigDecimal.TEN, true);
         ExpenseFullDto expectedExpenseDto = getDailyExpenseDto(id, LocalDate.now(), BigDecimal.TEN, true);
         Category category = Category.builder().id(1L).name("Food").build();
         expense.setCategory(category);
 
-        when(expenseRepositoryMock.findById(id)).thenReturn(Optional.of(expense));
+        when(expenseRepositoryMock.getById(id)).thenReturn(expense);
         when(expenseConverterMock.convert(expense)).thenReturn(expectedExpenseDto);
 
-        ExpenseFullDto actualResultDto = expenseService.findById(id);
+        ExpenseFullDto actualResultDto = expenseService.getById(id);
 
         assertEquals(expectedExpenseDto, actualResultDto);
     }
 
     @Test
-    void testFindByAbsentId() {
+    void testGetByAbsentId() {
         Long id = 1L;
 
-        when(expenseRepositoryMock.findById(id)).thenReturn(Optional.empty());
+        when(expenseRepositoryMock.getById(id)).thenThrow(new EntityNotFoundException());
 
         try {
-            expenseService.findById(id);
+            expenseService.getById(id);
             fail("Exception was not thrown");
         } catch (Exception e) {
-            assertEquals(CustomResponseStatusException.class, e.getClass());
-            CustomResponseStatusException exception = (CustomResponseStatusException) e;
-            assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-            assertEquals("Expense with id " + id + " not found", exception.getReason());
+            assertEquals(EntityNotFoundException.class, e.getClass());
         }
     }
 
@@ -133,10 +132,9 @@ class ExpenseServiceTest {
             expenseService.save(expenseDto);
             fail("Exception was not thrown");
         } catch (Exception e) {
-            assertEquals(CustomResponseStatusException.class, e.getClass());
-            CustomResponseStatusException exception = (CustomResponseStatusException) e;
-            assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-            assertEquals("Category with id " + categoryId + " does not exist", exception.getReason());
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            ObjectNotFoundException exception = (ObjectNotFoundException) e;
+            assertEquals("Category with id " + categoryId + " does not exist", exception.getMessage());
         }
     }
 
@@ -174,9 +172,10 @@ class ExpenseServiceTest {
         try {
             expenseService.updateById(expenseDto);
             fail("Exception was not thrown");
-        } catch (CustomResponseStatusException e) {
-            assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-            assertEquals("Expense with id " + id + " not found", e.getReason());
+        } catch (Exception e) {
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            ObjectNotFoundException exception = (ObjectNotFoundException) e;
+            assertEquals("Expense with id " + id + " does not exist", exception.getMessage());
             verify(expenseRepositoryMock, never())
                     .updateById(expense);
         }
@@ -195,10 +194,9 @@ class ExpenseServiceTest {
             expenseService.updateById(expenseDto);
             fail("Exception was not thrown");
         } catch (Exception e) {
-            assertEquals(CustomResponseStatusException.class, e.getClass());
-            CustomResponseStatusException exception = (CustomResponseStatusException) e;
-            assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-            assertEquals("Category with id " + categoryId + " does not exist", exception.getReason());
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            ObjectNotFoundException exception = (ObjectNotFoundException) e;
+            assertEquals("Category with id " + categoryId + " does not exist", exception.getMessage());
         }
     }
 
@@ -223,9 +221,10 @@ class ExpenseServiceTest {
         try {
             expenseService.deleteById(id);
             fail("Exception was not thrown");
-        } catch (CustomResponseStatusException e) {
-            assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-            assertEquals("Expense with id " + id + " not found", e.getReason());
+        } catch (Exception e) {
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            ObjectNotFoundException exception = (ObjectNotFoundException) e;
+            assertEquals("Expense with id " + id + " does not exist", exception.getMessage());
             verify(expenseRepositoryMock, never())
                     .deleteById(id);
         }

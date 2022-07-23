@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.service.SettingsService;
 import yehor.budget.web.dto.full.SettingsFullDto;
 import yehor.budget.web.dto.limited.SettingsLimitedDto;
-import yehor.budget.web.exception.CustomResponseStatusException;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -37,7 +37,7 @@ public class SettingsController {
             return new ResponseEntity<>(settingsDto, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             LOG.error("Error getting settings. {}", e.getMessage());
-            throw new CustomResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 

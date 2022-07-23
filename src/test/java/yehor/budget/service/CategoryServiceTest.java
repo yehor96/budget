@@ -3,9 +3,9 @@ package yehor.budget.service;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
+import yehor.budget.common.exception.ObjectAlreadyExistsException;
+import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.entity.Category;
-import yehor.budget.web.exception.CustomResponseStatusException;
 import yehor.budget.repository.CategoryRepository;
 import yehor.budget.web.converter.CategoryConverter;
 import yehor.budget.web.dto.full.CategoryFullDto;
@@ -72,9 +72,10 @@ class CategoryServiceTest {
         try {
             categoryService.save(expectedCategoryDto);
             fail("Exception was not thrown");
-        } catch (CustomResponseStatusException e) {
-            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-            assertEquals("Category " + expectedCategory.getName() + " already exists", e.getReason());
+        } catch (Exception e) {
+            assertEquals(ObjectAlreadyExistsException.class, e.getClass());
+            ObjectAlreadyExistsException exception = (ObjectAlreadyExistsException) e;
+            assertEquals("Category " + expectedCategory.getName() + " already exists", exception.getMessage());
             verify(categoryRepositoryMock, never())
                     .save(expectedCategory);
         }
@@ -94,9 +95,10 @@ class CategoryServiceTest {
         try {
             categoryService.delete(1L);
             fail("Exception was not thrown");
-        } catch (CustomResponseStatusException e) {
-            assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-            assertEquals("Category with id " + 1L + " does not exist", e.getReason());
+        } catch (Exception e) {
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            ObjectNotFoundException exception = (ObjectNotFoundException) e;
+            assertEquals("Category with id " + 1L + " not found", exception.getMessage());
             verify(categoryRepositoryMock, times(1))
                     .deleteById(1L);
         }
@@ -127,9 +129,10 @@ class CategoryServiceTest {
         try {
             categoryService.update(expectedCategoryDto);
             fail("Exception was not thrown");
-        } catch (CustomResponseStatusException e) {
-            assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-            assertEquals("Category with id " + expectedCategoryDto.getId() + " does not exist", e.getReason());
+        } catch (Exception e) {
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            ObjectNotFoundException exception = (ObjectNotFoundException) e;
+            assertEquals("Category with id " + 1L + " does not exist", exception.getMessage());
             verify(categoryRepositoryMock, never())
                     .update(expectedCategory);
         }
@@ -144,9 +147,10 @@ class CategoryServiceTest {
         try {
             categoryService.delete(id);
             fail("Exception was not thrown");
-        } catch (CustomResponseStatusException e) {
-            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-            assertEquals("Cannot delete category with dependent expenses", e.getReason());
+        } catch (Exception e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+            IllegalArgumentException exception = (IllegalArgumentException) e;
+            assertEquals("Cannot delete category with dependent expenses", exception.getMessage());
             verify(categoryRepositoryMock, times(1))
                     .deleteById(id);
         }

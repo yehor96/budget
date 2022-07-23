@@ -2,18 +2,15 @@ package yehor.budget.common.date;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import yehor.budget.entity.Settings;
 import yehor.budget.service.SettingsService;
-import yehor.budget.web.exception.CustomResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -82,11 +79,11 @@ class DateManagerTest {
 
         try {
             dateManager.validateMonthWithinBudget(month);
+            fail("Exception was not thrown");
         } catch (Exception e) {
-            assertEquals(CustomResponseStatusException.class, e.getClass());
-            CustomResponseStatusException exception = (CustomResponseStatusException) e;
-            assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
-            assertTrue(Objects.requireNonNull(exception.getReason()).contains("Provided value is invalid " + month));
+            assertEquals(IllegalArgumentException.class, e.getClass());
+            IllegalArgumentException exception = (IllegalArgumentException) e;
+            assertEquals("Provided value is invalid " + month, exception.getMessage());
         }
     }
 
@@ -105,11 +102,11 @@ class DateManagerTest {
 
         try {
             dateManager.validateMonthsInSequentialOrder(startMonth, endMonth);
+            fail("Exception was not thrown");
         } catch (Exception e) {
-            assertEquals(CustomResponseStatusException.class, e.getClass());
-            CustomResponseStatusException exception = (CustomResponseStatusException) e;
-            assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
-            assertEquals("Reversed order of provided months: " + startMonth + " and " + endMonth, exception.getReason());
+            assertEquals(IllegalArgumentException.class, e.getClass());
+            IllegalArgumentException exception = (IllegalArgumentException) e;
+            assertEquals("Reversed order of provided months: " + startMonth + " and " + endMonth, exception.getMessage());
         }
     }
 

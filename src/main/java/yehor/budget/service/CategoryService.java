@@ -11,13 +11,11 @@ import yehor.budget.repository.CategoryRepository;
 import yehor.budget.web.converter.CategoryConverter;
 import yehor.budget.web.dto.full.CategoryFullDto;
 import yehor.budget.web.dto.limited.CategoryLimitedDto;
+import yehor.budget.common.exception.ObjectAlreadyExistsException;
+import yehor.budget.common.exception.ObjectNotFoundException;
 
 import javax.transaction.Transactional;
 import java.util.List;
-
-import static yehor.budget.web.exception.CategoryExceptionProvider.cannotDeleteCategoryWithDependentExpensesException;
-import static yehor.budget.web.exception.CategoryExceptionProvider.categoryAlreadyExistsException;
-import static yehor.budget.web.exception.CategoryExceptionProvider.categoryDoesNotExistException;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +35,7 @@ public class CategoryService {
 
     public void save(CategoryLimitedDto categoryDto) {
         Category category = categoryConverter.convert(categoryDto);
-        validateCategoryDoNotExist(category);
+        validateNotExists(category);
         categoryRepository.save(category);
         LOG.info("{} is saved", category);
     }
@@ -47,30 +45,30 @@ public class CategoryService {
             categoryRepository.deleteById(id);
             LOG.info("Category with id {} is deleted", id);
         } catch (EmptyResultDataAccessException e) {
-            throw categoryDoesNotExistException(id);
+            throw new ObjectNotFoundException("Category with id " + id + " not found");
         } catch (DataIntegrityViolationException e) {
-            throw cannotDeleteCategoryWithDependentExpensesException();
+            throw new IllegalArgumentException("Cannot delete category with dependent expenses");
         }
     }
 
     @Transactional
     public void update(CategoryFullDto categoryDto) {
-        validateCategoryExists(categoryDto.getId());
+        validateExists(categoryDto.getId());
         Category category = categoryConverter.convert(categoryDto);
         categoryRepository.update(category);
         LOG.info("{} is updated", category);
     }
 
-    private void validateCategoryDoNotExist(Category category) {
-        categoryRepository.findByName(category.getName()) //TODO use getById and catch EntityNotFoundException
+    private void validateNotExists(Category category) {
+        categoryRepository.findByName(category.getName())
                 .ifPresent(e -> {
-                    throw categoryAlreadyExistsException(category.getName());
+                    throw new ObjectAlreadyExistsException("Category " + category.getName() + " already exists");
                 });
     }
 
-    private void validateCategoryExists(Long id) {
+    private void validateExists(Long id) {
         if (!categoryRepository.existsById(id)) {
-            throw categoryDoesNotExistException(id);
+            throw new ObjectNotFoundException("Category with id " + id + " does not exist");
         }
     }
 }

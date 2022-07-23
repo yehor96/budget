@@ -3,10 +3,12 @@ package yehor.budget.web.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.date.FullMonth;
 import yehor.budget.service.StatisticsService;
@@ -29,9 +31,11 @@ public class StatisticsController {
     public MonthlyStatistics getMonthlyStatistics(@RequestParam("month") Month month,
                                                   @RequestParam("year") Integer year) {
         FullMonth fullMonth = FullMonth.of(month, year);
-
-        dateManager.validateMonthWithinBudget(fullMonth);
-
+        try {
+            dateManager.validateMonthWithinBudget(fullMonth);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
+        }
         return statisticsService.getMonthlyStatistics(fullMonth);
     }
 
@@ -44,9 +48,13 @@ public class StatisticsController {
         FullMonth startFullMonth = FullMonth.of(startMonth, startYear);
         FullMonth endFullMonth = FullMonth.of(endMonth, endYear);
 
-        dateManager.validateMonthsInSequentialOrder(startFullMonth, endFullMonth);
-        dateManager.validateMonthWithinBudget(startFullMonth);
-        dateManager.validateMonthWithinBudget(endFullMonth);
+        try {
+            dateManager.validateMonthsInSequentialOrder(startFullMonth, endFullMonth);
+            dateManager.validateMonthWithinBudget(startFullMonth);
+            dateManager.validateMonthWithinBudget(endFullMonth);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
+        }
 
         return statisticsService.getPeriodicStatistics(startFullMonth, endFullMonth);
     }

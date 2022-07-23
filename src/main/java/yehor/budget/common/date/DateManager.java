@@ -12,12 +12,6 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static yehor.budget.web.exception.DateExceptionProvider.illegalDateArgumentProvidedException;
-import static yehor.budget.web.exception.DateExceptionProvider.invalidFullMonthException;
-import static yehor.budget.web.exception.DateExceptionProvider.outOfBudgetDateArgumentException;
-import static yehor.budget.web.exception.DateExceptionProvider.reversedOrderOfDatesException;
-import static yehor.budget.web.exception.DateExceptionProvider.reversedOrderOfMonthsException;
-
 @Component
 public class DateManager {
 
@@ -60,7 +54,7 @@ public class DateManager {
         try {
             return LocalDate.parse(value);
         } catch (DateTimeParseException e) {
-            throw illegalDateArgumentProvidedException(value);
+            throw new IllegalArgumentException("Provided value is not a valid date " + value);
         }
     }
 
@@ -94,7 +88,7 @@ public class DateManager {
             return;
         }
         if (date.isBefore(startDate)) {
-            throw outOfBudgetDateArgumentException(date);
+            throw new IllegalArgumentException(incorrectDateArgumentMessage() + " Provided date is " + date);
         }
     }
 
@@ -103,13 +97,14 @@ public class DateManager {
             return;
         }
         if (!areWithinBudget(date1, date2)) {
-            throw outOfBudgetDateArgumentException(date1, date2);
+            throw new IllegalArgumentException(incorrectDateArgumentMessage() +
+                    " Provided dates are " + date1 + " and " + date2);
         }
     }
 
     public void validateDatesInSequentialOrder(LocalDate date1, LocalDate date2) {
         if (date1.isAfter(date2)) {
-            throw reversedOrderOfDatesException(date1, date2);
+            throw new IllegalArgumentException("Reversed order of provided dates: " + date1 + " and " + date2);
         }
     }
 
@@ -126,13 +121,13 @@ public class DateManager {
         int endMonth = endDate.getMonthValue();
 
         if (startYear > year || endYear < year) {
-            throw invalidFullMonthException(fullMonth);
+            throw new IllegalArgumentException("Provided value is invalid " + fullMonth);
         }
         if (startYear == year && startMonth > month) {
-            throw invalidFullMonthException(fullMonth);
+            throw new IllegalArgumentException("Provided value is invalid " + fullMonth);
         }
         if (endYear == year && endMonth < month) {
-            throw invalidFullMonthException(fullMonth);
+            throw new IllegalArgumentException("Provided value is invalid " + fullMonth);
         }
     }
 
@@ -144,7 +139,7 @@ public class DateManager {
 
         if (startYearValue > endYearValue ||
                 (startYearValue == endYearValue && startMonthValue > endMonthValue)) {
-            throw reversedOrderOfMonthsException(startMonth, endMonth);
+            throw new IllegalArgumentException("Reversed order of provided months: " + startMonth + " and " + endMonth);
         }
     }
 
@@ -158,5 +153,9 @@ public class DateManager {
                 .budgetStartDate(startDate)
                 .build();
         settingsService.updateSettings(settings);
+    }
+
+    private String incorrectDateArgumentMessage() {
+        return "Date argument is out of budget. Start date is " + startDate + ". End date is " + endDate + ".";
     }
 }

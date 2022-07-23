@@ -12,14 +12,12 @@ import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.web.converter.ExpenseConverter;
 import yehor.budget.web.dto.full.ExpenseFullDto;
 import yehor.budget.web.dto.limited.ExpenseLimitedDto;
+import yehor.budget.common.exception.ObjectNotFoundException;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-
-import static yehor.budget.web.exception.CategoryExceptionProvider.categoryDoesNotExistException;
-import static yehor.budget.web.exception.ExpenseExceptionProvider.expenseWithIdDoesNotExistException;
 
 @Service
 @RequiredArgsConstructor
@@ -54,9 +52,8 @@ public class ExpenseService {
         dateManager.updateBudgetDatesIfNecessary(expense.getDate());
     }
 
-    public ExpenseFullDto findById(Long id) {
-        Expense expense = expenseRepository.findById(id)
-                .orElseThrow(() -> expenseWithIdDoesNotExistException(id));
+    public ExpenseFullDto getById(Long id) {
+        Expense expense = expenseRepository.getById(id);
         return expenseConverter.convert(expense);
     }
 
@@ -81,12 +78,12 @@ public class ExpenseService {
 
     private void validateExists(Long id) {
         if (!expenseRepository.existsById(id)) {
-            throw expenseWithIdDoesNotExistException(id);
+            throw new ObjectNotFoundException("Expense with id " + id + " does not exist");
         }
     }
 
     private Category findCategoryById(Long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> categoryDoesNotExistException(id));
+                .orElseThrow(() -> new ObjectNotFoundException("Category with id " + id + " does not exist"));
     }
 }

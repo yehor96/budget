@@ -13,11 +13,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.service.CategoryService;
 import yehor.budget.web.dto.full.CategoryFullDto;
 import yehor.budget.web.dto.limited.CategoryLimitedDto;
+import yehor.budget.common.exception.ObjectAlreadyExistsException;
+import yehor.budget.common.exception.ObjectNotFoundException;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestController
 @RequestMapping("/api/v1/categories")
@@ -36,21 +42,35 @@ public class CategoryController {
     @PostMapping
     @Operation(summary = "Save category")
     public ResponseEntity<CategoryLimitedDto> saveCategory(@RequestBody CategoryLimitedDto categoryDto) {
-        categoryService.save(categoryDto);
+        try {
+            categoryService.save(categoryDto);
+        } catch (ObjectAlreadyExistsException exception) {
+            throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete category by id")
     public ResponseEntity<CategoryLimitedDto> deleteCategory(@PathVariable("id") Long id) {
-        categoryService.delete(id);
+        try {
+            categoryService.delete(id);
+        } catch (ObjectNotFoundException exception) {
+            throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping
     @Operation(summary = "Update category by id")
     public ResponseEntity<CategoryFullDto> updateCategory(@RequestBody CategoryFullDto categoryDto) {
-        categoryService.update(categoryDto);
+        try {
+            categoryService.update(categoryDto);
+        } catch (ObjectNotFoundException exception) {
+            throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
