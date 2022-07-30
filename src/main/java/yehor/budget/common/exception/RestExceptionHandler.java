@@ -14,6 +14,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
 @RestControllerAdvice
 public class RestExceptionHandler {
 
@@ -27,19 +29,9 @@ public class RestExceptionHandler {
             return new ResponseEntity<>(responseObject, exception.getStatus());
         } else {
             LOG.error("Unknown error occurred", e);
-            Map<String, Object> responseObject = buildUnknownResponseError(request);
-            return new ResponseEntity<>(responseObject, HttpStatus.INTERNAL_SERVER_ERROR);
+            Map<String, Object> responseObject = buildResponseError(request, INTERNAL_SERVER_ERROR, "Unknown error occurred");
+            return new ResponseEntity<>(responseObject, INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private Map<String, Object> buildUnknownResponseError(HttpServletRequest request) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
-        body.put("status", 500);
-        body.put("error", "Internal Server Error");
-        body.put("message", "Unknown error occurred");
-        body.put("path", request.getRequestURI());
-        return body;
     }
 
     private Map<String, Object> buildResponseError(HttpServletRequest request, HttpStatus status, String message) {

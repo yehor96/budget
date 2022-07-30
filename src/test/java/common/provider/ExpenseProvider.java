@@ -8,15 +8,16 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import static common.provider.CategoryProvider.DEFAULT_CATEGORY_ID;
+
 @UtilityClass
 public class ExpenseProvider {
 
-    public static final long DEFAULT_ID = 1L;
-    public static final long DEFAULT_CATEGORY_ID = 1L;
+    public static final long DEFAULT_EXPENSE_ID = 1L;
 
     public static ExpenseFullDto defaultExpenseFullDto() {
         return ExpenseFullDto.builder()
-                .id(DEFAULT_ID)
+                .id(DEFAULT_EXPENSE_ID)
                 .value(new BigDecimal("10.00"))
                 .date(LocalDate.now())
                 .isRegular(true)

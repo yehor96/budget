@@ -3,6 +3,7 @@ package webmvc;
 import com.fasterxml.jackson.databind.ObjectReader;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.service.ExpenseService;
@@ -14,7 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static common.provider.ExpenseProvider.DEFAULT_ID;
+import static common.provider.ExpenseProvider.DEFAULT_EXPENSE_ID;
 import static common.provider.ExpenseProvider.defaultExpenseFullDto;
 import static common.provider.ExpenseProvider.defaultExpenseFullDtoList;
 import static common.provider.ExpenseProvider.defaultExpenseLimitedDto;
@@ -45,10 +46,10 @@ class ExpenseControllerTest extends BaseWebMvcTest {
     void testGetExpenseById() throws Exception {
         ExpenseFullDto expectedExpense = defaultExpenseFullDto();
 
-        when(expenseService.getById(DEFAULT_ID)).thenReturn(expectedExpense);
+        when(expenseService.getById(DEFAULT_EXPENSE_ID)).thenReturn(expectedExpense);
 
         String response = mockMvc.perform(get(EXPENSES_URL)
-                        .param("id", String.valueOf(DEFAULT_ID)))
+                        .param("id", String.valueOf(DEFAULT_EXPENSE_ID)))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
@@ -59,12 +60,12 @@ class ExpenseControllerTest extends BaseWebMvcTest {
 
     @Test
     void testTryGettingExpenseByNotExistingId() throws Exception {
-        String expectedErrorMessage = "Expense with id " + DEFAULT_ID + " not found";
+        String expectedErrorMessage = "Expense with id " + DEFAULT_EXPENSE_ID + " not found";
 
-        when(expenseService.getById(DEFAULT_ID)).thenThrow(new EntityNotFoundException());
+        when(expenseService.getById(DEFAULT_EXPENSE_ID)).thenThrow(new EntityNotFoundException());
 
         String response = mockMvc.perform(get(EXPENSES_URL)
-                        .param("id", String.valueOf(DEFAULT_ID)))
+                        .param("id", String.valueOf(DEFAULT_EXPENSE_ID)))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
 
@@ -78,7 +79,7 @@ class ExpenseControllerTest extends BaseWebMvcTest {
         ExpenseLimitedDto expenseLimitedDto = defaultExpenseLimitedDto();
 
         mockMvc.perform(post(EXPENSES_URL)
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseLimitedDto)))
                 .andExpect(status().isOk());
 
@@ -94,7 +95,7 @@ class ExpenseControllerTest extends BaseWebMvcTest {
                 .when(dateManager).validateDateAfterStart(expenseLimitedDto.getDate());
 
         String response = mockMvc.perform(post(EXPENSES_URL)
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseLimitedDto)))
                 .andExpect(status().isBadRequest())
                 .andReturn().getResponse().getContentAsString();
@@ -110,7 +111,7 @@ class ExpenseControllerTest extends BaseWebMvcTest {
         String expectedErrorMessage = "Provided category id is not valid - -1. Please provide valid category id";
 
         String response = mockMvc.perform(post(EXPENSES_URL)
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseLimitedDto)))
                 .andExpect(status().isBadRequest())
                 .andReturn().getResponse().getContentAsString();
@@ -128,7 +129,7 @@ class ExpenseControllerTest extends BaseWebMvcTest {
                 .when(expenseService).save(expenseLimitedDto);
 
         String response = mockMvc.perform(post(EXPENSES_URL)
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseLimitedDto)))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
@@ -143,7 +144,7 @@ class ExpenseControllerTest extends BaseWebMvcTest {
         ExpenseFullDto expenseFullDto = defaultExpenseFullDto();
 
         mockMvc.perform(put(EXPENSES_URL)
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseFullDto)))
                 .andExpect(status().isOk());
 
@@ -159,7 +160,7 @@ class ExpenseControllerTest extends BaseWebMvcTest {
                 .when(dateManager).validateDateAfterStart(expenseFullDto.getDate());
 
         String response = mockMvc.perform(put(EXPENSES_URL)
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseFullDto)))
                 .andExpect(status().isBadRequest())
                 .andReturn().getResponse().getContentAsString();
@@ -175,7 +176,7 @@ class ExpenseControllerTest extends BaseWebMvcTest {
         String expectedErrorMessage = "Provided category id is not valid - -1. Please provide valid category id";
 
         String response = mockMvc.perform(put(EXPENSES_URL)
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseFullDto)))
                 .andExpect(status().isBadRequest())
                 .andReturn().getResponse().getContentAsString();
@@ -193,7 +194,7 @@ class ExpenseControllerTest extends BaseWebMvcTest {
                 .when(expenseService).updateById(expenseFullDto);
 
         String response = mockMvc.perform(put(EXPENSES_URL)
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseFullDto)))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
@@ -400,10 +401,10 @@ class ExpenseControllerTest extends BaseWebMvcTest {
     @Test
     void testDeleteExpenseById() throws Exception {
         mockMvc.perform(delete(EXPENSES_URL)
-                        .param("id", String.valueOf(DEFAULT_ID)))
+                        .param("id", String.valueOf(DEFAULT_EXPENSE_ID)))
                 .andExpect(status().isOk());
 
-        verify(expenseService, times(1)).deleteById(DEFAULT_ID);
+        verify(expenseService, times(1)).deleteById(DEFAULT_EXPENSE_ID);
     }
 
     @Test
@@ -411,10 +412,10 @@ class ExpenseControllerTest extends BaseWebMvcTest {
         String expectedErrorMessage = "expectedErrorMessage";
 
         doThrow(new ObjectNotFoundException(expectedErrorMessage))
-                .when(expenseService).deleteById(DEFAULT_ID);
+                .when(expenseService).deleteById(DEFAULT_EXPENSE_ID);
 
         String response = mockMvc.perform(delete(EXPENSES_URL)
-                        .param("id", String.valueOf(DEFAULT_ID)))
+                        .param("id", String.valueOf(DEFAULT_EXPENSE_ID)))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
 
