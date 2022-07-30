@@ -12,10 +12,10 @@ import yehor.budget.web.dto.limited.CategoryLimitedDto;
 
 import java.util.List;
 
-import static common.provider.CategoryProvider.DEFAULT_CATEGORY_ID;
-import static common.provider.CategoryProvider.defaultCategoryFullDto;
-import static common.provider.CategoryProvider.defaultCategoryFullDtoList;
-import static common.provider.CategoryProvider.defaultCategoryLimitedDto;
+import static common.factory.CategoryFactory.DEFAULT_CATEGORY_ID;
+import static common.factory.CategoryFactory.defaultCategoryFullDto;
+import static common.factory.CategoryFactory.defaultCategoryFullDtoList;
+import static common.factory.CategoryFactory.defaultCategoryLimitedDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;

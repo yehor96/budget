@@ -1,4 +1,4 @@
-package common.provider;
+package common.factory;
 
 import lombok.experimental.UtilityClass;
 import yehor.budget.web.dto.full.CategoryFullDto;
@@ -7,7 +7,7 @@ import yehor.budget.web.dto.limited.CategoryLimitedDto;
 import java.util.List;
 
 @UtilityClass
-public class CategoryProvider {
+public class CategoryFactory {
 
     public static final long DEFAULT_CATEGORY_ID = 1L;
 

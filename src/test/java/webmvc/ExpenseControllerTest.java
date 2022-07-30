@@ -15,10 +15,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static common.provider.ExpenseProvider.DEFAULT_EXPENSE_ID;
-import static common.provider.ExpenseProvider.defaultExpenseFullDto;
-import static common.provider.ExpenseProvider.defaultExpenseFullDtoList;
-import static common.provider.ExpenseProvider.defaultExpenseLimitedDto;
+import static common.factory.ExpenseFactory.DEFAULT_EXPENSE_ID;
+import static common.factory.ExpenseFactory.defaultExpenseFullDto;
+import static common.factory.ExpenseFactory.defaultExpenseFullDtoList;
+import static common.factory.ExpenseFactory.defaultExpenseLimitedDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;

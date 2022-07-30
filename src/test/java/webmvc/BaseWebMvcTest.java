@@ -20,10 +20,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 abstract class BaseWebMvcTest {
 
     protected static final String BASE_URL = "http://localhost:8080/";
+
     protected static final String EXPENSES_URL = BASE_URL.concat("/api/v1/expenses/");
     protected static final String EXPENSE_INTERVAL_URL = EXPENSES_URL + "/interval";
     protected static final String EXPENSE_SUM_URL = EXPENSES_URL + "/sum";
+
     protected static final String CATEGORIES_URL = BASE_URL.concat("/api/v1/categories/");
+    protected static final String SETTINGS_URL = "/api/v1/settings/";
 
     @Autowired
     protected MockMvc mockMvc;

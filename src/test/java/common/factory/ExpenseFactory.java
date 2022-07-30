@@ -1,4 +1,4 @@
-package common.provider;
+package common.factory;
 
 import lombok.experimental.UtilityClass;
 import yehor.budget.web.dto.full.ExpenseFullDto;
@@ -8,10 +8,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static common.provider.CategoryProvider.DEFAULT_CATEGORY_ID;
+import static common.factory.CategoryFactory.DEFAULT_CATEGORY_ID;
 
 @UtilityClass
-public class ExpenseProvider {
+public class ExpenseFactory {
 
     public static final long DEFAULT_EXPENSE_ID = 1L;
 

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import yehor.budget.service.ExpenseService;
 
-import static common.provider.ExpenseProvider.DEFAULT_EXPENSE_ID;
+import static common.factory.ExpenseFactory.DEFAULT_EXPENSE_ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
