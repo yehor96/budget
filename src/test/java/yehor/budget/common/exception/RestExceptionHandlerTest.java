@@ -23,7 +23,6 @@ class RestExceptionHandlerTest {
     private final MockHttpServletRequest requestMock = mock(MockHttpServletRequest.class);
 
     @Test
-    @SuppressWarnings("unchecked")
     void testExceptionHandlerHandlesUnknownException() {
         RuntimeException exception = new RuntimeException();
 
@@ -38,6 +37,7 @@ class RestExceptionHandlerTest {
 
         ResponseEntity<Object> responseEntity = restExceptionHandler.exceptionHandler(exception, requestMock);
 
+        @SuppressWarnings("unchecked")
         Map<String, Object> actualBody = (LinkedHashMap<String, Object>) responseEntity.getBody();
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
@@ -52,19 +52,33 @@ class RestExceptionHandlerTest {
     }
 
     @Test
-    void testExceptionHandlerHandlesRethrowsResponseStatusException() {
+    void testExceptionHandlerHandlesKnownResponseStatusException() {
         ResponseStatusException expectedException =
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Expected exception");
 
-        try {
-            restExceptionHandler.exceptionHandler(expectedException, requestMock);
-            fail("Exception was not thrown");
-        } catch (Exception e) {
-            assertEquals(ResponseStatusException.class, e.getClass());
-            ResponseStatusException actualException = (ResponseStatusException) e;
-            assertEquals(expectedException.getStatus(), actualException.getStatus());
-            assertEquals(expectedException.getMessage(), actualException.getMessage());
-        }
+        Map<String, Object> expectedBody = new LinkedHashMap<>();
+        expectedBody.put("timestamp", LocalDateTime.now());
+        expectedBody.put("status", 404);
+        expectedBody.put("error", "Not Found");
+        expectedBody.put("message", "Expected exception");
+        expectedBody.put("path", "/some/api/path");
+
+        when(requestMock.getRequestURI()).thenReturn("/some/api/path");
+
+        ResponseEntity<Object> responseEntity = restExceptionHandler.exceptionHandler(expectedException, requestMock);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> actualBody = (LinkedHashMap<String, Object>) responseEntity.getBody();
+
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        assertNotNull(actualBody);
+        LocalDateTime expectedTimeStamp = ((LocalDateTime) expectedBody.get("timestamp")).truncatedTo(ChronoUnit.SECONDS);
+        LocalDateTime actualTimeStamp = ((LocalDateTime) actualBody.get("timestamp")).truncatedTo(ChronoUnit.SECONDS);
+        assertEquals(expectedTimeStamp, actualTimeStamp);
+        assertEquals(expectedBody.get("status"), actualBody.get("status"));
+        assertEquals(expectedBody.get("error"), actualBody.get("error"));
+        assertEquals(expectedBody.get("message"), actualBody.get("message"));
+        assertEquals(expectedBody.get("path"), actualBody.get("path"));
     }
 
 }

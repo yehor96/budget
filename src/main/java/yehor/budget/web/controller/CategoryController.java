@@ -12,13 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import yehor.budget.common.exception.ObjectAlreadyExistsException;
+import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.service.CategoryService;
 import yehor.budget.web.dto.full.CategoryFullDto;
 import yehor.budget.web.dto.limited.CategoryLimitedDto;
-import yehor.budget.common.exception.ObjectAlreadyExistsException;
-import yehor.budget.common.exception.ObjectNotFoundException;
 
 import java.util.List;
 
@@ -50,9 +51,9 @@ public class CategoryController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @Operation(summary = "Delete category by id")
-    public ResponseEntity<CategoryLimitedDto> deleteCategory(@PathVariable("id") Long id) {
+    public ResponseEntity<CategoryLimitedDto> deleteCategory(@RequestParam("id") Long id) {
         try {
             categoryService.delete(id);
         } catch (ObjectNotFoundException exception) {

@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.common.date.DateManager;
+import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.service.ExpenseService;
 import yehor.budget.web.dto.full.ExpenseFullDto;
 import yehor.budget.web.dto.limited.ExpenseLimitedDto;
-import yehor.budget.common.exception.ObjectNotFoundException;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
@@ -119,9 +118,9 @@ public class ExpenseController {
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @Operation(summary = "Delete expense by id")
-    public ResponseEntity<ExpenseFullDto> deleteExpense(@PathVariable("id") Long id) {
+    public ResponseEntity<ExpenseFullDto> deleteExpense(@RequestParam("id") Long id) {
         try {
             expenseService.deleteById(id);
         } catch (ObjectNotFoundException exception) {

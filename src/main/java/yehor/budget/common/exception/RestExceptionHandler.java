@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -19,21 +20,34 @@ public class RestExceptionHandler {
     private static final Logger LOG = LogManager.getLogger(RestExceptionHandler.class);
 
     @ExceptionHandler(Throwable.class)
-    public ResponseEntity<Object> exceptionHandler(Throwable exception, HttpServletRequest request) {
-        if (exception.getClass().equals(ResponseStatusException.class)) {
-            throw (ResponseStatusException) exception;
+    public ResponseEntity<Object> exceptionHandler(Throwable e, HttpServletRequest request) {
+        if (e.getClass().equals(ResponseStatusException.class)) {
+            ResponseStatusException exception = (ResponseStatusException) e;
+            Map<String, Object> responseObject = buildResponseError(request, exception.getStatus(), exception.getReason());
+            return new ResponseEntity<>(responseObject, exception.getStatus());
         } else {
-            LOG.error("Unknown error occurred", exception);
-            return new ResponseEntity<>(unknownErrorBody(request), HttpStatus.INTERNAL_SERVER_ERROR);
+            LOG.error("Unknown error occurred", e);
+            Map<String, Object> responseObject = buildUnknownResponseError(request);
+            return new ResponseEntity<>(responseObject, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private Map<String, Object> unknownErrorBody(HttpServletRequest request) {
+    private Map<String, Object> buildUnknownResponseError(HttpServletRequest request) {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
+        body.put("timestamp", LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
         body.put("status", 500);
         body.put("error", "Internal Server Error");
         body.put("message", "Unknown error occurred");
+        body.put("path", request.getRequestURI());
+        return body;
+    }
+
+    private Map<String, Object> buildResponseError(HttpServletRequest request, HttpStatus status, String message) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
+        body.put("status", status.value());
+        body.put("error", status.getReasonPhrase());
+        body.put("message", message);
         body.put("path", request.getRequestURI());
         return body;
     }
