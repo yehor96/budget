@@ -130,7 +130,11 @@ class StatisticsServiceTest {
                 .build();
 
         PeriodicStatistics expectedPeriodicStatistics = PeriodicStatistics.builder()
-                .monthToMonthlyStatisticsMap(Map.of(july, monthlyStatistics1, august, monthlyStatistics2, september, monthlyStatistics3))
+                .monthToMonthlyStatisticsMap(Map.of(
+                        july.toString(), monthlyStatistics1,
+                        august.toString(), monthlyStatistics2,
+                        september.toString(), monthlyStatistics3)
+                )
                 .totalExpense(BigDecimal.valueOf(50))
                 .avgMonthlyTotalRegular(BigDecimal.TEN)
                 .avgMonthlyTotalNonRegular(BigDecimal.valueOf(6.5))
@@ -173,7 +177,11 @@ class StatisticsServiceTest {
                 .build();
 
         PeriodicStatistics expectedPeriodicStatistics = PeriodicStatistics.builder()
-                .monthToMonthlyStatisticsMap(Map.of(july, monthlyStatistics1, august, monthlyStatistics2, september, monthlyStatistics3))
+                .monthToMonthlyStatisticsMap(Map.of(
+                        july.toString(), monthlyStatistics1,
+                        august.toString(), monthlyStatistics2,
+                        september.toString(), monthlyStatistics3)
+                )
                 .totalExpense(BigDecimal.ZERO)
                 .avgMonthlyTotalRegular(BigDecimal.ZERO)
                 .avgMonthlyTotalNonRegular(BigDecimal.ZERO)

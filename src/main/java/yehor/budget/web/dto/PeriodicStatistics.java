@@ -18,5 +18,5 @@ public class PeriodicStatistics {
     private BigDecimal avgMonthlyTotalExpense = BigDecimal.ZERO;
     private BigDecimal avgMonthlyTotalRegular = BigDecimal.ZERO;
     private BigDecimal avgMonthlyTotalNonRegular = BigDecimal.ZERO;
-    private Map<FullMonth, MonthlyStatistics> monthToMonthlyStatisticsMap;
+    private Map<String, MonthlyStatistics> monthToMonthlyStatisticsMap;
 }

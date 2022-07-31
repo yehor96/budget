@@ -44,7 +44,7 @@ public class StatisticsService {
 
     public PeriodicStatistics getPeriodicStatistics(FullMonth startFullMonth, FullMonth endFullMonth) {
         PeriodicStatistics periodicStatistics = new PeriodicStatistics();
-        Map<FullMonth, MonthlyStatistics> monthToMonthlyStatisticsMap =
+        Map<String, MonthlyStatistics> monthToMonthlyStatisticsMap =
                 getMonthToMonthlyStatisticsMap(startFullMonth, endFullMonth);
 
         List<BigDecimal> totalRegulars = new ArrayList<>();
@@ -66,10 +66,10 @@ public class StatisticsService {
         return periodicStatistics;
     }
 
-    private Map<FullMonth, MonthlyStatistics> getMonthToMonthlyStatisticsMap(FullMonth startFullMonth, FullMonth endFullMonth) {
+    private Map<String, MonthlyStatistics> getMonthToMonthlyStatisticsMap(FullMonth startFullMonth, FullMonth endFullMonth) {
         List<FullMonth> monthsList = dateManager.getMonthsListIn(startFullMonth, endFullMonth);
-        Map<FullMonth, MonthlyStatistics> monthToMonthlyStatisticsMap = new LinkedHashMap<>();
-        monthsList.forEach(fullMonth -> monthToMonthlyStatisticsMap.put(fullMonth, getMonthlyStatistics(fullMonth)));
+        Map<String, MonthlyStatistics> monthToMonthlyStatisticsMap = new LinkedHashMap<>();
+        monthsList.forEach(fullMonth -> monthToMonthlyStatisticsMap.put(fullMonth.toString(), getMonthlyStatistics(fullMonth)));
         return monthToMonthlyStatisticsMap;
     }
 

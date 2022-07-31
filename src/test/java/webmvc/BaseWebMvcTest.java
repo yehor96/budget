@@ -19,14 +19,19 @@ import static org.junit.jupiter.api.Assertions.fail;
 @SpringBootTest(classes = BudgetApplication.class)
 abstract class BaseWebMvcTest {
 
-    protected static final String BASE_URL = "http://localhost:8080/";
+    protected static final String BASE_URL = "http://localhost:8080/api/v1";
 
-    protected static final String EXPENSES_URL = BASE_URL.concat("/api/v1/expenses/");
+    protected static final String EXPENSES_URL = BASE_URL.concat("/expenses");
     protected static final String EXPENSE_INTERVAL_URL = EXPENSES_URL + "/interval";
     protected static final String EXPENSE_SUM_URL = EXPENSES_URL + "/sum";
 
-    protected static final String CATEGORIES_URL = BASE_URL.concat("/api/v1/categories/");
-    protected static final String SETTINGS_URL = "/api/v1/settings/";
+    protected static final String CATEGORIES_URL = BASE_URL.concat("/categories");
+
+    protected static final String SETTINGS_URL = BASE_URL.concat("/settings");
+
+    protected static final String STATISTICS_URL = BASE_URL.concat("/statistics");
+    protected static final String MONTHLY_STATISTICS_URL = STATISTICS_URL.concat("/monthly");
+    protected static final String PERIODIC_STATISTICS_URL = STATISTICS_URL.concat("/periodic");
 
     @Autowired
     protected MockMvc mockMvc;
