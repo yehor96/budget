@@ -3,31 +3,26 @@ package yehor.budget.common.date;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Component;
+import yehor.budget.common.SettingsListener;
+import yehor.budget.common.SettingsNotificationManager;
 import yehor.budget.entity.Settings;
-import yehor.budget.service.SettingsService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
-public class DateManager {
+public class DateManager implements SettingsListener {
 
     private static final Logger LOG = LogManager.getLogger(DateManager.class);
 
-    private final SettingsService settingsService;
-
-    private static Boolean isBudgetDateValidation;
+    private Boolean isBudgetDateValidation;
     @Getter
     private LocalDate startDate;
     @Getter
     private LocalDate endDate;
 
-    public DateManager(SettingsService settingsService) {
-        this.settingsService = settingsService;
-        Settings settings = settingsService.getSettingsEntity();
+    public DateManager(Settings settings) {
         startDate = settings.getBudgetStartDate();
         endDate = settings.getBudgetEndDate();
         isBudgetDateValidation = settings.getIsBudgetDateValidation();
@@ -143,7 +138,8 @@ public class DateManager {
         }
     }
 
-    public static void updateWithSettings(Settings settings) {
+    @Override
+    public void onUpdate(Settings settings) {
         isBudgetDateValidation = settings.getIsBudgetDateValidation();
     }
 
@@ -152,7 +148,7 @@ public class DateManager {
                 .budgetEndDate(endDate)
                 .budgetStartDate(startDate)
                 .build();
-        settingsService.updateSettings(settings);
+        SettingsNotificationManager.updateListeners(this.getClass(), settings);
     }
 
     private String incorrectDateArgumentMessage() {

@@ -5,8 +5,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
-import yehor.budget.common.date.DateManager;
+import yehor.budget.common.SettingsListener;
+import yehor.budget.common.SettingsNotificationManager;
 import yehor.budget.entity.Settings;
 import yehor.budget.repository.SettingsRepository;
 import yehor.budget.web.converter.SettingsConverter;
@@ -17,9 +17,8 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Service
 @RequiredArgsConstructor
-public class SettingsService implements InitializingBean {
+public class SettingsService implements InitializingBean, SettingsListener {
 
     private static final Logger LOG = LogManager.getLogger(SettingsService.class);
     private static final Long SETTING_ID = 1L;
@@ -43,12 +42,18 @@ public class SettingsService implements InitializingBean {
         updateSettings(newSettings);
     }
 
+    @Override
+    @Transactional
+    public void onUpdate(Settings settings) {
+        updateSettings(settings);
+    }
+
     @Transactional
     public void updateSettings(Settings newSettings) {
         Settings existingSettings = settingsRepository.getById(SETTING_ID);
         Settings settings = mergeSettings(newSettings, existingSettings); //TODO test 2 dif kinds of merge
         LOG.info("Updating settings: {}", settings);
-        DateManager.updateWithSettings(settings);
+        SettingsNotificationManager.updateListeners(this.getClass(), settings);
         settingsRepository.updateById(settings);
     }
 

@@ -2,6 +2,7 @@ package yehor.budget.common.date;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import yehor.budget.common.SettingsNotificationManager;
 import yehor.budget.entity.Settings;
 import yehor.budget.service.SettingsService;
 
@@ -11,17 +12,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mockStatic;
 
 class DateManagerTest {
 
     private final SettingsService settingsServiceMock = mock(SettingsService.class);
-
     private DateManager dateManager;
 
     private static final LocalDate startDate = LocalDate.now().minusDays(30);
@@ -34,8 +31,9 @@ class DateManagerTest {
 
     @BeforeEach
     void setup() {
-        when(settingsServiceMock.getSettingsEntity()).thenReturn(settings);
-        dateManager = new DateManager(settingsServiceMock);
+        dateManager = new DateManager(settings);
+        SettingsNotificationManager settingsNotificationManager = new SettingsNotificationManager();
+        settingsNotificationManager.addListener(dateManager.getClass(), settingsServiceMock);
     }
 
     @Test
@@ -112,23 +110,27 @@ class DateManagerTest {
 
     @Test
     void testUpdateEndDateIfNecessaryNotCalledWhenDateIsWithinExistingBudgetPeriod() {
-        dateManager.updateBudgetDatesIfNecessary(LocalDate.now().minusDays(5));
+        try (var mock = mockStatic(SettingsNotificationManager.class)) {
 
-        verify(settingsServiceMock, never())
-                .updateSettings(any(Settings.class));
+            dateManager.updateBudgetDatesIfNecessary(LocalDate.now().minusDays(5));
+
+            mock.verifyNoInteractions();
+        }
     }
 
     @Test
     void testUpdateEndDateIfNecessaryCalledWhenDateIsOutsideOfExistingBudgetPeriod() {
-        LocalDate newEndDate = LocalDate.now().plusDays(5);
-        Settings expectedSettings = Settings.builder()
-                .budgetStartDate(settings.getBudgetStartDate())
-                .budgetEndDate(newEndDate)
-                .build();
+        try (var mock = mockStatic(SettingsNotificationManager.class)) {
 
-        dateManager.updateBudgetDatesIfNecessary(newEndDate);
+            LocalDate newEndDate = LocalDate.now().plusDays(5);
+            Settings expectedSettings = Settings.builder()
+                    .budgetStartDate(settings.getBudgetStartDate())
+                    .budgetEndDate(newEndDate)
+                    .build();
 
-        verify(settingsServiceMock, times(1))
-                .updateSettings(expectedSettings);
+            dateManager.updateBudgetDatesIfNecessary(newEndDate);
+
+            mock.verify(() -> SettingsNotificationManager.updateListeners(eq(DateManager.class), eq(expectedSettings)));
+        }
     }
 }
