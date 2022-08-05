@@ -1,8 +1,6 @@
 package yehor.budget.service;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.entity.Category;
@@ -19,6 +17,14 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static common.factory.CategoryFactory.DEFAULT_CATEGORY_ID;
+import static common.factory.CategoryFactory.defaultCategory;
+import static common.factory.ExpenseFactory.DEFAULT_EXPENSE_ID;
+import static common.factory.ExpenseFactory.defaultExpense;
+import static common.factory.ExpenseFactory.defaultExpenseFullDto;
+import static common.factory.ExpenseFactory.defaultExpenseLimitedDto;
+import static common.factory.ExpenseFactory.secondExpense;
+import static common.factory.ExpenseFactory.secondExpenseFullDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
@@ -39,10 +45,10 @@ class ExpenseServiceTest {
 
     @Test
     void testGetById() {
-        Long id = 1L;
-        Expense expense = getDailyExpense(id, LocalDate.now(), BigDecimal.TEN, true);
-        ExpenseFullDto expectedExpenseDto = getDailyExpenseDto(id, LocalDate.now(), BigDecimal.TEN, true);
-        Category category = Category.builder().id(1L).name("Food").build();
+        Long id = DEFAULT_EXPENSE_ID;
+        Expense expense = defaultExpense();
+        ExpenseFullDto expectedExpenseDto = defaultExpenseFullDto();
+        Category category = defaultCategory();
         expense.setCategory(category);
 
         when(expenseRepositoryMock.getById(id)).thenReturn(expense);
@@ -55,7 +61,7 @@ class ExpenseServiceTest {
 
     @Test
     void testGetByAbsentId() {
-        Long id = 1L;
+        Long id = DEFAULT_EXPENSE_ID;
 
         when(expenseRepositoryMock.getById(id)).thenThrow(new EntityNotFoundException());
 
@@ -85,12 +91,12 @@ class ExpenseServiceTest {
         LocalDate date1 = LocalDate.now();
         LocalDate date2 = date1.plusDays(1);
 
-        Expense expense1 = getDailyExpense(1L, date1, BigDecimal.TEN, true);
-        Expense expense2 = getDailyExpense(1L, date2, BigDecimal.TEN, true);
+        Expense expense1 = defaultExpense();
+        Expense expense2 = secondExpense();
         List<Expense> expectedList = List.of(expense1, expense2);
 
-        ExpenseFullDto expenseDto1 = getDailyExpenseDto(1L, date1, BigDecimal.TEN, true);
-        ExpenseFullDto expenseDto2 = getDailyExpenseDto(1L, date2, BigDecimal.TEN, true);
+        ExpenseFullDto expenseDto1 = defaultExpenseFullDto();
+        ExpenseFullDto expenseDto2 = secondExpenseFullDto();
         List<ExpenseFullDto> expectedDtoList = List.of(expenseDto1, expenseDto2);
 
         when(expenseRepositoryMock.findAllInInterval(date1, date2)).thenReturn(expectedList);
@@ -104,11 +110,11 @@ class ExpenseServiceTest {
 
     @Test
     void testSave() {
-        Long categoryId = 1L;
+        Long categoryId = DEFAULT_CATEGORY_ID;
         LocalDate now = LocalDate.now();
-        Expense expense = Expense.builder().date(now).value(BigDecimal.TEN).build();
-        ExpenseLimitedDto expenseDto = ExpenseLimitedDto.builder().date(now).value(BigDecimal.TEN).isRegular(true).categoryId(categoryId).build();
-        Category category = Category.builder().id(categoryId).name("Food").build();
+        Expense expense = defaultExpense();
+        ExpenseLimitedDto expenseDto = defaultExpenseLimitedDto();
+        Category category = defaultCategory();
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
         when(categoryRepositoryMock.findById(categoryId)).thenReturn(Optional.of(category));
@@ -123,8 +129,8 @@ class ExpenseServiceTest {
 
     @Test
     void testTrySavingWithAbsentCategoryId() {
-        Long categoryId = 2L;
-        ExpenseLimitedDto expenseDto = ExpenseLimitedDto.builder().date(LocalDate.now()).value(BigDecimal.TEN).isRegular(true).categoryId(categoryId).build();
+        Long categoryId = DEFAULT_CATEGORY_ID;
+        ExpenseLimitedDto expenseDto = defaultExpenseLimitedDto();
 
         when(categoryRepositoryMock.findById(categoryId)).thenReturn(Optional.empty());
 
@@ -140,12 +146,12 @@ class ExpenseServiceTest {
 
     @Test
     void testUpdate() {
-        Long id = 1L;
-        Long categoryId = 1L;
+        Long id = DEFAULT_EXPENSE_ID;
+        Long categoryId = DEFAULT_CATEGORY_ID;
         LocalDate now = LocalDate.now();
-        Expense expense = Expense.builder().date(now).value(BigDecimal.TEN).build();
-        ExpenseFullDto expenseDto = ExpenseFullDto.builder().id(id).date(now).value(BigDecimal.TEN).isRegular(true).categoryId(categoryId).build();
-        Category category = Category.builder().id(1L).name("Food").build();
+        Expense expense = defaultExpense();
+        ExpenseFullDto expenseDto = defaultExpenseFullDto();
+        Category category = defaultCategory();
         expense.setCategory(category);
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
@@ -162,9 +168,9 @@ class ExpenseServiceTest {
 
     @Test
     void testTryUpdatingWithNotExistingId() {
-        Long id = 1L;
-        Expense expense = getDailyExpense(id, LocalDate.now(), BigDecimal.TEN, true);
-        ExpenseFullDto expenseDto = getDailyExpenseDto(id, LocalDate.now(), BigDecimal.TEN, true);
+        Long id = DEFAULT_EXPENSE_ID;
+        Expense expense = defaultExpense();
+        ExpenseFullDto expenseDto = defaultExpenseFullDto();
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
         when(expenseRepositoryMock.existsById(id)).thenReturn(false);
@@ -183,9 +189,9 @@ class ExpenseServiceTest {
 
     @Test
     void testTryUpdatingWithAbsentCategoryId() {
-        Long id = 1L;
-        Long categoryId = 2L;
-        ExpenseFullDto expenseDto = ExpenseFullDto.builder().id(id).date(LocalDate.now()).value(BigDecimal.TEN).isRegular(true).categoryId(categoryId).build();
+        Long id = DEFAULT_EXPENSE_ID;
+        Long categoryId = DEFAULT_CATEGORY_ID;
+        ExpenseFullDto expenseDto = defaultExpenseFullDto();
 
         when(expenseRepositoryMock.existsById(id)).thenReturn(true);
         when(categoryRepositoryMock.findById(categoryId)).thenReturn(Optional.empty());
@@ -202,7 +208,7 @@ class ExpenseServiceTest {
 
     @Test
     void testDeleteById() {
-        Long id = 1L;
+        Long id = DEFAULT_EXPENSE_ID;
 
         when(expenseRepositoryMock.existsById(id)).thenReturn(true);
 
@@ -214,7 +220,7 @@ class ExpenseServiceTest {
 
     @Test
     void testTryDeletingWithNotExistingId() {
-        Long id = 1L;
+        Long id = DEFAULT_EXPENSE_ID;
 
         when(expenseRepositoryMock.existsById(id)).thenReturn(false);
 
@@ -228,23 +234,5 @@ class ExpenseServiceTest {
             verify(expenseRepositoryMock, never())
                     .deleteById(id);
         }
-    }
-
-    private Expense getDailyExpense(Long id, LocalDate date, BigDecimal value, Boolean isRegular) {
-        return Expense.builder()
-                .id(id)
-                .date(date)
-                .value(value)
-                .isRegular(isRegular)
-                .build();
-    }
-
-    private ExpenseFullDto getDailyExpenseDto(Long id, LocalDate date, BigDecimal value, Boolean isRegular) {
-        return ExpenseFullDto.builder()
-                .id(id)
-                .date(date)
-                .value(value)
-                .isRegular(isRegular)
-                .build();
     }
 }

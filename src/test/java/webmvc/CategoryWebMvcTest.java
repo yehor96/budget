@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class CategoryControllerTest extends BaseWebMvcTest {
+class CategoryWebMvcTest extends BaseWebMvcTest {
 
     @MockBean
     private CategoryService categoryService;

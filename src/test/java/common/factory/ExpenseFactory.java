@@ -1,6 +1,7 @@
 package common.factory;
 
 import lombok.experimental.UtilityClass;
+import yehor.budget.entity.Expense;
 import yehor.budget.web.dto.full.ExpenseFullDto;
 import yehor.budget.web.dto.limited.ExpenseLimitedDto;
 
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static common.factory.CategoryFactory.DEFAULT_CATEGORY_ID;
+import static common.factory.CategoryFactory.defaultCategory;
 
 @UtilityClass
 public class ExpenseFactory {
@@ -25,6 +27,16 @@ public class ExpenseFactory {
                 .build();
     }
 
+    public static Expense defaultExpense() {
+        return Expense.builder()
+                .id(DEFAULT_EXPENSE_ID)
+                .value(new BigDecimal("10.00"))
+                .date(LocalDate.now())
+                .isRegular(true)
+                .category(defaultCategory())
+                .build();
+    }
+
     public static ExpenseFullDto secondExpenseFullDto() {
         return ExpenseFullDto.builder()
                 .id(2L)
@@ -32,6 +44,16 @@ public class ExpenseFactory {
                 .date(LocalDate.now().minusDays(1))
                 .isRegular(false)
                 .categoryId(DEFAULT_CATEGORY_ID)
+                .build();
+    }
+
+    public static Expense secondExpense() {
+        return Expense.builder()
+                .id(2L)
+                .value(new BigDecimal("100.00"))
+                .date(LocalDate.now().minusDays(1))
+                .isRegular(false)
+                .category(defaultCategory())
                 .build();
     }
 

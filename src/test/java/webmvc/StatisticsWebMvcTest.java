@@ -20,7 +20,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class StatisticsControllerTest extends BaseWebMvcTest {
+class StatisticsWebMvcTest extends BaseWebMvcTest {
 
     @MockBean
     private StatisticsService statisticsService;

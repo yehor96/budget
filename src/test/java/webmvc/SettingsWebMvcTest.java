@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class SettingsControllerTest extends BaseWebMvcTest {
+class SettingsWebMvcTest extends BaseWebMvcTest {
 
     @MockBean
     private SettingsService settingsService;

@@ -14,6 +14,11 @@ import yehor.budget.web.dto.limited.CategoryLimitedDto;
 import java.util.List;
 import java.util.Optional;
 
+import static common.factory.CategoryFactory.defaultCategory;
+import static common.factory.CategoryFactory.defaultCategoryFullDto;
+import static common.factory.CategoryFactory.defaultCategoryLimitedDto;
+import static common.factory.CategoryFactory.secondCategory;
+import static common.factory.CategoryFactory.secondCategoryFullDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -33,10 +38,10 @@ class CategoryServiceTest {
 
     @Test
     void testGetAll() {
-        CategoryFullDto expectedCategoryDto1 = CategoryFullDto.builder().id(1L).name("Food").build();
-        CategoryFullDto expectedCategoryDto2 = CategoryFullDto.builder().id(2L).name("Meds").build();
-        Category expectedCategory1 = Category.builder().id(1L).name("Food").build();
-        Category expectedCategory2 = Category.builder().id(2L).name("Meds").build();
+        CategoryFullDto expectedCategoryDto1 = defaultCategoryFullDto();
+        CategoryFullDto expectedCategoryDto2 = secondCategoryFullDto();
+        Category expectedCategory1 = defaultCategory();
+        Category expectedCategory2 = secondCategory();
 
         when(categoryRepositoryMock.findAll()).thenReturn(List.of(expectedCategory1, expectedCategory2));
         when(categoryConverterMock.convert(expectedCategory1)).thenReturn(expectedCategoryDto1);
@@ -50,8 +55,8 @@ class CategoryServiceTest {
 
     @Test
     void testSave() {
-        CategoryLimitedDto expectedCategoryDto = CategoryLimitedDto.builder().name("Food").build();
-        Category expectedCategory = Category.builder().name("Food").build();
+        CategoryLimitedDto expectedCategoryDto = defaultCategoryLimitedDto();
+        Category expectedCategory = defaultCategory();
 
         when(categoryConverterMock.convert(expectedCategoryDto)).thenReturn(expectedCategory);
 
@@ -63,8 +68,8 @@ class CategoryServiceTest {
 
     @Test
     void testTrySavingExistingCategory() {
-        CategoryLimitedDto expectedCategoryDto = CategoryLimitedDto.builder().name("Food").build();
-        Category expectedCategory = Category.builder().name("Food").build();
+        CategoryLimitedDto expectedCategoryDto = defaultCategoryLimitedDto();
+        Category expectedCategory = defaultCategory();
 
         when(categoryConverterMock.convert(expectedCategoryDto)).thenReturn(expectedCategory);
         when(categoryRepositoryMock.findByName(expectedCategory.getName())).thenReturn(Optional.of(expectedCategory));
@@ -106,8 +111,8 @@ class CategoryServiceTest {
 
     @Test
     void testUpdateCategory() {
-        CategoryFullDto expectedCategoryDto = CategoryFullDto.builder().id(1L).name("Food").build();
-        Category expectedCategory = Category.builder().id(1L).name("Food").build();
+        CategoryFullDto expectedCategoryDto = defaultCategoryFullDto();
+        Category expectedCategory = defaultCategory();
 
         when(categoryConverterMock.convert(expectedCategoryDto)).thenReturn(expectedCategory);
         when(categoryRepositoryMock.existsById(expectedCategoryDto.getId())).thenReturn(true);
@@ -120,8 +125,8 @@ class CategoryServiceTest {
 
     @Test
     void testTryUpdatingNotExistingCategory() {
-        CategoryFullDto expectedCategoryDto = CategoryFullDto.builder().id(1L).name("Food").build();
-        Category expectedCategory = Category.builder().id(1L).name("Food").build();
+        CategoryFullDto expectedCategoryDto = defaultCategoryFullDto();
+        Category expectedCategory = defaultCategory();
 
         when(categoryConverterMock.convert(expectedCategoryDto)).thenReturn(expectedCategory);
         when(categoryRepositoryMock.existsById(expectedCategoryDto.getId())).thenReturn(false);

@@ -1,6 +1,7 @@
 package common.factory;
 
 import lombok.experimental.UtilityClass;
+import yehor.budget.entity.Category;
 import yehor.budget.web.dto.full.CategoryFullDto;
 import yehor.budget.web.dto.limited.CategoryLimitedDto;
 
@@ -24,8 +25,22 @@ public class CategoryFactory {
                 .build();
     }
 
+    public static Category defaultCategory() {
+        return Category.builder()
+                .id(DEFAULT_CATEGORY_ID)
+                .name("Food")
+                .build();
+    }
+
     public static CategoryFullDto secondCategoryFullDto() {
         return CategoryFullDto.builder()
+                .id(2L)
+                .name("Meds")
+                .build();
+    }
+
+    public static Category secondCategory() {
+        return Category.builder()
                 .id(2L)
                 .name("Meds")
                 .build();
