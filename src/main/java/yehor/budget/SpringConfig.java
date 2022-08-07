@@ -1,6 +1,5 @@
 package yehor.budget;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,24 +12,21 @@ import yehor.budget.web.converter.SettingsConverter;
 @Configuration
 public class SpringConfig {
 
-    @Autowired
-    private ApplicationContext applicationContext;
-
     @Bean
-    public SettingsNotificationManager notificationManager() {
+    public SettingsNotificationManager notificationManager(ApplicationContext applicationContext) {
         SettingsNotificationManager notificationManager = new SettingsNotificationManager();
-        notificationManager.addListener(SettingsService.class, dateManager());
-        notificationManager.addListener(DateManager.class, settingsService());
+        notificationManager.addListener(SettingsService.class, dateManager(applicationContext));
+        notificationManager.addListener(DateManager.class, settingsService(applicationContext));
         return notificationManager;
     }
 
     @Bean
-    public DateManager dateManager() {
-        return new DateManager(settingsService().getSettingsEntity());
+    public DateManager dateManager(ApplicationContext applicationContext) {
+        return new DateManager(settingsService(applicationContext).getSettingsEntity());
     }
 
     @Bean
-    public SettingsService settingsService() {
+    public SettingsService settingsService(ApplicationContext applicationContext) {
         return new SettingsService(
                 applicationContext.getEnvironment(),
                 applicationContext.getBean(SettingsRepository.class),

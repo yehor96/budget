@@ -92,14 +92,14 @@ public class DateManager implements SettingsListener {
             return;
         }
         if (!areWithinBudget(date1, date2)) {
-            throw new IllegalArgumentException(incorrectDateArgumentMessage() +
-                    " Provided dates are " + date1 + " and " + date2);
+            throw new IllegalArgumentException(
+                    incorrectDateArgumentMessage() + String.format(" Provided dates are %s and %s", date1, date2));
         }
     }
 
     public void validateDatesInSequentialOrder(LocalDate date1, LocalDate date2) {
         if (date1.isAfter(date2)) {
-            throw new IllegalArgumentException("Reversed order of provided dates: " + date1 + " and " + date2);
+            throw new IllegalArgumentException(String.format("Reversed order of dates: %s and %s", date1, date2));
         }
     }
 
@@ -115,13 +115,9 @@ public class DateManager implements SettingsListener {
         int startMonth = startDate.getMonthValue();
         int endMonth = endDate.getMonthValue();
 
-        if (startYear > year || endYear < year) {
-            throw new IllegalArgumentException("Provided value is invalid " + fullMonth);
-        }
-        if (startYear == year && startMonth > month) {
-            throw new IllegalArgumentException("Provided value is invalid " + fullMonth);
-        }
-        if (endYear == year && endMonth < month) {
+        if ((startYear > year || endYear < year)
+                || (startYear == year && startMonth > month)
+                || (endYear == year && endMonth < month)) {
             throw new IllegalArgumentException("Provided value is invalid " + fullMonth);
         }
     }
@@ -134,7 +130,8 @@ public class DateManager implements SettingsListener {
 
         if (startYearValue > endYearValue ||
                 (startYearValue == endYearValue && startMonthValue > endMonthValue)) {
-            throw new IllegalArgumentException("Reversed order of provided months: " + startMonth + " and " + endMonth);
+            throw new IllegalArgumentException(
+                    String.format("Reversed order of provided months: %s and %s", startMonth, endMonth));
         }
     }
 
