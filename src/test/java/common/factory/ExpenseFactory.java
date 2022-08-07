@@ -11,6 +11,7 @@ import java.util.List;
 
 import static common.factory.CategoryFactory.DEFAULT_CATEGORY_ID;
 import static common.factory.CategoryFactory.defaultCategory;
+import static common.factory.CategoryFactory.secondCategory;
 
 @UtilityClass
 public class ExpenseFactory {
@@ -67,6 +68,26 @@ public class ExpenseFactory {
                 .build();
     }
 
+    public static Expense thirdExpense() {
+        return Expense.builder()
+                .id(3L)
+                .value(new BigDecimal("15.50"))
+                .date(LocalDate.now().minusDays(2))
+                .isRegular(false)
+                .category(defaultCategory())
+                .build();
+    }
+
+    public static Expense anotherCategoryExpense() {
+        return Expense.builder()
+                .id(4L)
+                .value(new BigDecimal("11.00"))
+                .date(LocalDate.now())
+                .isRegular(true)
+                .category(secondCategory())
+                .build();
+    }
+
     public static List<ExpenseFullDto> defaultExpenseFullDtoList() {
         ExpenseFullDto expenseFullDto1 = defaultExpenseFullDto();
         ExpenseFullDto expenseFullDto2 = secondExpenseFullDto();
@@ -83,24 +104,12 @@ public class ExpenseFactory {
                 .build();
     }
 
-    public static ExpenseLimitedDto secondExpenseLimitedDto() {
-        return ExpenseLimitedDto.builder()
-                .value(new BigDecimal("100.00"))
-                .date(LocalDate.now().minusDays(1))
-                .isRegular(false)
-                .categoryId(DEFAULT_CATEGORY_ID)
-                .build();
+    public static List<Expense> multipleCategoriesExpenseList() {
+        Expense expense1 = defaultExpense();
+        Expense expense2 = secondExpense();
+        Expense expense3 = thirdExpense();
+        Expense expense4 = anotherCategoryExpense();
+        return List.of(expense1, expense2, expense3, expense4);
     }
-
-    public static ExpenseLimitedDto thirdExpenseLimitedDto() {
-        return ExpenseLimitedDto.builder()
-                .value(new BigDecimal("15.50"))
-                .date(LocalDate.now().minusDays(2))
-                .isRegular(false)
-                .categoryId(DEFAULT_CATEGORY_ID)
-                .build();
-    }
-
-
 
 }

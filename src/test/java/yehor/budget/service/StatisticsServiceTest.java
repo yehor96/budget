@@ -3,9 +3,9 @@ package yehor.budget.service;
 import org.junit.jupiter.api.Test;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.date.FullMonth;
+import yehor.budget.common.helper.CalculatorHelper;
 import yehor.budget.entity.Category;
 import yehor.budget.entity.Expense;
-import yehor.budget.common.helper.CalculatorHelper;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.web.dto.MonthlyStatistics;
 import yehor.budget.web.dto.PeriodicStatistics;
@@ -17,6 +17,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static common.factory.ExpenseFactory.multipleCategoriesExpenseList;
+import static common.factory.StatisticsFactory.defaultMonthlyStatistics;
+import static common.factory.StatisticsFactory.emptyMonthStatistics;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -33,26 +36,11 @@ class StatisticsServiceTest {
 
     @Test
     void testGetMonthlyStatistics() {
-        FullMonth fullMonth = FullMonth.of(Month.JULY, 2022);
-        LocalDate date1 = LocalDate.of(2022, 7, 1);
-        LocalDate date2 = LocalDate.of(2022, 7, 15);
-        LocalDate date3 = LocalDate.of(2022, 7, 31);
+        FullMonth fullMonth = FullMonth.of(LocalDate.now());
+        MonthlyStatistics expectedMonthlyStatistics = defaultMonthlyStatistics();
 
-        Category category1 = Category.builder().id(1L).name("Food").build();
-        Category category2 = Category.builder().id(2L).name("Meds").build();
-
-        Expense expense1 = Expense.builder().id(1L).date(date1).value(BigDecimal.TEN).isRegular(true).category(category1).build();
-        Expense expense2 = Expense.builder().id(1L).date(date2).value(BigDecimal.TEN).isRegular(true).category(category1).build();
-        Expense expense3 = Expense.builder().id(1L).date(date3).value(BigDecimal.TEN).isRegular(false).category(category2).build();
-
-        when(expenseRepositoryMock.findAllInInterval(any(), any())).thenReturn(List.of(expense1, expense2, expense3));
-
-        MonthlyStatistics expectedMonthlyStatistics = MonthlyStatistics.builder()
-                .totalExpense(BigDecimal.valueOf(30))
-                .totalRegular(BigDecimal.valueOf(20))
-                .totalNonRegular(BigDecimal.TEN)
-                .categoryToValueMap(Map.of("Food", BigDecimal.valueOf(20), "Meds", BigDecimal.TEN))
-                .build();
+        when(expenseRepositoryMock.findAllInInterval(any(), any()))
+                .thenReturn(multipleCategoriesExpenseList());
 
         MonthlyStatistics actualMonthlyStatistics = statisticsService.getMonthlyStatistics(fullMonth);
 
@@ -61,16 +49,10 @@ class StatisticsServiceTest {
 
     @Test
     void testGetMonthlyStatisticsEmptyMonth() {
-        FullMonth fullMonth = FullMonth.of(Month.JULY, 2022);
+        FullMonth fullMonth = FullMonth.of(LocalDate.now());
+        MonthlyStatistics expectedMonthlyStatistics = emptyMonthStatistics();
 
         when(expenseRepositoryMock.findAllInInterval(any(), any())).thenReturn(Collections.emptyList());
-
-        MonthlyStatistics expectedMonthlyStatistics = MonthlyStatistics.builder()
-                .totalExpense(BigDecimal.ZERO)
-                .totalRegular(BigDecimal.ZERO)
-                .totalNonRegular(BigDecimal.ZERO)
-                .categoryToValueMap(Collections.emptyMap())
-                .build();
 
         MonthlyStatistics actualMonthlyStatistics = statisticsService.getMonthlyStatistics(fullMonth);
 
@@ -157,24 +139,9 @@ class StatisticsServiceTest {
         when(calculatorHelperMock.sum(any())).thenReturn(BigDecimal.ZERO);
         when(dateManagerMock.getMonthsListIn(any(), any())).thenReturn(List.of(july, august, september));
 
-        MonthlyStatistics monthlyStatistics1 = MonthlyStatistics.builder()
-                .totalExpense(BigDecimal.ZERO)
-                .totalRegular(BigDecimal.ZERO)
-                .totalNonRegular(BigDecimal.ZERO)
-                .categoryToValueMap(Collections.emptyMap())
-                .build();
-        MonthlyStatistics monthlyStatistics2 = MonthlyStatistics.builder()
-                .totalExpense(BigDecimal.ZERO)
-                .totalRegular(BigDecimal.ZERO)
-                .totalNonRegular(BigDecimal.ZERO)
-                .categoryToValueMap(Collections.emptyMap())
-                .build();
-        MonthlyStatistics monthlyStatistics3 = MonthlyStatistics.builder()
-                .totalExpense(BigDecimal.ZERO)
-                .totalRegular(BigDecimal.ZERO)
-                .totalNonRegular(BigDecimal.ZERO)
-                .categoryToValueMap(Collections.emptyMap())
-                .build();
+        MonthlyStatistics monthlyStatistics1 = emptyMonthStatistics();
+        MonthlyStatistics monthlyStatistics2 = emptyMonthStatistics();
+        MonthlyStatistics monthlyStatistics3 = emptyMonthStatistics();
 
         PeriodicStatistics expectedPeriodicStatistics = PeriodicStatistics.builder()
                 .monthToMonthlyStatisticsMap(Map.of(

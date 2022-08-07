@@ -3,6 +3,7 @@ package yehor.budget.common.date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.Month;
 
 @Data
@@ -13,6 +14,10 @@ public class FullMonth {
 
     public static FullMonth of(java.time.Month month, Integer year) {
         return new FullMonth(month, year);
+    }
+
+    public static FullMonth of(LocalDate date) {
+        return new FullMonth(date.getMonth(), date.getYear());
     }
 
     @Override
