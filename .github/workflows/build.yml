@@ -24,6 +24,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: mvn -B package --file pom.xml verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=yehor96_budget -Dsonar.qualitygate.wait=true
+    #
+    #TEsT
+    
     #- name: Sonar Quality Gate check
     #  id: sonarqube-quality-gate-check
     #  uses: sonarsource/sonarqube-quality-gate-action@master
