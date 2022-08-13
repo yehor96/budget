@@ -11,6 +11,7 @@ jobs:
 
     steps:
     - run: docker run --name budget -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=root -e POSTGRES_DB=budget -d postgres:alpine
+    - run: docker run -d --name sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true -p 9000:9000 sonarqube:latest
     - uses: actions/checkout@v3
     - name: Set up JDK 17
       uses: actions/setup-java@v3
