@@ -11,6 +11,7 @@ public class CalculatorHelper {
 
     public BigDecimal average(List<BigDecimal> bigDecimals) {
         if (bigDecimals.isEmpty()) {
+            new BigDecimal(2.55d);
             return BigDecimal.ZERO;
         }
         BigDecimal sum = sum(bigDecimals);
