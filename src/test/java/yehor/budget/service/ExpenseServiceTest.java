@@ -7,6 +7,7 @@ import yehor.budget.entity.Category;
 import yehor.budget.entity.Expense;
 import yehor.budget.repository.CategoryRepository;
 import yehor.budget.repository.ExpenseRepository;
+import yehor.budget.repository.TagRepository;
 import yehor.budget.web.converter.ExpenseConverter;
 import yehor.budget.web.dto.full.ExpenseFullDto;
 import yehor.budget.web.dto.limited.ExpenseLimitedDto;
@@ -25,6 +26,8 @@ import static common.factory.ExpenseFactory.defaultExpenseFullDto;
 import static common.factory.ExpenseFactory.defaultExpenseLimitedDto;
 import static common.factory.ExpenseFactory.secondExpense;
 import static common.factory.ExpenseFactory.secondExpenseFullDto;
+import static common.factory.TagFactory.DEFAULT_TAG_ID;
+import static common.factory.TagFactory.defaultTag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
@@ -38,10 +41,11 @@ class ExpenseServiceTest {
     private final ExpenseRepository expenseRepositoryMock = mock(ExpenseRepository.class);
     private final ExpenseConverter expenseConverterMock = mock(ExpenseConverter.class);
     private final CategoryRepository categoryRepositoryMock = mock(CategoryRepository.class);
+    private final TagRepository tagRepositoryMock = mock(TagRepository.class);
     private final DateManager dateManagerMock = mock(DateManager.class);
 
     private final ExpenseService expenseService = new ExpenseService(
-            expenseConverterMock, expenseRepositoryMock, categoryRepositoryMock, dateManagerMock);
+            expenseConverterMock, expenseRepositoryMock, categoryRepositoryMock, tagRepositoryMock, dateManagerMock);
 
     @Test
     void testGetById() {
@@ -110,14 +114,13 @@ class ExpenseServiceTest {
 
     @Test
     void testSave() {
-        Long categoryId = DEFAULT_CATEGORY_ID;
         LocalDate now = LocalDate.now();
         Expense expense = defaultExpense();
         ExpenseLimitedDto expenseDto = defaultExpenseLimitedDto();
-        Category category = defaultCategory();
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
-        when(categoryRepositoryMock.findById(categoryId)).thenReturn(Optional.of(category));
+        when(categoryRepositoryMock.findById(DEFAULT_CATEGORY_ID)).thenReturn(Optional.of(defaultCategory()));
+        when(tagRepositoryMock.findById(DEFAULT_TAG_ID)).thenReturn(Optional.of(defaultTag()));
 
         expenseService.save(expenseDto);
 
@@ -145,23 +148,40 @@ class ExpenseServiceTest {
     }
 
     @Test
+    void testTrySavingWithAbsentTagId() {
+        Long tagId = DEFAULT_TAG_ID;
+        ExpenseLimitedDto expenseDto = defaultExpenseLimitedDto();
+
+        when(expenseConverterMock.convert(expenseDto)).thenReturn(defaultExpense());
+        when(expenseRepositoryMock.existsById(DEFAULT_EXPENSE_ID)).thenReturn(false);
+        when(categoryRepositoryMock.findById(DEFAULT_CATEGORY_ID)).thenReturn(Optional.of(defaultCategory()));
+        when(tagRepositoryMock.findById(tagId)).thenReturn(Optional.empty());
+
+        try {
+            expenseService.save(expenseDto);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            ObjectNotFoundException exception = (ObjectNotFoundException) e;
+            assertEquals("Tag with id " + tagId + " does not exist", exception.getMessage());
+        }
+    }
+
+    @Test
     void testUpdate() {
-        Long id = DEFAULT_EXPENSE_ID;
-        Long categoryId = DEFAULT_CATEGORY_ID;
         LocalDate now = LocalDate.now();
         Expense expense = defaultExpense();
         ExpenseFullDto expenseDto = defaultExpenseFullDto();
-        Category category = defaultCategory();
-        expense.setCategory(category);
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
-        when(expenseRepositoryMock.existsById(id)).thenReturn(true);
-        when(categoryRepositoryMock.findById(categoryId)).thenReturn(Optional.of(category));
+        when(expenseRepositoryMock.existsById(DEFAULT_EXPENSE_ID)).thenReturn(true);
+        when(categoryRepositoryMock.findById(DEFAULT_CATEGORY_ID)).thenReturn(Optional.of(defaultCategory()));
+        when(tagRepositoryMock.findById(DEFAULT_TAG_ID)).thenReturn(Optional.of(defaultTag()));
 
-        expenseService.updateById(expenseDto);
+        expenseService.update(expenseDto);
 
         verify(expenseRepositoryMock, times(1))
-                .updateById(expense);
+                .save(expense);
         verify(dateManagerMock, times(1))
                 .updateBudgetDatesIfNecessary(now);
     }
@@ -176,7 +196,7 @@ class ExpenseServiceTest {
         when(expenseRepositoryMock.existsById(id)).thenReturn(false);
 
         try {
-            expenseService.updateById(expenseDto);
+            expenseService.update(expenseDto);
             fail("Exception was not thrown");
         } catch (Exception e) {
             assertEquals(ObjectNotFoundException.class, e.getClass());
@@ -189,20 +209,39 @@ class ExpenseServiceTest {
 
     @Test
     void testTryUpdatingWithAbsentCategoryId() {
-        Long id = DEFAULT_EXPENSE_ID;
         Long categoryId = DEFAULT_CATEGORY_ID;
         ExpenseFullDto expenseDto = defaultExpenseFullDto();
 
-        when(expenseRepositoryMock.existsById(id)).thenReturn(true);
+        when(expenseRepositoryMock.existsById(DEFAULT_EXPENSE_ID)).thenReturn(true);
         when(categoryRepositoryMock.findById(categoryId)).thenReturn(Optional.empty());
 
         try {
-            expenseService.updateById(expenseDto);
+            expenseService.update(expenseDto);
             fail("Exception was not thrown");
         } catch (Exception e) {
             assertEquals(ObjectNotFoundException.class, e.getClass());
             ObjectNotFoundException exception = (ObjectNotFoundException) e;
             assertEquals("Category with id " + categoryId + " does not exist", exception.getMessage());
+        }
+    }
+
+    @Test
+    void testTryUpdatingWithAbsentTagId() {
+        Long tagId = DEFAULT_TAG_ID;
+        ExpenseFullDto expenseDto = defaultExpenseFullDto();
+
+        when(expenseConverterMock.convert(expenseDto)).thenReturn(defaultExpense());
+        when(expenseRepositoryMock.existsById(DEFAULT_EXPENSE_ID)).thenReturn(true);
+        when(categoryRepositoryMock.findById(DEFAULT_CATEGORY_ID)).thenReturn(Optional.of(defaultCategory()));
+        when(tagRepositoryMock.findById(tagId)).thenReturn(Optional.empty());
+
+        try {
+            expenseService.update(expenseDto);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            ObjectNotFoundException exception = (ObjectNotFoundException) e;
+            assertEquals("Tag with id " + tagId + " does not exist", exception.getMessage());
         }
     }
 

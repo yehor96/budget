@@ -23,8 +23,10 @@ import yehor.budget.web.dto.limited.ExpenseLimitedDto;
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -55,6 +57,7 @@ public class ExpenseController {
         try {
             dateManager.validateDateAfterStart(expenseDto.getDate());
             validateCategoryId(expenseDto.getCategoryId());
+            validateTagIds(expenseDto);
 
             expenseService.save(expenseDto);
         } catch (ObjectNotFoundException exception) {
@@ -71,8 +74,9 @@ public class ExpenseController {
         try {
             dateManager.validateDateAfterStart(expenseDto.getDate());
             validateCategoryId(expenseDto.getCategoryId());
+            validateTagIds(expenseDto);
 
-            expenseService.updateById(expenseDto);
+            expenseService.update(expenseDto);
         } catch (ObjectNotFoundException exception) {
             throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
         } catch (IllegalArgumentException exception) {
@@ -133,6 +137,26 @@ public class ExpenseController {
         if (Objects.isNull(categoryId) || categoryId < 1) {
             throw new IllegalArgumentException("Provided category id is not valid - " + categoryId + ". " +
                     "Please provide valid category id");
+        }
+    }
+
+    private void validateTagIds(ExpenseFullDto expenseDto) {
+        Set<Long> tagIds = expenseDto.getTagIds();
+        if (Objects.isNull(tagIds)) {
+            tagIds = Collections.emptySet();
+            expenseDto.setTagIds(tagIds);
+        } else if (tagIds.stream().anyMatch(id -> id < 1)) {
+            throw new IllegalArgumentException("Tag cannot be negative or 0: " + tagIds);
+        }
+    }
+
+    private void validateTagIds(ExpenseLimitedDto expenseDto) {
+        Set<Long> tagIds = expenseDto.getTagIds();
+        if (Objects.isNull(tagIds)) {
+            tagIds = Collections.emptySet();
+            expenseDto.setTagIds(tagIds);
+        } else if (tagIds.stream().anyMatch(id -> id < 1)) {
+            throw new IllegalArgumentException("Tag cannot be negative or 0: " + tagIds);
         }
     }
 
