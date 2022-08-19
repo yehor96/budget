@@ -23,8 +23,8 @@ public class TagService {
 
     private static final Logger LOG = LogManager.getLogger(TagService.class);
 
-    private final TagConverter tagConverter;
     private final TagRepository tagRepository;
+    private final TagConverter tagConverter;
 
     public List<TagFullDto> getAll() {
         List<Tag> tags = tagRepository.findAll();
