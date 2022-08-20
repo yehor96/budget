@@ -138,7 +138,7 @@ class TagServiceTest {
             ObjectNotFoundException exception = (ObjectNotFoundException) e;
             assertEquals("Tag with id " + 1L + " does not exist", exception.getMessage());
             verify(tagRepositoryMock, never())
-                    .update(expectedTag);
+                    .save(expectedTag);
         }
     }
 }

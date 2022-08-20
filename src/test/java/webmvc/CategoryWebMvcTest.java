@@ -46,7 +46,6 @@ class CategoryWebMvcTest extends BaseWebMvcTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-
         ObjectReader listReader = objectMapper.readerForListOf(CategoryFullDto.class);
         List<CategoryFullDto> actualCategories = listReader.readValue(response);
 

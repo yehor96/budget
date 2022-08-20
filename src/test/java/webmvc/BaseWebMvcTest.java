@@ -33,6 +33,8 @@ abstract class BaseWebMvcTest {
     protected static final String MONTHLY_STATISTICS_URL = STATISTICS_URL.concat("/monthly");
     protected static final String PERIODIC_STATISTICS_URL = STATISTICS_URL.concat("/periodic");
 
+    protected static final String TAGS_URL = BASE_URL.concat("/tags");
+
     @Autowired
     protected MockMvc mockMvc;
     @Autowired
