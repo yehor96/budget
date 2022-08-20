@@ -7,11 +7,16 @@ import yehor.budget.web.dto.limited.ExpenseLimitedDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import static common.factory.CategoryFactory.DEFAULT_CATEGORY_ID;
 import static common.factory.CategoryFactory.defaultCategory;
 import static common.factory.CategoryFactory.secondCategory;
+import static common.factory.TagFactory.DEFAULT_TAG_ID;
+import static common.factory.TagFactory.SECOND_TAG_ID;
+import static common.factory.TagFactory.defaultTag;
+import static common.factory.TagFactory.secondTag;
 
 @UtilityClass
 public class ExpenseFactory {
@@ -25,6 +30,7 @@ public class ExpenseFactory {
                 .date(LocalDate.now())
                 .isRegular(true)
                 .categoryId(DEFAULT_CATEGORY_ID)
+                .tagIds(Collections.singleton(DEFAULT_TAG_ID))
                 .build();
     }
 
@@ -35,6 +41,7 @@ public class ExpenseFactory {
                 .date(LocalDate.now())
                 .isRegular(true)
                 .category(defaultCategory())
+                .tags(Collections.singleton(defaultTag()))
                 .build();
     }
 
@@ -45,6 +52,7 @@ public class ExpenseFactory {
                 .date(LocalDate.now().minusDays(1))
                 .isRegular(false)
                 .categoryId(DEFAULT_CATEGORY_ID)
+                .tagIds(Collections.singleton(SECOND_TAG_ID))
                 .build();
     }
 
@@ -55,6 +63,7 @@ public class ExpenseFactory {
                 .date(LocalDate.now().minusDays(1))
                 .isRegular(false)
                 .category(defaultCategory())
+                .tags(Collections.singleton(secondTag()))
                 .build();
     }
 
@@ -101,6 +110,7 @@ public class ExpenseFactory {
                 .date(LocalDate.now())
                 .isRegular(true)
                 .categoryId(DEFAULT_CATEGORY_ID)
+                .tagIds(Collections.singleton(DEFAULT_TAG_ID))
                 .build();
     }
 

@@ -13,11 +13,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Builder
 @AllArgsConstructor
@@ -48,4 +51,11 @@ public class Expense {
     @JoinColumn(name = "category_id", nullable = false)
     @ToString.Exclude
     private Category category;
+
+    @ManyToMany
+    @JoinTable(name = "expenses_to_tags",
+            joinColumns = @JoinColumn(name = "expense_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @ToString.Exclude
+    private Set<Tag> tags;
 }
