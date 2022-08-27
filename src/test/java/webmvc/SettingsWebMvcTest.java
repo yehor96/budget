@@ -37,7 +37,8 @@ class SettingsWebMvcTest extends BaseWebMvcTest {
 
         when(settingsService.getSettings()).thenReturn(expectedSettings);
 
-        String response = mockMvc.perform(get(SETTINGS_URL))
+        String response = mockMvc.perform(get(SETTINGS_URL)
+                        .header("Authorization", BASIC_AUTH_STRING))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
@@ -54,7 +55,8 @@ class SettingsWebMvcTest extends BaseWebMvcTest {
         doThrow(new EntityNotFoundException(expectedErrorMessage))
                 .when(settingsService).getSettings();
 
-        String response = mockMvc.perform(get(SETTINGS_URL))
+        String response = mockMvc.perform(get(SETTINGS_URL)
+                        .header("Authorization", BASIC_AUTH_STRING))
                 .andExpect(status().isInternalServerError())
                 .andReturn().getResponse().getContentAsString();
 
@@ -68,6 +70,7 @@ class SettingsWebMvcTest extends BaseWebMvcTest {
         SettingsLimitedDto settings = defaultSettingsLimitedDto();
 
         mockMvc.perform(put(SETTINGS_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(settings)))
                 .andExpect(status().isOk());
