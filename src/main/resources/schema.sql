@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS expenses;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS settings;
 DROP TABLE IF EXISTS tags;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE categories (
                        category_id BIGSERIAL NOT NULL,
@@ -47,4 +48,13 @@ CREATE TABLE settings  (
                         budget_date_validation BOOLEAN NOT NULL,
 
                         CONSTRAINT settings_pk PRIMARY KEY (settings_id)
+                        );
+
+CREATE TABLE users      (
+                        user_id SERIAL NOT NULL,
+                        username VARCHAR(50) NOT NULL,
+                        password VARCHAR(500) NOT NULL,
+
+                        CONSTRAINT users_pk PRIMARY KEY (user_id),
+                        CONSTRAINT users_username_uq UNIQUE (username)
                         );

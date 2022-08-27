@@ -50,6 +50,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
         when(expenseService.getById(DEFAULT_EXPENSE_ID)).thenReturn(expectedExpense);
 
         String response = mockMvc.perform(get(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_EXPENSE_ID)))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -66,6 +67,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
         when(expenseService.getById(DEFAULT_EXPENSE_ID)).thenThrow(new EntityNotFoundException());
 
         String response = mockMvc.perform(get(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_EXPENSE_ID)))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
@@ -80,6 +82,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
         ExpenseLimitedDto expenseLimitedDto = defaultExpenseLimitedDto();
 
         mockMvc.perform(post(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseLimitedDto)))
                 .andExpect(status().isOk());
@@ -96,6 +99,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).validateDateAfterStart(expenseLimitedDto.getDate());
 
         String response = mockMvc.perform(post(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseLimitedDto)))
                 .andExpect(status().isBadRequest())
@@ -112,6 +116,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
         String expectedErrorMessage = "Provided category id is not valid - -1. Please provide valid category id";
 
         String response = mockMvc.perform(post(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseLimitedDto)))
                 .andExpect(status().isBadRequest())
@@ -130,6 +135,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
                 .when(expenseService).save(expenseLimitedDto);
 
         String response = mockMvc.perform(post(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseLimitedDto)))
                 .andExpect(status().isNotFound())
@@ -145,6 +151,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
         String expectedErrorMessage = "Tag cannot be negative or 0: [-1]";
 
         String response = mockMvc.perform(post(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseLimitedDto)))
                 .andExpect(status().isBadRequest())
@@ -161,6 +168,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
         ExpenseFullDto expenseFullDto = defaultExpenseFullDto();
 
         mockMvc.perform(put(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseFullDto)))
                 .andExpect(status().isOk());
@@ -177,6 +185,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).validateDateAfterStart(expenseFullDto.getDate());
 
         String response = mockMvc.perform(put(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseFullDto)))
                 .andExpect(status().isBadRequest())
@@ -193,6 +202,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
         String expectedErrorMessage = "Provided category id is not valid - -1. Please provide valid category id";
 
         String response = mockMvc.perform(put(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseFullDto)))
                 .andExpect(status().isBadRequest())
@@ -209,6 +219,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
         String expectedErrorMessage = "Tag cannot be negative or 0: [-1]";
 
         String response = mockMvc.perform(put(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseFullDto)))
                 .andExpect(status().isBadRequest())
@@ -227,6 +238,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
                 .when(expenseService).update(expenseFullDto);
 
         String response = mockMvc.perform(put(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseFullDto)))
                 .andExpect(status().isNotFound())
@@ -251,6 +263,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
         when(expenseService.findAllInInterval(dateFrom, dateTo)).thenReturn(expectedExpenseInterval);
 
         String response = mockMvc.perform(get(EXPENSE_INTERVAL_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isOk())
@@ -277,6 +290,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).validateDatesInSequentialOrder(dateFrom, dateTo);
 
         String response = mockMvc.perform(get(EXPENSE_INTERVAL_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isBadRequest())
@@ -301,6 +315,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).validateDatesWithinBudget(dateFrom, dateTo);
 
         String response = mockMvc.perform(get(EXPENSE_INTERVAL_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isBadRequest())
@@ -323,6 +338,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).parse(from);
 
         String response = mockMvc.perform(get(EXPENSE_INTERVAL_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isBadRequest())
@@ -348,6 +364,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
         when(expenseService.findSumInInterval(dateFrom, dateTo)).thenReturn(expectedSum);
 
         String response = mockMvc.perform(get(EXPENSE_SUM_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isOk())
@@ -373,6 +390,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).validateDatesInSequentialOrder(dateFrom, dateTo);
 
         String response = mockMvc.perform(get(EXPENSE_SUM_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isBadRequest())
@@ -397,6 +415,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).validateDatesWithinBudget(dateFrom, dateTo);
 
         String response = mockMvc.perform(get(EXPENSE_SUM_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isBadRequest())
@@ -419,6 +438,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).parse(from);
 
         String response = mockMvc.perform(get(EXPENSE_SUM_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isBadRequest())
@@ -434,6 +454,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
     @Test
     void testDeleteExpenseById() throws Exception {
         mockMvc.perform(delete(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_EXPENSE_ID)))
                 .andExpect(status().isOk());
 
@@ -448,6 +469,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
                 .when(expenseService).deleteById(DEFAULT_EXPENSE_ID);
 
         String response = mockMvc.perform(delete(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_EXPENSE_ID)))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();

@@ -42,7 +42,8 @@ class CategoryWebMvcTest extends BaseWebMvcTest {
 
         when(categoryService.getAll()).thenReturn(expectedCategories);
 
-        String response = mockMvc.perform(get(CATEGORIES_URL))
+        String response = mockMvc.perform(get(CATEGORIES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
@@ -59,6 +60,7 @@ class CategoryWebMvcTest extends BaseWebMvcTest {
         CategoryLimitedDto category = defaultCategoryLimitedDto();
 
         mockMvc.perform(post(CATEGORIES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(category)))
                 .andExpect(status().isOk());
@@ -75,6 +77,7 @@ class CategoryWebMvcTest extends BaseWebMvcTest {
                 .when(categoryService).save(category);
 
         String response = mockMvc.perform(post(CATEGORIES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(category)))
                 .andExpect(status().isBadRequest())
@@ -88,6 +91,7 @@ class CategoryWebMvcTest extends BaseWebMvcTest {
     @Test
     void testDeleteCategory() throws Exception {
         mockMvc.perform(delete(CATEGORIES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_CATEGORY_ID)))
                 .andExpect(status().isOk());
 
@@ -102,6 +106,7 @@ class CategoryWebMvcTest extends BaseWebMvcTest {
                 .when(categoryService).delete(DEFAULT_CATEGORY_ID);
 
         String response = mockMvc.perform(delete(CATEGORIES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_CATEGORY_ID)))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
@@ -117,6 +122,7 @@ class CategoryWebMvcTest extends BaseWebMvcTest {
                 .when(categoryService).delete(DEFAULT_CATEGORY_ID);
 
         String response = mockMvc.perform(delete(CATEGORIES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_CATEGORY_ID)))
                 .andExpect(status().isBadRequest())
                 .andReturn().getResponse().getContentAsString();
@@ -131,6 +137,7 @@ class CategoryWebMvcTest extends BaseWebMvcTest {
         CategoryFullDto category = defaultCategoryFullDto();
 
         mockMvc.perform(put(CATEGORIES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(category)))
                 .andExpect(status().isOk());
@@ -147,6 +154,7 @@ class CategoryWebMvcTest extends BaseWebMvcTest {
                 .when(categoryService).update(category);
 
         String response = mockMvc.perform(put(CATEGORIES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(category)))
                 .andExpect(status().isNotFound())
