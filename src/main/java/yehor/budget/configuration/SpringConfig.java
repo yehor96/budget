@@ -1,4 +1,4 @@
-package yehor.budget;
+package yehor.budget.configuration;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;

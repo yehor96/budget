@@ -35,6 +35,9 @@ abstract class BaseWebMvcTest {
 
     protected static final String TAGS_URL = BASE_URL.concat("/tags");
 
+
+    protected static final String BASIC_AUTH_STRING = "Basic YWRtaW46cGFzc3dvcmQ=";
+
     @Autowired
     protected MockMvc mockMvc;
     @Autowired
