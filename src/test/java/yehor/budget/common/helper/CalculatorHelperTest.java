@@ -15,8 +15,14 @@ class CalculatorHelperTest {
     private final List<BigDecimal> values = List.of(BigDecimal.valueOf(2), BigDecimal.valueOf(3), BigDecimal.valueOf(25));
 
     @Test
-    void testSum() {
+    void testSumWithList() {
         BigDecimal result = calculatorHelper.sum(values);
+        assertEquals(BigDecimal.valueOf(30), result);
+    }
+
+    @Test
+    void testSumWithVararg() {
+        BigDecimal result = calculatorHelper.sum(values.get(0), values.get(1), values.get(2));
         assertEquals(BigDecimal.valueOf(30), result);
     }
 

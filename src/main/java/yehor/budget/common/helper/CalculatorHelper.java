@@ -20,4 +20,8 @@ public class CalculatorHelper {
     public BigDecimal sum(List<BigDecimal> bigDecimals) {
         return bigDecimals.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
     }
+
+    public BigDecimal sum(BigDecimal... bigDecimals) {
+        return sum(List.of(bigDecimals));
+    }
 }

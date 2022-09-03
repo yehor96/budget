@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS expenses_to_tags;
 DROP TABLE IF EXISTS expenses;
+DROP TABLE IF EXISTS row_regular_expected_expenses;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS settings;
 DROP TABLE IF EXISTS tags;
@@ -12,6 +13,18 @@ CREATE TABLE categories (
                        CONSTRAINT categories_pk PRIMARY KEY (category_id),
                        CONSTRAINT categories_name_uq UNIQUE (name)
                        );
+
+CREATE TABLE row_regular_expected_expenses (
+                        row_regular_expected_expenses_id BIGSERIAL NOT NULL,
+                        category_id BIGINT NOT NULL,
+                        days_1_to_7 NUMERIC(11,2) NOT NULL,
+                        days_8_to_14 NUMERIC(11,2) NOT NULL,
+                        days_15_to_21 NUMERIC(11,2) NOT NULL,
+                        days_22_to_31 NUMERIC(11,2) NOT NULL,
+
+                        CONSTRAINT row_regular_expected_expenses_pk PRIMARY KEY (row_regular_expected_expenses_id),
+                        CONSTRAINT row_regular_expected_expenses_to_categories_fk FOREIGN KEY (category_id) REFERENCES categories (category_id)
+                        );
 
 CREATE TABLE tags (
                        tag_id BIGSERIAL NOT NULL,
@@ -29,7 +42,7 @@ CREATE TABLE expenses (
     				   category_id BIGINT NOT NULL,
 
     				   CONSTRAINT expenses_pk PRIMARY KEY (expense_id),
-    				   CONSTRAINT expense_to_categories_fk FOREIGN KEY (category_id) REFERENCES categories (category_id)
+    				   CONSTRAINT expenses_to_categories_fk FOREIGN KEY (category_id) REFERENCES categories (category_id)
     				   );
 
 CREATE TABLE expenses_to_tags (

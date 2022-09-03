@@ -35,6 +35,7 @@ abstract class BaseWebMvcTest {
 
     protected static final String TAGS_URL = BASE_URL.concat("/tags");
 
+    protected static final String REGULAR_EXPECTED_EXPENSE_URL = BASE_URL.concat("/regular-expected-expenses");
 
     protected static final String BASIC_AUTH_STRING = "Basic YWRtaW46cGFzc3dvcmQ="; //todo remove
 
@@ -45,7 +46,6 @@ abstract class BaseWebMvcTest {
 
     protected void verifyResponseErrorObject(String responseContent, HttpStatus status, String message) {
         try {
-
             var response = objectMapper.readValue(responseContent, HashMap.class);
 
             assertEquals(status.value(), response.get("status"));
