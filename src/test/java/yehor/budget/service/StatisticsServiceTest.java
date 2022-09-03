@@ -22,6 +22,7 @@ import static common.factory.StatisticsFactory.defaultMonthlyStatistics;
 import static common.factory.StatisticsFactory.emptyMonthStatistics;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -87,7 +88,7 @@ class StatisticsServiceTest {
                 .thenReturn(BigDecimal.TEN)
                 .thenReturn(BigDecimal.valueOf(6.5))
                 .thenReturn(BigDecimal.valueOf(16.5));
-        when(calculatorHelperMock.sum(any()))
+        when(calculatorHelperMock.sum(anyList()))
                 .thenReturn(BigDecimal.valueOf(50));
         when(dateManagerMock.getMonthsListIn(any(), any()))
                 .thenReturn(List.of(july, august, september));
@@ -136,7 +137,7 @@ class StatisticsServiceTest {
 
         when(expenseRepositoryMock.findAllInInterval(any(), any())).thenReturn(Collections.emptyList());
         when(calculatorHelperMock.average(any())).thenReturn(BigDecimal.ZERO);
-        when(calculatorHelperMock.sum(any())).thenReturn(BigDecimal.ZERO);
+        when(calculatorHelperMock.sum(anyList())).thenReturn(BigDecimal.ZERO);
         when(dateManagerMock.getMonthsListIn(any(), any())).thenReturn(List.of(july, august, september));
 
         MonthlyStatistics monthlyStatistics1 = emptyMonthStatistics();
