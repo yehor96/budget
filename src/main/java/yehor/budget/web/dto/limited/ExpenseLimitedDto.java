@@ -15,4 +15,5 @@ public class ExpenseLimitedDto {
     private Boolean isRegular;
     private Long categoryId;
     private Set<Long> tagIds;
+    private String note;
 }

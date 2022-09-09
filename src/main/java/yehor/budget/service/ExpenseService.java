@@ -20,6 +20,7 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -86,7 +87,7 @@ public class ExpenseService {
     }
 
     private void validateExists(Long id) {
-        if (!expenseRepository.existsById(id)) {
+        if (Objects.isNull(id) || !expenseRepository.existsById(id)) {
             throw new ObjectNotFoundException(String.format("Expense with id %s does not exist", id));
         }
     }
