@@ -40,6 +40,7 @@ CREATE TABLE expenses (
     				   value NUMERIC(11,2) NOT NULL,
     				   is_regular BOOLEAN DEFAULT FALSE,
     				   category_id BIGINT NOT NULL,
+    				   note VARCHAR(255),
 
     				   CONSTRAINT expenses_pk PRIMARY KEY (expense_id),
     				   CONSTRAINT expenses_to_categories_fk FOREIGN KEY (category_id) REFERENCES categories (category_id)

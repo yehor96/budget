@@ -58,6 +58,7 @@ public class ExpenseController {
             dateManager.validateDateAfterStart(expenseDto.getDate());
             validateCategoryId(expenseDto.getCategoryId());
             validateTagIds(expenseDto);
+            validateNote(expenseDto.getNote());
 
             expenseService.save(expenseDto);
         } catch (ObjectNotFoundException exception) {
@@ -75,6 +76,7 @@ public class ExpenseController {
             dateManager.validateDateAfterStart(expenseDto.getDate());
             validateCategoryId(expenseDto.getCategoryId());
             validateTagIds(expenseDto);
+            validateNote(expenseDto.getNote());
 
             expenseService.update(expenseDto);
         } catch (ObjectNotFoundException exception) {
@@ -157,6 +159,12 @@ public class ExpenseController {
             expenseDto.setTagIds(tagIds);
         } else if (tagIds.stream().anyMatch(id -> id < 1)) {
             throw new IllegalArgumentException("Tag cannot be negative or 0: " + tagIds);
+        }
+    }
+
+    private void validateNote(String note) {
+        if (Objects.nonNull(note) && note.length() > 255) {
+            throw new IllegalArgumentException("Note should not be longer than 255 characters");
         }
     }
 

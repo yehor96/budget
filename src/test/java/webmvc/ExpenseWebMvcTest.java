@@ -161,6 +161,21 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
         verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
     }
 
+    @Test
+    void testTrySavingExpenseWhenNoteIsTooLong() throws Exception {
+        ExpenseLimitedDto expenseLimitedDto = defaultExpenseLimitedDto();
+        expenseLimitedDto.setNote("charscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharsrscharscharscharscharsrscharscharscharscharsrscharscharscharschars");
+
+        String response = mockMvc.perform(post(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(expenseLimitedDto)))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+        verifyResponseErrorObject(response, BAD_REQUEST, "Note should not be longer than 255 characters");
+    }
+
     // Update Expense
 
     @Test
@@ -245,6 +260,21 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
                 .andReturn().getResponse().getContentAsString();
 
         verifyResponseErrorObject(response, NOT_FOUND, expectedErrorMessage);
+    }
+
+    @Test
+    void testTryUpdatingExpenseWhenNoteIsTooLong() throws Exception {
+        ExpenseLimitedDto expenseLimitedDto = defaultExpenseLimitedDto();
+        expenseLimitedDto.setNote("charscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharsrscharscharscharscharsrscharscharscharscharsrscharscharscharschars");
+
+        String response = mockMvc.perform(put(EXPENSES_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(expenseLimitedDto)))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+        verifyResponseErrorObject(response, BAD_REQUEST, "Note should not be longer than 255 characters");
     }
 
     // Get expenses in interval

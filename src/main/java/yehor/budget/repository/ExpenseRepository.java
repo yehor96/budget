@@ -27,7 +27,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
             "SET e.value = :#{#expense.value}, " +
             "e.isRegular = :#{#expense.isRegular}, " +
             "e.date = :#{#expense.date}, " +
-            "e.category = :#{#expense.category} " +
+            "e.category = :#{#expense.category}, " +
+            "e.note = :#{#expense.note} " +
             "WHERE e.id = :#{#expense.id}")
     void updateById(@Param("expense") Expense expense);
 }

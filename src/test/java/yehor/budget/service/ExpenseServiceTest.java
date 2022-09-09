@@ -30,6 +30,7 @@ import static common.factory.TagFactory.DEFAULT_TAG_ID;
 import static common.factory.TagFactory.defaultTag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -189,10 +190,8 @@ class ExpenseServiceTest {
     @Test
     void testTryUpdatingWithNotExistingId() {
         Long id = DEFAULT_EXPENSE_ID;
-        Expense expense = defaultExpense();
         ExpenseFullDto expenseDto = defaultExpenseFullDto();
 
-        when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
         when(expenseRepositoryMock.existsById(id)).thenReturn(false);
 
         try {
@@ -203,7 +202,25 @@ class ExpenseServiceTest {
             ObjectNotFoundException exception = (ObjectNotFoundException) e;
             assertEquals("Expense with id " + id + " does not exist", exception.getMessage());
             verify(expenseRepositoryMock, never())
-                    .updateById(expense);
+                    .updateById(any());
+        }
+    }
+
+    @Test
+    void testTryUpdatingWithNullId() {
+        Long id = null;
+        ExpenseFullDto expenseDto = defaultExpenseFullDto();
+        expenseDto.setId(id);
+
+        try {
+            expenseService.update(expenseDto);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            ObjectNotFoundException exception = (ObjectNotFoundException) e;
+            assertEquals("Expense with id " + id + " does not exist", exception.getMessage());
+            verify(expenseRepositoryMock, never())
+                    .updateById(any());
         }
     }
 
@@ -272,6 +289,22 @@ class ExpenseServiceTest {
             assertEquals("Expense with id " + id + " does not exist", exception.getMessage());
             verify(expenseRepositoryMock, never())
                     .deleteById(id);
+        }
+    }
+
+    @Test
+    void testTryDeletingWithNullId() {
+        Long id = null;
+
+        try {
+            expenseService.deleteById(id);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            ObjectNotFoundException exception = (ObjectNotFoundException) e;
+            assertEquals("Expense with id " + id + " does not exist", exception.getMessage());
+            verify(expenseRepositoryMock, never())
+                    .deleteById(any());
         }
     }
 }

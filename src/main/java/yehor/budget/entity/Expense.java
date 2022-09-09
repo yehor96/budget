@@ -58,4 +58,7 @@ public class Expense {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @ToString.Exclude
     private Set<Tag> tags;
+
+    @Column(name = "note")
+    private String note;
 }

@@ -31,6 +31,7 @@ public class ExpenseFactory {
                 .isRegular(true)
                 .categoryId(DEFAULT_CATEGORY_ID)
                 .tagIds(Collections.singleton(DEFAULT_TAG_ID))
+                .note("Some information")
                 .build();
     }
 
@@ -42,6 +43,18 @@ public class ExpenseFactory {
                 .isRegular(true)
                 .category(defaultCategory())
                 .tags(Collections.singleton(defaultTag()))
+                .note("Some information")
+                .build();
+    }
+
+    public static ExpenseLimitedDto defaultExpenseLimitedDto() {
+        return ExpenseLimitedDto.builder()
+                .value(new BigDecimal("10.00"))
+                .date(LocalDate.now())
+                .isRegular(true)
+                .categoryId(DEFAULT_CATEGORY_ID)
+                .tagIds(Collections.singleton(DEFAULT_TAG_ID))
+                .note("Some information")
                 .build();
     }
 
@@ -87,7 +100,7 @@ public class ExpenseFactory {
                 .build();
     }
 
-    public static Expense anotherCategoryExpense() {
+    public static Expense expenseWithAnotherCategory() {
         return Expense.builder()
                 .id(4L)
                 .value(new BigDecimal("11.00"))
@@ -104,21 +117,11 @@ public class ExpenseFactory {
         return List.of(expenseFullDto1, expenseFullDto2, expenseFullDto3);
     }
 
-    public static ExpenseLimitedDto defaultExpenseLimitedDto() {
-        return ExpenseLimitedDto.builder()
-                .value(new BigDecimal("10.00"))
-                .date(LocalDate.now())
-                .isRegular(true)
-                .categoryId(DEFAULT_CATEGORY_ID)
-                .tagIds(Collections.singleton(DEFAULT_TAG_ID))
-                .build();
-    }
-
     public static List<Expense> multipleCategoriesExpenseList() {
         Expense expense1 = defaultExpense();
         Expense expense2 = secondExpense();
         Expense expense3 = thirdExpense();
-        Expense expense4 = anotherCategoryExpense();
+        Expense expense4 = expenseWithAnotherCategory();
         return List.of(expense1, expense2, expense3, expense4);
     }
 

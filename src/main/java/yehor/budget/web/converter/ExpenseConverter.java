@@ -19,6 +19,7 @@ public class ExpenseConverter {
                 .isRegular(expense.getIsRegular())
                 .categoryId(expense.getCategory().getId())
                 .tagIds(expense.getTags().stream().map(Tag::getId).collect(Collectors.toSet()))
+                .note(expense.getNote())
                 .build();
     }
 
@@ -27,6 +28,7 @@ public class ExpenseConverter {
                 .value(expenseDto.getValue())
                 .date(expenseDto.getDate())
                 .isRegular(expenseDto.getIsRegular())
+                .note(expenseDto.getNote())
                 .build();
     }
 
@@ -36,6 +38,7 @@ public class ExpenseConverter {
                 .value(expenseDto.getValue())
                 .date(expenseDto.getDate())
                 .isRegular(expenseDto.getIsRegular())
+                .note(expenseDto.getNote())
                 .build();
     }
 }
