@@ -21,7 +21,7 @@ import java.util.Objects;
 public class SettingsService implements InitializingBean, SettingsListener {
 
     private static final Logger LOG = LogManager.getLogger(SettingsService.class);
-    private static final Long SETTING_ID = 1L;
+    private static final Long SETTINGS_ID = 1L;
 
     private final Environment environment;
     private final SettingsRepository settingsRepository;
@@ -33,7 +33,7 @@ public class SettingsService implements InitializingBean, SettingsListener {
     }
 
     public Settings getSettingsEntity() {
-        return settingsRepository.getById(SETTING_ID);
+        return settingsRepository.getById(SETTINGS_ID);
     }
 
     @Transactional
@@ -50,8 +50,8 @@ public class SettingsService implements InitializingBean, SettingsListener {
 
     @Transactional
     public void updateSettings(Settings newSettings) {
-        Settings existingSettings = settingsRepository.getById(SETTING_ID);
-        Settings settings = mergeSettings(newSettings, existingSettings); //TODO test 2 dif kinds of merge
+        Settings existingSettings = settingsRepository.getById(SETTINGS_ID);
+        Settings settings = mergeSettings(newSettings, existingSettings);
         LOG.info("Updating settings: {}", settings);
         SettingsNotificationManager.updateListeners(this.getClass(), settings);
         settingsRepository.updateById(settings);
@@ -59,8 +59,8 @@ public class SettingsService implements InitializingBean, SettingsListener {
 
     @Override
     public void afterPropertiesSet() {
-        if (settingsRepository.findById(SETTING_ID).isEmpty()) { //TODO test
-            Settings defaultSettings = defaultSettings(); //TODO test
+        if (!settingsRepository.existsById(SETTINGS_ID)) {
+            Settings defaultSettings = defaultSettings();
             LOG.info("Initializing default settings: {}", defaultSettings);
             settingsRepository.save(defaultSettings);
         }
@@ -71,7 +71,7 @@ public class SettingsService implements InitializingBean, SettingsListener {
                 environment.getProperty("budget.date.validation", Boolean.class));
 
         return Settings.builder()
-                .id(SETTING_ID)
+                .id(SETTINGS_ID)
                 .isBudgetDateValidation(budgetDateValidation)
                 .budgetStartDate(LocalDate.now().minusDays(30))
                 .budgetEndDate(LocalDate.now())
@@ -80,7 +80,7 @@ public class SettingsService implements InitializingBean, SettingsListener {
 
     private Settings mergeSettings(Settings newSettings, Settings existingSettings) {
         Settings settings = new Settings();
-        settings.setId(SETTING_ID);
+        settings.setId(SETTINGS_ID);
 
         if (Objects.isNull(newSettings.getBudgetStartDate())) {
             settings.setBudgetStartDate(existingSettings.getBudgetStartDate());

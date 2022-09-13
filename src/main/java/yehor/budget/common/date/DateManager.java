@@ -35,7 +35,7 @@ public class DateManager implements SettingsListener {
             endDate = date;
             shouldUpdateDb = true;
         } else if (date.isBefore(startDate)) {
-            LOG.info("Start date is changed from {} to {}", startDate, date); //TODO test
+            LOG.info("Start date is changed from {} to {}", startDate, date);
             startDate = date;
             shouldUpdateDb = true;
         }
@@ -53,14 +53,14 @@ public class DateManager implements SettingsListener {
         }
     }
 
-    public boolean isWithinBudget(LocalDate date) { //TODO test
+    public boolean isWithinBudget(LocalDate date) {
         if (Boolean.FALSE.equals(isBudgetDateValidation)) {
             return true;
         }
         return Interval.of(startDate, endDate).isWithin(date);
     }
 
-    public boolean areWithinBudget(LocalDate date1, LocalDate date2) { //TODO test
+    public boolean areWithinBudget(LocalDate date1, LocalDate date2) {
         if (Boolean.FALSE.equals(isBudgetDateValidation)) {
             return true;
         }
@@ -79,7 +79,7 @@ public class DateManager implements SettingsListener {
     }
 
     public void validateDateAfterStart(LocalDate date) {
-        if (Boolean.FALSE.equals(isBudgetDateValidation)) { //TODO test
+        if (Boolean.FALSE.equals(isBudgetDateValidation)) {
             return;
         }
         if (date.isBefore(startDate)) {
@@ -88,7 +88,7 @@ public class DateManager implements SettingsListener {
     }
 
     public void validateDatesWithinBudget(LocalDate date1, LocalDate date2) {
-        if (Boolean.FALSE.equals(isBudgetDateValidation)) { //TODO test
+        if (Boolean.FALSE.equals(isBudgetDateValidation)) {
             return;
         }
         if (!areWithinBudget(date1, date2)) {
@@ -104,7 +104,7 @@ public class DateManager implements SettingsListener {
     }
 
     public void validateMonthWithinBudget(FullMonth fullMonth) {
-        if (Boolean.FALSE.equals(isBudgetDateValidation)) { //TODO test
+        if (Boolean.FALSE.equals(isBudgetDateValidation)) {
             return;
         }
 
