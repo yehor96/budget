@@ -34,4 +34,13 @@ public class SettingsFactory {
                 .budgetEndDate(LocalDate.now())
                 .build();
     }
+
+    public static Settings settingsWithBudgetDateValidationOff() {
+        return Settings.builder()
+                .id(DEFAULT_SETTINGS_ID)
+                .isBudgetDateValidation(false)
+                .budgetStartDate(LocalDate.now().minusDays(30))
+                .budgetEndDate(LocalDate.now())
+                .build();
+    }
 }

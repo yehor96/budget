@@ -1,43 +1,104 @@
 package yehor.budget.common.date;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import yehor.budget.common.SettingsNotificationManager;
 import yehor.budget.entity.Settings;
-import yehor.budget.service.SettingsService;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 
+import static common.factory.SettingsFactory.defaultSettings;
+import static common.factory.SettingsFactory.settingsWithBudgetDateValidationOff;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
 class DateManagerTest {
 
-    private final SettingsService settingsServiceMock = mock(SettingsService.class);
     private DateManager dateManager;
 
-    private static final LocalDate startDate = LocalDate.now().minusDays(30);
-    private static final LocalDate endDate = LocalDate.now();
-    private final static Settings settings = Settings.builder()
-            .budgetStartDate(startDate)
-            .budgetEndDate(endDate)
-            .isBudgetDateValidation(true)
-            .build();
+    private Settings settings;
 
-    @BeforeEach
-    void setup() {
-        dateManager = new DateManager(settings);
-        SettingsNotificationManager settingsNotificationManager = new SettingsNotificationManager();
-        settingsNotificationManager.addListener(dateManager.getClass(), settingsServiceMock);
+    @Test
+    void testUpdateEndDateIfNecessaryNotCalledWhenDateIsWithinExistingBudgetPeriod() {
+        setUp(defaultSettings());
+        try (var mock = mockStatic(SettingsNotificationManager.class)) {
+
+            dateManager.updateBudgetDatesIfNecessary(LocalDate.now().minusDays(5));
+
+            mock.verifyNoInteractions();
+        }
+    }
+
+    @Test
+    void testUpdateEndDateIfNecessaryCalledWhenDateIsOutsideOfExistingBudgetPeriod() {
+        setUp(defaultSettings());
+        try (var mock = mockStatic(SettingsNotificationManager.class)) {
+
+            LocalDate newEndDate = LocalDate.now().plusDays(5);
+            Settings expectedSettings = Settings.builder()
+                    .budgetStartDate(settings.getBudgetStartDate())
+                    .budgetEndDate(newEndDate)
+                    .build();
+
+            dateManager.updateBudgetDatesIfNecessary(newEndDate);
+
+            mock.verify(() -> SettingsNotificationManager.updateListeners(eq(DateManager.class), eq(expectedSettings)));
+        }
+    }
+
+    @Test
+    void testIsWithinBudgetSuccess() {
+        setUp(defaultSettings());
+        LocalDate date = LocalDate.now().plusDays(5);
+        assertFalse(dateManager.isWithinBudget(date));
+    }
+
+    @Test
+    void testIsWithinBudgetFailed() {
+        setUp(defaultSettings());
+        LocalDate date = LocalDate.now().minusDays(5);
+        assertTrue(dateManager.isWithinBudget(date));
+    }
+
+    @Test
+    void testIsWithinBudgetReturnsTrueIfBudgetValidationIsOff() {
+        setUp(settingsWithBudgetDateValidationOff());
+        LocalDate date = LocalDate.now().plusDays(5);
+        assertTrue(dateManager.isWithinBudget(date));
+    }
+
+    @Test
+    void testAreWithinBudgetSuccess() {
+        setUp(defaultSettings());
+        LocalDate date1 = LocalDate.now().minusDays(5);
+        LocalDate date2 = LocalDate.now().minusDays(10);
+        assertTrue(dateManager.areWithinBudget(date1, date2));
+    }
+
+    @Test
+    void testAreWithinBudgetFailed() {
+        setUp(defaultSettings());
+        LocalDate date1 = LocalDate.now().minusDays(5);
+        LocalDate date2 = LocalDate.now().plusDays(5);
+        assertFalse(dateManager.areWithinBudget(date1, date2));
+    }
+
+    @Test
+    void testAreWithinBudgetReturnsTrueIfBudgetValidationIsOff() {
+        setUp(settingsWithBudgetDateValidationOff());
+        LocalDate date1 = LocalDate.now().minusDays(5);
+        LocalDate date2 = LocalDate.now().minusDays(15);
+        assertTrue(dateManager.areWithinBudget(date1, date2));
     }
 
     @Test
     void testGetMonthsListIn() {
+        setUp(defaultSettings());
         FullMonth startMonth = FullMonth.of(Month.JANUARY, 2022);
         FullMonth month1 = FullMonth.of(Month.FEBRUARY, 2022);
         FullMonth month2 = FullMonth.of(Month.MARCH, 2022);
@@ -53,6 +114,7 @@ class DateManagerTest {
 
     @Test
     void testGetMonthsListInTheSameMonth() {
+        setUp(defaultSettings());
         FullMonth month = FullMonth.of(Month.JANUARY, 2022);
 
         List<FullMonth> expectedMonths = List.of(month);
@@ -63,7 +125,114 @@ class DateManagerTest {
     }
 
     @Test
+    void testValidateDateAfterStartSuccess() {
+        setUp(defaultSettings());
+        LocalDate date = dateManager.getStartDate().plusDays(5);
+
+        dateManager.validateDateAfterStart(date);
+    }
+
+    @Test
+    void testValidateDateAfterStartFailure() {
+        setUp(defaultSettings());
+        LocalDate date = dateManager.getStartDate().minusDays(5);
+
+        try {
+            dateManager.validateDateAfterStart(date);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+            IllegalArgumentException exception = (IllegalArgumentException) e;
+            assertTrue(exception.getMessage().contains("Date argument is out of budget"));
+        }
+    }
+
+    @Test
+    void testValidateDateAfterStartDoesNotThrowExceptionWhenBudgetValidationIsOff() {
+        setUp(settingsWithBudgetDateValidationOff());
+        LocalDate date = dateManager.getStartDate().minusDays(5);
+
+        dateManager.validateDateAfterStart(date);
+    }
+
+    @Test
+    void testValidateDatesWithinBudgetSuccess() {
+        setUp(defaultSettings());
+        LocalDate date1 = LocalDate.now().minusDays(5);
+        LocalDate date2 = LocalDate.now().minusDays(10);
+
+        dateManager.validateDatesWithinBudget(date1, date2);
+    }
+
+    @Test
+    void testValidateDatesWithinBudgetFailed() {
+        setUp(defaultSettings());
+        LocalDate date1 = LocalDate.now().minusDays(5);
+        LocalDate date2 = LocalDate.now().plusDays(5);
+
+        try {
+            dateManager.validateDatesWithinBudget(date1, date2);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+            IllegalArgumentException exception = (IllegalArgumentException) e;
+            assertTrue(exception.getMessage().contains("Date argument is out of budget"));
+        }
+    }
+
+    @Test
+    void testValidateDatesWithinBudgetDoesNotThrowExceptionIfBudgetValidationIsOff() {
+        setUp(settingsWithBudgetDateValidationOff());
+        LocalDate date1 = LocalDate.now().plusDays(5);
+        LocalDate date2 = LocalDate.now().plusDays(15);
+
+        dateManager.validateDatesWithinBudget(date1, date2);
+    }
+
+    @Test
+    void testValidateDatesInSequentialOrderSuccess() {
+        setUp(defaultSettings());
+        LocalDate date1 = dateManager.getStartDate().minusDays(5);
+        LocalDate date2 = dateManager.getStartDate().plusDays(5);
+
+        dateManager.validateDatesInSequentialOrder(date1, date2);
+    }
+
+    @Test
+    void testValidateDatesInSequentialOrderFailure() {
+        setUp(defaultSettings());
+        LocalDate date1 = dateManager.getStartDate().plusDays(5);
+        LocalDate date2 = dateManager.getStartDate().minusDays(5);
+
+        try {
+            dateManager.validateDatesInSequentialOrder(date1, date2);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+            IllegalArgumentException exception = (IllegalArgumentException) e;
+            assertTrue(exception.getMessage().contains("Reversed order of dates"));
+        }
+    }
+
+    @Test
+    void testValidateDatesInSequentialOrderStillThrowsExceptionWhenBudgetValidationIsOff() {
+        setUp(settingsWithBudgetDateValidationOff());
+        LocalDate date1 = dateManager.getStartDate().plusDays(5);
+        LocalDate date2 = dateManager.getStartDate().minusDays(5);
+
+        try {
+            dateManager.validateDatesInSequentialOrder(date1, date2);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+            IllegalArgumentException exception = (IllegalArgumentException) e;
+            assertTrue(exception.getMessage().contains("Reversed order of dates"));
+        }
+    }
+
+    @Test
     void testValidateMonthWithinBudgetSuccess() {
+        setUp(defaultSettings());
         LocalDate now = LocalDate.now();
         FullMonth month = FullMonth.of(now.getMonth(), now.getYear());
 
@@ -72,6 +241,7 @@ class DateManagerTest {
 
     @Test
     void testValidateMonthWithinBudgetFailure() {
+        setUp(defaultSettings());
         LocalDate date = dateManager.getStartDate().minusMonths(1);
         FullMonth month = FullMonth.of(date.getMonth(), date.getYear());
 
@@ -86,7 +256,17 @@ class DateManagerTest {
     }
 
     @Test
+    void testValidateMonthWithinBudgetDoesNotThrowExceptionWhenBudgetValidationIsOff() {
+        setUp(settingsWithBudgetDateValidationOff());
+        LocalDate date = dateManager.getStartDate().minusMonths(1);
+        FullMonth month = FullMonth.of(date.getMonth(), date.getYear());
+
+        dateManager.validateMonthWithinBudget(month);
+    }
+
+    @Test
     void testValidateMonthsInSequentialOrderSuccess() {
+        setUp(defaultSettings());
         FullMonth startMonth = FullMonth.of(Month.JANUARY, 2022);
         FullMonth endMonth = FullMonth.of(Month.MAY, 2022);
 
@@ -95,6 +275,7 @@ class DateManagerTest {
 
     @Test
     void testValidateMonthsInSequentialOrderFailure() {
+        setUp(defaultSettings());
         FullMonth startMonth = FullMonth.of(Month.MAY, 2022);
         FullMonth endMonth = FullMonth.of(Month.JANUARY, 2022);
 
@@ -108,29 +289,8 @@ class DateManagerTest {
         }
     }
 
-    @Test
-    void testUpdateEndDateIfNecessaryNotCalledWhenDateIsWithinExistingBudgetPeriod() {
-        try (var mock = mockStatic(SettingsNotificationManager.class)) {
-
-            dateManager.updateBudgetDatesIfNecessary(LocalDate.now().minusDays(5));
-
-            mock.verifyNoInteractions();
-        }
-    }
-
-    @Test
-    void testUpdateEndDateIfNecessaryCalledWhenDateIsOutsideOfExistingBudgetPeriod() {
-        try (var mock = mockStatic(SettingsNotificationManager.class)) {
-
-            LocalDate newEndDate = LocalDate.now().plusDays(5);
-            Settings expectedSettings = Settings.builder()
-                    .budgetStartDate(settings.getBudgetStartDate())
-                    .budgetEndDate(newEndDate)
-                    .build();
-
-            dateManager.updateBudgetDatesIfNecessary(newEndDate);
-
-            mock.verify(() -> SettingsNotificationManager.updateListeners(eq(DateManager.class), eq(expectedSettings)));
-        }
+    private void setUp(Settings settings) {
+        this.settings = settings;
+        dateManager = new DateManager(settings);
     }
 }
