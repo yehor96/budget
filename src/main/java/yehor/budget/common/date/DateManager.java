@@ -35,7 +35,7 @@ public class DateManager implements SettingsListener {
             endDate = date;
             shouldUpdateDb = true;
         } else if (date.isBefore(startDate)) {
-            LOG.info("Start date is changed from {} to {}", startDate, date); //TODO test
+            LOG.info("Start date is changed from {} to {}", startDate, date);
             startDate = date;
             shouldUpdateDb = true;
         }

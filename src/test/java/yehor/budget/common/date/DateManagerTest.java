@@ -12,6 +12,7 @@ import static common.factory.SettingsFactory.defaultSettings;
 import static common.factory.SettingsFactory.settingsWithBudgetDateValidationOff;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.eq;
@@ -24,22 +25,23 @@ class DateManagerTest {
     private Settings settings;
 
     @Test
-    void testUpdateEndDateIfNecessaryNotCalledWhenDateIsWithinExistingBudgetPeriod() {
+    void testUpdateBudgetDatesIfNecessaryNotUpdatesEndDateAndNotInformsListenersWhenDateIsBeforeEndDate() {
         setUp(defaultSettings());
         try (var mock = mockStatic(SettingsNotificationManager.class)) {
 
-            dateManager.updateBudgetDatesIfNecessary(LocalDate.now().minusDays(5));
+            dateManager.updateBudgetDatesIfNecessary(settings.getBudgetEndDate().minusDays(5));
 
             mock.verifyNoInteractions();
+            assertEquals(settings.getBudgetEndDate(), dateManager.getEndDate());
         }
     }
 
     @Test
-    void testUpdateEndDateIfNecessaryCalledWhenDateIsOutsideOfExistingBudgetPeriod() {
+    void testUpdateBudgetDatesIfNecessaryUpdatesEndDateAndInformsListenersWhenDateIsAfterEndDate() {
         setUp(defaultSettings());
         try (var mock = mockStatic(SettingsNotificationManager.class)) {
 
-            LocalDate newEndDate = LocalDate.now().plusDays(5);
+            LocalDate newEndDate = settings.getBudgetEndDate().plusDays(5);
             Settings expectedSettings = Settings.builder()
                     .budgetStartDate(settings.getBudgetStartDate())
                     .budgetEndDate(newEndDate)
@@ -48,6 +50,39 @@ class DateManagerTest {
             dateManager.updateBudgetDatesIfNecessary(newEndDate);
 
             mock.verify(() -> SettingsNotificationManager.updateListeners(eq(DateManager.class), eq(expectedSettings)));
+            assertEquals(newEndDate, dateManager.getEndDate());
+            assertNotEquals(settings.getBudgetEndDate(), dateManager.getEndDate());
+        }
+    }
+
+    @Test
+    void testUpdateBudgetDatesIfNecessaryNotUpdatesStartDateAndNotInformsListenersWhenDateIsAfterStartDate() {
+        setUp(defaultSettings());
+        try (var mock = mockStatic(SettingsNotificationManager.class)) {
+
+            dateManager.updateBudgetDatesIfNecessary(settings.getBudgetStartDate().plusDays(5));
+
+            mock.verifyNoInteractions();
+            assertEquals(settings.getBudgetStartDate(), dateManager.getStartDate());
+        }
+    }
+
+    @Test
+    void testUpdateBudgetDatesIfNecessaryUpdatesStartDateAndInformsListenersWhenDateIsBeforeStartDate() {
+        setUp(defaultSettings());
+        try (var mock = mockStatic(SettingsNotificationManager.class)) {
+
+            LocalDate newStartDate = settings.getBudgetStartDate().minusDays(5);
+            Settings expectedSettings = Settings.builder()
+                    .budgetStartDate(newStartDate)
+                    .budgetEndDate(settings.getBudgetEndDate())
+                    .build();
+
+            dateManager.updateBudgetDatesIfNecessary(newStartDate);
+
+            mock.verify(() -> SettingsNotificationManager.updateListeners(eq(DateManager.class), eq(expectedSettings)));
+            assertEquals(newStartDate, dateManager.getStartDate());
+            assertNotEquals(settings.getBudgetStartDate(), dateManager.getStartDate());
         }
     }
 
