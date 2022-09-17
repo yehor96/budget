@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,7 +26,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "expenses")
 public class Expense {
@@ -49,16 +47,27 @@ public class Expense {
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
-    @ToString.Exclude
     private Category category;
 
     @ManyToMany
     @JoinTable(name = "expenses_to_tags",
             joinColumns = @JoinColumn(name = "expense_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    @ToString.Exclude
     private Set<Tag> tags;
 
     @Column(name = "note")
     private String note;
+
+    @Override
+    public String toString() {
+        return "Expense{" +
+                "id=" + id +
+                ", value=" + value +
+                ", date=" + date +
+                ", isRegular=" + isRegular +
+                ", category=" + category.getId() +
+                ", tags=" + tags.stream().map(Tag::getId).toList() +
+                ", note='" + note + "'" +
+                '}';
+    }
 }

@@ -54,7 +54,7 @@ public class SettingsService implements InitializingBean, SettingsListener {
         Settings settings = mergeSettings(newSettings, existingSettings);
         LOG.info("Updating settings: {}", settings);
         SettingsNotificationManager.updateListeners(this.getClass(), settings);
-        settingsRepository.updateById(settings);
+        settingsRepository.save(settings);
     }
 
     @Override
