@@ -27,7 +27,6 @@ import static common.factory.ExpenseFactory.defaultExpenseLimitedDto;
 import static common.factory.ExpenseFactory.secondExpense;
 import static common.factory.ExpenseFactory.secondExpenseFullDto;
 import static common.factory.TagFactory.DEFAULT_TAG_ID;
-import static common.factory.TagFactory.defaultTag;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -120,8 +119,8 @@ class ExpenseServiceTest {
         ExpenseLimitedDto expenseDto = defaultExpenseLimitedDto();
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
-        when(categoryRepositoryMock.findById(DEFAULT_CATEGORY_ID)).thenReturn(Optional.of(defaultCategory()));
-        when(tagRepositoryMock.findById(DEFAULT_TAG_ID)).thenReturn(Optional.of(defaultTag()));
+        when(categoryRepositoryMock.existsById(DEFAULT_CATEGORY_ID)).thenReturn(true);
+        when(tagRepositoryMock.existsById(DEFAULT_TAG_ID)).thenReturn(true);
 
         expenseService.save(expenseDto);
 
@@ -155,8 +154,8 @@ class ExpenseServiceTest {
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(defaultExpense());
         when(expenseRepositoryMock.existsById(DEFAULT_EXPENSE_ID)).thenReturn(false);
-        when(categoryRepositoryMock.findById(DEFAULT_CATEGORY_ID)).thenReturn(Optional.of(defaultCategory()));
-        when(tagRepositoryMock.findById(tagId)).thenReturn(Optional.empty());
+        when(categoryRepositoryMock.existsById(DEFAULT_CATEGORY_ID)).thenReturn(true);
+        when(tagRepositoryMock.existsById(tagId)).thenReturn(false);
 
         try {
             expenseService.save(expenseDto);
@@ -176,8 +175,8 @@ class ExpenseServiceTest {
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
         when(expenseRepositoryMock.existsById(DEFAULT_EXPENSE_ID)).thenReturn(true);
-        when(categoryRepositoryMock.findById(DEFAULT_CATEGORY_ID)).thenReturn(Optional.of(defaultCategory()));
-        when(tagRepositoryMock.findById(DEFAULT_TAG_ID)).thenReturn(Optional.of(defaultTag()));
+        when(categoryRepositoryMock.existsById(DEFAULT_CATEGORY_ID)).thenReturn(true);
+        when(tagRepositoryMock.existsById(DEFAULT_TAG_ID)).thenReturn(true);
 
         expenseService.update(expenseDto);
 
@@ -249,8 +248,8 @@ class ExpenseServiceTest {
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(defaultExpense());
         when(expenseRepositoryMock.existsById(DEFAULT_EXPENSE_ID)).thenReturn(true);
-        when(categoryRepositoryMock.findById(DEFAULT_CATEGORY_ID)).thenReturn(Optional.of(defaultCategory()));
-        when(tagRepositoryMock.findById(tagId)).thenReturn(Optional.empty());
+        when(categoryRepositoryMock.existsById(DEFAULT_CATEGORY_ID)).thenReturn(true);
+        when(tagRepositoryMock.existsById(tagId)).thenReturn(false);
 
         try {
             expenseService.update(expenseDto);
