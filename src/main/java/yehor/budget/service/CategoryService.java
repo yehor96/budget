@@ -55,7 +55,7 @@ public class CategoryService {
     public void update(CategoryFullDto categoryDto) {
         validateExists(categoryDto.getId());
         Category category = categoryConverter.convert(categoryDto);
-        categoryRepository.update(category);
+        categoryRepository.save(category);
         LOG.info("{} is updated", category);
     }
 

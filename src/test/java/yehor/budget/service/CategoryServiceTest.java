@@ -120,7 +120,7 @@ class CategoryServiceTest {
         categoryService.update(expectedCategoryDto);
 
         verify(categoryRepositoryMock, times(1))
-                .update(expectedCategory);
+                .save(expectedCategory);
     }
 
     @Test
@@ -139,7 +139,7 @@ class CategoryServiceTest {
             ObjectNotFoundException exception = (ObjectNotFoundException) e;
             assertEquals("Category with id " + 1L + " does not exist", exception.getMessage());
             verify(categoryRepositoryMock, never())
-                    .update(expectedCategory);
+                    .save(expectedCategory);
         }
     }
 

@@ -1,7 +1,6 @@
 package yehor.budget.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -21,14 +20,4 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT e FROM Expense e WHERE e.date BETWEEN :dateFrom AND :dateTo")
     List<Expense> findAllInInterval(@Param("dateFrom") LocalDate dateFrom,
                                     @Param("dateTo") LocalDate dateTo);
-
-    @Modifying
-    @Query("UPDATE Expense e " +
-            "SET e.value = :#{#expense.value}, " +
-            "e.isRegular = :#{#expense.isRegular}, " +
-            "e.date = :#{#expense.date}, " +
-            "e.category = :#{#expense.category}, " +
-            "e.note = :#{#expense.note} " +
-            "WHERE e.id = :#{#expense.id}")
-    void updateById(@Param("expense") Expense expense);
 }

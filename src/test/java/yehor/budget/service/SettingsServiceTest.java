@@ -74,7 +74,7 @@ class SettingsServiceTest {
             settingsService.updateSettings(newSettings);
 
             verify(settingsRepositoryMock, times(1))
-                    .updateById(newSettings);
+                    .save(newSettings);
             mock.verify(() -> SettingsNotificationManager.updateListeners(eq(SettingsService.class), eq(newSettings)));
         }
     }
@@ -98,7 +98,7 @@ class SettingsServiceTest {
             settingsService.updateSettings(newSettings);
 
             verify(settingsRepositoryMock, times(1))
-                    .updateById(expectedSettings);
+                    .save(expectedSettings);
             mock.verify(() -> SettingsNotificationManager.updateListeners(eq(SettingsService.class), eq(expectedSettings)));
         }
     }

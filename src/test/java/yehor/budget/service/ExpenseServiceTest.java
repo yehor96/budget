@@ -202,7 +202,7 @@ class ExpenseServiceTest {
             ObjectNotFoundException exception = (ObjectNotFoundException) e;
             assertEquals("Expense with id " + id + " does not exist", exception.getMessage());
             verify(expenseRepositoryMock, never())
-                    .updateById(any());
+                    .save(any());
         }
     }
 
@@ -220,7 +220,7 @@ class ExpenseServiceTest {
             ObjectNotFoundException exception = (ObjectNotFoundException) e;
             assertEquals("Expense with id " + id + " does not exist", exception.getMessage());
             verify(expenseRepositoryMock, never())
-                    .updateById(any());
+                    .save(any());
         }
     }
 
