@@ -3,7 +3,6 @@ package yehor.budget.service;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.env.Environment;
 import yehor.budget.common.SettingsListener;
 import yehor.budget.common.SettingsNotificationManager;
@@ -13,12 +12,13 @@ import yehor.budget.web.converter.SettingsConverter;
 import yehor.budget.web.dto.full.SettingsFullDto;
 import yehor.budget.web.dto.limited.SettingsLimitedDto;
 
+import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Objects;
 
 @RequiredArgsConstructor
-public class SettingsService implements InitializingBean, SettingsListener {
+public class SettingsService implements SettingsListener {
 
     private static final Logger LOG = LogManager.getLogger(SettingsService.class);
     private static final Long SETTINGS_ID = 1L;
@@ -57,8 +57,8 @@ public class SettingsService implements InitializingBean, SettingsListener {
         settingsRepository.save(settings);
     }
 
-    @Override
-    public void afterPropertiesSet() {
+    @PostConstruct
+    private void initialization() {
         if (!settingsRepository.existsById(SETTINGS_ID)) {
             Settings defaultSettings = defaultSettings();
             LOG.info("Initializing default settings: {}", defaultSettings);

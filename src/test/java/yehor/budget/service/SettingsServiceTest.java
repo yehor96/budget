@@ -102,34 +102,4 @@ class SettingsServiceTest {
             mock.verify(() -> SettingsNotificationManager.updateListeners(eq(SettingsService.class), eq(expectedSettings)));
         }
     }
-
-    @Test
-    void testAfterPropertiesSetIsInvokedWhenSettingsDoNotExistInDb() {
-        boolean budgetSettingValue = true;
-        when(environmentMock.getProperty("budget.date.validation", Boolean.class)).thenReturn(budgetSettingValue);
-
-        Settings actualDefaultSettings = Settings.builder()
-                .id(1L)
-                .isBudgetDateValidation(budgetSettingValue)
-                .budgetStartDate(LocalDate.now().minusDays(30))
-                .budgetEndDate(LocalDate.now())
-                .build();
-
-        when(settingsRepositoryMock.existsById(DEFAULT_SETTINGS_ID)).thenReturn(false);
-
-        settingsService.afterPropertiesSet();
-
-        verify(settingsRepositoryMock, times(1))
-                .save(actualDefaultSettings);
-    }
-
-    @Test
-    void testAfterPropertiesSetIsNotInvokedWhenSettingsExistsInDb() {
-        when(settingsRepositoryMock.existsById(DEFAULT_SETTINGS_ID)).thenReturn(true);
-
-        settingsService.afterPropertiesSet();
-
-        verify(settingsRepositoryMock, never())
-                .save(any(Settings.class));
-    }
 }
