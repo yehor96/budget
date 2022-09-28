@@ -60,10 +60,9 @@ public class TagService {
     }
 
     private void validateNotExists(Tag tag) {
-        tagRepository.findByName(tag.getName())
-                .ifPresent(e -> {
-                    throw new ObjectAlreadyExistsException("Tag " + tag.getName() + " already exists");
-                });
+        if (tagRepository.existsByName(tag.getName())) {
+            throw new ObjectAlreadyExistsException("Tag " + tag.getName() + " already exists");
+        }
     }
 
     private void validateExists(Long id) {

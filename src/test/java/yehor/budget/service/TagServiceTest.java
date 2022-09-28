@@ -71,7 +71,7 @@ class TagServiceTest {
         Tag expectedTag = defaultTag();
 
         when(tagConverterMock.convert(expectedTagDto)).thenReturn(expectedTag);
-        when(tagRepositoryMock.findByName(expectedTag.getName())).thenReturn(Optional.of(expectedTag));
+        when(tagRepositoryMock.existsByName(expectedTag.getName())).thenReturn(true);
 
         try {
             tagService.save(expectedTagDto);

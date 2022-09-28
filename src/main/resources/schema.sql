@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS settings;
 DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS income_sources;
 
 CREATE TABLE categories (
                        category_id BIGSERIAL NOT NULL,
@@ -72,3 +73,12 @@ CREATE TABLE users      (
                         CONSTRAINT users_pk PRIMARY KEY (user_id),
                         CONSTRAINT users_username_uq UNIQUE (username)
                         );
+
+CREATE TABLE income_sources (
+                            income_source_id SERIAL NOT NULL,
+                            name VARCHAR(50) NOT NULL,
+                            value NUMERIC(11,2) NOT NULL,
+
+                            CONSTRAINT income_sources_pk PRIMARY KEY (income_source_id),
+                            CONSTRAINT income_sources_name_uq UNIQUE (name)
+                            );
