@@ -115,7 +115,7 @@ class CategoryWebMvcTest extends BaseWebMvcTest {
     }
 
     @Test
-    void testTryDeletingCategoryWithIllegalCategoryIdExists() throws Exception {
+    void testTryDeletingCategoryWithDependentExpenses() throws Exception {
         String expectedErrorMessage = "expectedErrorMessage";
 
         doThrow(new IllegalArgumentException(expectedErrorMessage))

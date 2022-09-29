@@ -24,18 +24,15 @@ abstract class BaseWebMvcTest {
     protected static final String EXPENSES_URL = BASE_URL.concat("/expenses");
     protected static final String EXPENSE_INTERVAL_URL = EXPENSES_URL + "/interval";
     protected static final String EXPENSE_SUM_URL = EXPENSES_URL + "/sum";
-
     protected static final String CATEGORIES_URL = BASE_URL.concat("/categories");
-
     protected static final String SETTINGS_URL = BASE_URL.concat("/settings");
-
     protected static final String STATISTICS_URL = BASE_URL.concat("/statistics");
     protected static final String MONTHLY_STATISTICS_URL = STATISTICS_URL.concat("/monthly");
     protected static final String PERIODIC_STATISTICS_URL = STATISTICS_URL.concat("/periodic");
-
     protected static final String TAGS_URL = BASE_URL.concat("/tags");
+    protected static final String REGULAR_EXPECTED_EXPENSES_URL = BASE_URL.concat("/regular-expected-expenses");
+    protected static final String INCOME_SOURCES_URL = BASE_URL.concat("/income-sources");
 
-    protected static final String REGULAR_EXPECTED_EXPENSE_URL = BASE_URL.concat("/regular-expected-expenses");
 
     protected static final String BASIC_AUTH_STRING = "Basic YWRtaW46cGFzc3dvcmQ="; //todo remove
 

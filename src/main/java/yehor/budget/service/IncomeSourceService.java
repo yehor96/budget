@@ -52,9 +52,9 @@ public class IncomeSourceService {
     public void delete(Long id) {
         try {
             incomeSourceRepository.deleteById(id);
-            LOG.info("Income service with id {} is deleted", id);
+            LOG.info("Income source with id {} is deleted", id);
         } catch (EmptyResultDataAccessException e) {
-            throw new ObjectNotFoundException("Income service with id " + id + " not found");
+            throw new ObjectNotFoundException("Income source with id " + id + " not found");
         }
     }
 
