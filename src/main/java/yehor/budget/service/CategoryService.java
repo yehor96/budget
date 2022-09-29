@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import yehor.budget.entity.Category;
 import yehor.budget.repository.CategoryRepository;
 import yehor.budget.web.converter.CategoryConverter;
@@ -14,7 +15,6 @@ import yehor.budget.web.dto.limited.CategoryLimitedDto;
 import yehor.budget.common.exception.ObjectAlreadyExistsException;
 import yehor.budget.common.exception.ObjectNotFoundException;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service

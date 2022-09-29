@@ -115,7 +115,7 @@ class TagWebMvcTest extends BaseWebMvcTest {
     }
 
     @Test
-    void testTryDeletingTagWithIllegalTagId() throws Exception {
+    void testTryDeletingTagWithDependentExpenses() throws Exception {
         String expectedErrorMessage = "expectedErrorMessage";
 
         doThrow(new IllegalArgumentException(expectedErrorMessage))

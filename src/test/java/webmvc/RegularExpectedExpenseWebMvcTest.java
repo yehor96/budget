@@ -26,7 +26,7 @@ class RegularExpectedExpenseWebMvcTest extends BaseWebMvcTest {
 
         when(regularExpectedExpenseService.getOne()).thenReturn(expenseFullDto);
 
-        String response = mockMvc.perform(get(REGULAR_EXPECTED_EXPENSE_URL)
+        String response = mockMvc.perform(get(REGULAR_EXPECTED_EXPENSES_URL)
                         .header("Authorization", BASIC_AUTH_STRING))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();

@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import yehor.budget.common.exception.ObjectAlreadyExistsException;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.entity.Tag;
@@ -14,7 +15,6 @@ import yehor.budget.web.converter.TagConverter;
 import yehor.budget.web.dto.full.TagFullDto;
 import yehor.budget.web.dto.limited.TagLimitedDto;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -60,10 +60,9 @@ public class TagService {
     }
 
     private void validateNotExists(Tag tag) {
-        tagRepository.findByName(tag.getName())
-                .ifPresent(e -> {
-                    throw new ObjectAlreadyExistsException("Tag " + tag.getName() + " already exists");
-                });
+        if (tagRepository.existsByName(tag.getName())) {
+            throw new ObjectAlreadyExistsException("Tag " + tag.getName() + " already exists");
+        }
     }
 
     private void validateExists(Long id) {

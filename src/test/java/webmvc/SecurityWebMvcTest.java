@@ -19,10 +19,12 @@ class SecurityWebMvcTest extends BaseWebMvcTest {
     static Stream<String> endpointProvider() {
         return Stream.of(
                 SETTINGS_URL,
-                TAGS_URL, CATEGORIES_URL,
+                INCOME_SOURCES_URL,
+                CATEGORIES_URL,
                 STATISTICS_URL,
                 EXPENSES_URL,
-                REGULAR_EXPECTED_EXPENSE_URL
+                REGULAR_EXPECTED_EXPENSES_URL,
+                INCOME_SOURCES_URL
         );
     }
 }

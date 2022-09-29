@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.core.env.Environment;
+import org.springframework.transaction.annotation.Transactional;
 import yehor.budget.common.SettingsListener;
 import yehor.budget.common.SettingsNotificationManager;
 import yehor.budget.entity.Settings;
@@ -13,7 +14,6 @@ import yehor.budget.web.dto.full.SettingsFullDto;
 import yehor.budget.web.dto.limited.SettingsLimitedDto;
 
 import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Objects;
 
