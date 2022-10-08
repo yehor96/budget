@@ -3,17 +3,17 @@ package yehor.budget.web.converter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import yehor.budget.common.helper.CalculatorHelper;
-import yehor.budget.entity.RowRegularExpectedExpense;
-import yehor.budget.web.dto.full.RowRegularExpectedExpenseFullDto;
+import yehor.budget.entity.RowEstimatedExpense;
+import yehor.budget.web.dto.full.RowEstimatedExpenseFullDto;
 
 @Component
 @RequiredArgsConstructor
-public class RegularExpectedExpenseConverter {
+public class EstimatedExpenseConverter {
 
     private final CalculatorHelper calculatorHelper;
 
-    public RowRegularExpectedExpenseFullDto convert(RowRegularExpectedExpense row) {
-        return RowRegularExpectedExpenseFullDto.builder()
+    public RowEstimatedExpenseFullDto convert(RowEstimatedExpense row) {
+        return RowEstimatedExpenseFullDto.builder()
                 .categoryId(row.getCategory().getId())
                 .days1to7(row.getDays1to7())
                 .days8to14(row.getDays8to14())

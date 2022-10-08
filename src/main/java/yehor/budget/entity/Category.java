@@ -22,10 +22,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "categories")
 @Getter
 @Setter
 @ToString
+@Table(name = "categories")
 public class Category {
 
     @Id
@@ -43,5 +43,5 @@ public class Category {
 
     @OneToOne(mappedBy = "category")
     @ToString.Exclude
-    private RowRegularExpectedExpense rowRegularExpectedExpense;
+    private RowEstimatedExpense rowEstimatedExpense;
 }

@@ -12,8 +12,8 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegularExpectedExpenseFullDto {
-    private List<RowRegularExpectedExpenseFullDto> rows;
+public class EstimatedExpenseFullDto {
+    private List<RowEstimatedExpenseFullDto> rows;
     private BigDecimal total1to7;
     private BigDecimal total8to14;
     private BigDecimal total15to21;

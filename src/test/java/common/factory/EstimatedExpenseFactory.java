@@ -1,9 +1,9 @@
 package common.factory;
 
 import lombok.experimental.UtilityClass;
-import yehor.budget.entity.RowRegularExpectedExpense;
-import yehor.budget.web.dto.full.RegularExpectedExpenseFullDto;
-import yehor.budget.web.dto.full.RowRegularExpectedExpenseFullDto;
+import yehor.budget.entity.RowEstimatedExpense;
+import yehor.budget.web.dto.full.EstimatedExpenseFullDto;
+import yehor.budget.web.dto.full.RowEstimatedExpenseFullDto;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -13,13 +13,13 @@ import static common.factory.CategoryFactory.defaultCategory;
 import static common.factory.CategoryFactory.secondCategory;
 
 @UtilityClass
-public class RegularExpectedExpenseFactory {
+public class EstimatedExpenseFactory {
 
-    public static final long DEFAULT_ROW_REGULAR_EXPECTED_EXPENSE_ID = 1L;
+    public static final long DEFAULT_ROW_ESTIMATED_EXPENSE_ID = 1L;
 
-    public static RegularExpectedExpenseFullDto defaultRegularExpectedExpenseFullDto() {
-        return RegularExpectedExpenseFullDto.builder()
-                .rows(List.of(defaultRowRegularExpectedExpenseFullDto(), secondRowRegularExpectedExpenseFullDto()))
+    public static EstimatedExpenseFullDto defaultEstimatedExpenseFullDto() {
+        return EstimatedExpenseFullDto.builder()
+                .rows(List.of(defaultRowEstimatedExpenseFullDto(), secondRowEstimatedExpenseFullDto()))
                 .total1to7(new BigDecimal("51.00"))
                 .total8to14(new BigDecimal("105.00"))
                 .total15to21(new BigDecimal("220.00"))
@@ -28,8 +28,8 @@ public class RegularExpectedExpenseFactory {
                 .build();
     }
 
-    public static RowRegularExpectedExpenseFullDto defaultRowRegularExpectedExpenseFullDto() {
-        return RowRegularExpectedExpenseFullDto.builder()
+    public static RowEstimatedExpenseFullDto defaultRowEstimatedExpenseFullDto() {
+        return RowEstimatedExpenseFullDto.builder()
                 .categoryId(DEFAULT_CATEGORY_ID)
                 .days1to7(new BigDecimal("50.00"))
                 .days8to14(new BigDecimal("100.00"))
@@ -39,8 +39,8 @@ public class RegularExpectedExpenseFactory {
                 .build();
     }
 
-    public static RowRegularExpectedExpenseFullDto secondRowRegularExpectedExpenseFullDto() {
-        return RowRegularExpectedExpenseFullDto.builder()
+    public static RowEstimatedExpenseFullDto secondRowEstimatedExpenseFullDto() {
+        return RowEstimatedExpenseFullDto.builder()
                 .categoryId(2L)
                 .days1to7(BigDecimal.ONE)
                 .days8to14(new BigDecimal("5.00"))
@@ -50,9 +50,9 @@ public class RegularExpectedExpenseFactory {
                 .build();
     }
 
-    public static RowRegularExpectedExpense defaultRowRegularExpectedExpense() {
-        return RowRegularExpectedExpense.builder()
-                .id(DEFAULT_ROW_REGULAR_EXPECTED_EXPENSE_ID)
+    public static RowEstimatedExpense defaultRowEstimatedExpense() {
+        return RowEstimatedExpense.builder()
+                .id(DEFAULT_ROW_ESTIMATED_EXPENSE_ID)
                 .category(defaultCategory())
                 .days1to7(new BigDecimal("50.00"))
                 .days8to14(new BigDecimal("100.00"))
@@ -61,8 +61,8 @@ public class RegularExpectedExpenseFactory {
                 .build();
     }
 
-    public static RowRegularExpectedExpense secondRowRegularExpectedExpense() {
-        return RowRegularExpectedExpense.builder()
+    public static RowEstimatedExpense secondRowEstimatedExpense() {
+        return RowEstimatedExpense.builder()
                 .id(2L)
                 .category(secondCategory())
                 .days1to7(BigDecimal.ONE)
