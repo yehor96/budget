@@ -1,7 +1,6 @@
 package yehor.budget.common.exception;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,9 +16,8 @@ import java.util.Map;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @RestControllerAdvice
+@Slf4j
 public class RestExceptionHandler {
-
-    private static final Logger LOG = LogManager.getLogger(RestExceptionHandler.class);
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<Object> exceptionHandler(Throwable e, HttpServletRequest request) {
@@ -28,7 +26,7 @@ public class RestExceptionHandler {
             Map<String, Object> responseObject = buildResponseError(request, exception.getStatus(), exception.getReason());
             return new ResponseEntity<>(responseObject, exception.getStatus());
         } else {
-            LOG.error("Unknown error occurred", e);
+            log.error("Unknown error occurred", e);
             Map<String, Object> responseObject = buildResponseError(request, INTERNAL_SERVER_ERROR, "Unknown error occurred");
             return new ResponseEntity<>(responseObject, INTERNAL_SERVER_ERROR);
         }
