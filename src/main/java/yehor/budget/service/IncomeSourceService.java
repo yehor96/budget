@@ -1,8 +1,7 @@
 package yehor.budget.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +17,10 @@ import yehor.budget.web.dto.limited.IncomeSourceLimitedDto;
 import java.math.BigDecimal;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class IncomeSourceService {
-
-    private static final Logger LOG = LogManager.getLogger(IncomeSourceService.class);
 
     private final IncomeSourceRepository incomeSourceRepository;
     private final IncomeSourceConverter incomeSourceConverter;
@@ -46,13 +44,13 @@ public class IncomeSourceService {
         IncomeSource incomeSource = incomeSourceConverter.convert(incomeSourceDto);
         validateNotExists(incomeSource);
         incomeSourceRepository.save(incomeSource);
-        LOG.info("{} is saved", incomeSource);
+        log.info("{} is saved", incomeSource);
     }
 
     public void delete(Long id) {
         try {
             incomeSourceRepository.deleteById(id);
-            LOG.info("Income source with id {} is deleted", id);
+            log.info("Income source with id {} is deleted", id);
         } catch (EmptyResultDataAccessException e) {
             throw new ObjectNotFoundException("Income source with id " + id + " not found");
         }
@@ -63,7 +61,7 @@ public class IncomeSourceService {
         validateExists(incomeSourceDto.getId());
         IncomeSource incomeSource = incomeSourceConverter.convert(incomeSourceDto);
         incomeSourceRepository.save(incomeSource);
-        LOG.info("{} is updated", incomeSource);
+        log.info("{} is updated", incomeSource);
     }
 
     private void validateNotExists(IncomeSource incomeSource) {

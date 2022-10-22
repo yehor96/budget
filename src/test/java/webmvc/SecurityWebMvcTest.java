@@ -23,7 +23,7 @@ class SecurityWebMvcTest extends BaseWebMvcTest {
                 CATEGORIES_URL,
                 STATISTICS_URL,
                 EXPENSES_URL,
-                REGULAR_EXPECTED_EXPENSES_URL,
+                ESTIMATED_EXPENSES_URL,
                 INCOME_SOURCES_URL
         );
     }

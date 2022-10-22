@@ -1,8 +1,7 @@
 package yehor.budget.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -17,11 +16,10 @@ import yehor.budget.web.dto.limited.TagLimitedDto;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TagService {
-
-    private static final Logger LOG = LogManager.getLogger(TagService.class);
 
     private final TagRepository tagRepository;
     private final TagConverter tagConverter;
@@ -37,13 +35,13 @@ public class TagService {
         Tag tag = tagConverter.convert(tagDto);
         validateNotExists(tag);
         tagRepository.save(tag);
-        LOG.info("{} is saved", tag);
+        log.info("{} is saved", tag);
     }
 
     public void delete(Long id) {
         try {
             tagRepository.deleteById(id);
-            LOG.info("Tag with id {} is deleted", id);
+            log.info("Tag with id {} is deleted", id);
         } catch (EmptyResultDataAccessException e) {
             throw new ObjectNotFoundException("Tag with id " + id + " not found");
         } catch (DataIntegrityViolationException e) {
@@ -56,7 +54,7 @@ public class TagService {
         validateExists(tagDto.getId());
         Tag tag = tagConverter.convert(tagDto);
         tagRepository.save(tag);
-        LOG.info("{} is updated", tag);
+        log.info("{} is updated", tag);
     }
 
     private void validateNotExists(Tag tag) {

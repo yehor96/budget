@@ -20,4 +20,8 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT e FROM Expense e WHERE e.date BETWEEN :dateFrom AND :dateTo")
     List<Expense> findAllInInterval(@Param("dateFrom") LocalDate dateFrom,
                                     @Param("dateTo") LocalDate dateTo);
+
+    @Query("SELECT e FROM Expense e WHERE e.date BETWEEN :dateFrom AND :dateTo AND e.isRegular = true")
+    List<Expense> findAllRegularInInterval(@Param("dateFrom") LocalDate dateFrom,
+                                           @Param("dateTo") LocalDate dateTo);
 }
