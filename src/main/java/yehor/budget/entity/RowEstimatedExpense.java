@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,20 +22,19 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
-@Table(name = "row_regular_expected_expenses")
-public class RowRegularExpectedExpense {
+@Table(name = "row_estimated_expenses")
+public class RowEstimatedExpense {
 
     @Id
     @SequenceGenerator(
-            name = "row_regular_expected_expenses_sequence",
-            sequenceName = "row_regular_expected_expenses_row_regular_expected_expenses_id_seq",
+            name = "row_estimated_expenses_sequence",
+            sequenceName = "row_estimated_expenses_row_estimated_expense_id_seq",
             allocationSize = 1)
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "row_regular_expected_expenses_sequence")
-    @Column(name = "row_regular_expected_expenses_id")
+            generator = "row_estimated_expenses_sequence")
+    @Column(name = "row_estimated_expense_id")
     private Long id;
 
     @OneToOne
@@ -54,4 +52,16 @@ public class RowRegularExpectedExpense {
 
     @Column(name = "days_22_to_31")
     private BigDecimal days22to31;
+
+    @Override
+    public String toString() {
+        return "RowEstimatedExpense{" +
+                "id=" + id +
+                ", category=" + category.getId() +
+                ", days1to7=" + days1to7 +
+                ", days8to14=" + days8to14 +
+                ", days15to21=" + days15to21 +
+                ", days22to31=" + days22to31 +
+                '}';
+    }
 }

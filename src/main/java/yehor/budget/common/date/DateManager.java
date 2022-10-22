@@ -1,8 +1,7 @@
 package yehor.budget.common.date;
 
 import lombok.Getter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import yehor.budget.common.SettingsListener;
 import yehor.budget.common.SettingsNotificationManager;
 import yehor.budget.entity.Settings;
@@ -12,9 +11,8 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class DateManager implements SettingsListener {
-
-    private static final Logger LOG = LogManager.getLogger(DateManager.class);
 
     private Boolean isBudgetDateValidation;
     @Getter
@@ -31,11 +29,11 @@ public class DateManager implements SettingsListener {
     public void updateBudgetDatesIfNecessary(LocalDate date) {
         boolean shouldUpdateDb = false;
         if (date.isAfter(endDate)) {
-            LOG.info("End date is changed from {} to {}", endDate, date);
+            log.info("End date is changed from {} to {}", endDate, date);
             endDate = date;
             shouldUpdateDb = true;
         } else if (date.isBefore(startDate)) {
-            LOG.info("Start date is changed from {} to {}", startDate, date);
+            log.info("Start date is changed from {} to {}", startDate, date);
             startDate = date;
             shouldUpdateDb = true;
         }

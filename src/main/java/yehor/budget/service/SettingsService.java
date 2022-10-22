@@ -1,8 +1,7 @@
 package yehor.budget.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.Transactional;
 import yehor.budget.common.SettingsListener;
@@ -17,10 +16,10 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Slf4j
 @RequiredArgsConstructor
 public class SettingsService implements SettingsListener {
 
-    private static final Logger LOG = LogManager.getLogger(SettingsService.class);
     private static final Long SETTINGS_ID = 1L;
 
     private final Environment environment;
@@ -52,7 +51,7 @@ public class SettingsService implements SettingsListener {
     public void updateSettings(Settings newSettings) {
         Settings existingSettings = settingsRepository.getById(SETTINGS_ID);
         Settings settings = mergeSettings(newSettings, existingSettings);
-        LOG.info("Updating settings: {}", settings);
+        log.info("Updating settings: {}", settings);
         SettingsNotificationManager.updateListeners(this.getClass(), settings);
         settingsRepository.save(settings);
     }
@@ -61,7 +60,7 @@ public class SettingsService implements SettingsListener {
     private void initialization() {
         if (!settingsRepository.existsById(SETTINGS_ID)) {
             Settings defaultSettings = defaultSettings();
-            LOG.info("Initializing default settings: {}", defaultSettings);
+            log.info("Initializing default settings: {}", defaultSettings);
             settingsRepository.save(defaultSettings);
         }
     }

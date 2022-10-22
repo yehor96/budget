@@ -42,8 +42,8 @@ class RestExceptionHandlerTest {
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
         assertNotNull(actualBody);
-        LocalDateTime expectedTimeStamp = ((LocalDateTime) expectedBody.get("timestamp")).truncatedTo(ChronoUnit.SECONDS);
-        LocalDateTime actualTimeStamp = ((LocalDateTime) actualBody.get("timestamp")).truncatedTo(ChronoUnit.SECONDS);
+        LocalDateTime expectedTimeStamp = ((LocalDateTime) expectedBody.get("timestamp")).truncatedTo(ChronoUnit.MINUTES);
+        LocalDateTime actualTimeStamp = ((LocalDateTime) actualBody.get("timestamp")).truncatedTo(ChronoUnit.MINUTES);
         assertEquals(expectedTimeStamp, actualTimeStamp);
         assertEquals(expectedBody.get("status"), actualBody.get("status"));
         assertEquals(expectedBody.get("error"), actualBody.get("error"));
@@ -72,8 +72,8 @@ class RestExceptionHandlerTest {
 
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
         assertNotNull(actualBody);
-        LocalDateTime expectedTimeStamp = ((LocalDateTime) expectedBody.get("timestamp")).truncatedTo(ChronoUnit.SECONDS);
-        LocalDateTime actualTimeStamp = ((LocalDateTime) actualBody.get("timestamp")).truncatedTo(ChronoUnit.SECONDS);
+        LocalDateTime expectedTimeStamp = ((LocalDateTime) expectedBody.get("timestamp")).truncatedTo(ChronoUnit.MINUTES);
+        LocalDateTime actualTimeStamp = ((LocalDateTime) actualBody.get("timestamp")).truncatedTo(ChronoUnit.MINUTES);
         assertEquals(expectedTimeStamp, actualTimeStamp);
         assertEquals(expectedBody.get("status"), actualBody.get("status"));
         assertEquals(expectedBody.get("error"), actualBody.get("error"));

@@ -1,8 +1,7 @@
 package yehor.budget.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import yehor.budget.common.date.DateManager;
@@ -21,11 +20,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ExpenseService {
-
-    private static final Logger LOG = LogManager.getLogger(ExpenseService.class);
 
     private final ExpenseConverter expenseConverter;
     private final ExpenseRepository expenseRepository;
@@ -50,7 +48,7 @@ public class ExpenseService {
 
         Expense expense = expenseConverter.convert(expenseDto);
         expenseRepository.save(expense);
-        LOG.info("{} is saved", expense);
+        log.info("{} is saved", expense);
         dateManager.updateBudgetDatesIfNecessary(expense.getDate());
     }
 
@@ -67,14 +65,14 @@ public class ExpenseService {
 
         Expense expense = expenseConverter.convert(expenseDto);
         expenseRepository.save(expense);
-        LOG.info("{} is updated", expense);
+        log.info("{} is updated", expense);
         dateManager.updateBudgetDatesIfNecessary(expense.getDate());
     }
 
     public void deleteById(Long id) {
         validateExists(id);
         expenseRepository.deleteById(id);
-        LOG.info("Expense with id {} is deleted", id);
+        log.info("Expense with id {} is deleted", id);
     }
 
     private void validateExists(Long id) {

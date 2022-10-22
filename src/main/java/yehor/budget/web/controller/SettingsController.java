@@ -3,8 +3,7 @@ package yehor.budget.web.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,13 +18,12 @@ import yehor.budget.web.dto.limited.SettingsLimitedDto;
 
 import javax.persistence.EntityNotFoundException;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/settings")
 @RequiredArgsConstructor
 @Tag(name = "Settings Controller")
 public class SettingsController {
-
-    private static final Logger LOG = LogManager.getLogger(SettingsController.class);
 
     private final SettingsService settingsService;
 
@@ -36,7 +34,7 @@ public class SettingsController {
             SettingsFullDto settingsDto = settingsService.getSettings();
             return new ResponseEntity<>(settingsDto, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
-            LOG.error("Error getting settings. {}", e.getMessage());
+            log.error("Error getting settings. {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
