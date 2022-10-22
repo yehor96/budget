@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class CalculatorHelperTest {
 
@@ -42,6 +43,24 @@ class CalculatorHelperTest {
     void testAverageEmptyList() {
         BigDecimal result = calculatorHelper.average(Collections.emptyList());
         assertEquals(BigDecimal.ZERO, result);
+    }
+
+    @Test
+    void testAverageWithDivider() {
+        BigDecimal result = calculatorHelper.divide(BigDecimal.valueOf(50), BigDecimal.valueOf(10));
+        assertEquals(BigDecimal.valueOf(5), result);
+    }
+
+    @Test
+    void testAverageWithDividerZero() {
+        try {
+            calculatorHelper.divide(BigDecimal.valueOf(50), BigDecimal.ZERO);
+            fail("Exception not thrown");
+        } catch (Exception e) {
+            assertEquals(ArithmeticException.class, e.getClass());
+            ArithmeticException exception = (ArithmeticException) e;
+            assertEquals("/ by zero", exception.getMessage());
+        }
     }
 
 }

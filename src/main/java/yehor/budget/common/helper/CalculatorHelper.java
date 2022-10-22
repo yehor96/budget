@@ -19,8 +19,8 @@ public class CalculatorHelper {
         return sum.divide(new BigDecimal(bigDecimals.size()), ROUNDING_MODE);
     }
 
-    public BigDecimal average(BigDecimal value, BigDecimal divider) {
-        if (BigDecimal.ZERO.equals(divider) || BigDecimal.ZERO.equals(value)) {
+    public BigDecimal divide(BigDecimal value, BigDecimal divider) {
+        if (BigDecimal.ZERO.equals(value)) {
             return BigDecimal.ZERO;
         }
         return value.divide(divider, ROUNDING_MODE);

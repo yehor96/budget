@@ -1,11 +1,11 @@
-package yehor.budget.service.handler;
+package yehor.budget.service.worker;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import yehor.budget.common.date.FullMonth;
 import yehor.budget.common.helper.CalculatorHelper;
 import yehor.budget.entity.Expense;
 import yehor.budget.entity.RowEstimatedExpense;
@@ -29,9 +29,8 @@ import static java.util.stream.Collectors.reducing;
 
 @RequiredArgsConstructor
 @Component
-public class EstimatedExpenseCalculationHandler {
-
-    private static final Logger LOG = LogManager.getLogger(EstimatedExpenseCalculationHandler.class);
+@Slf4j
+public class EstimatedExpenseWorker {
 
     private final ExpenseRepository expenseRepository;
     private final CategoryRepository categoryRepository;
@@ -41,22 +40,23 @@ public class EstimatedExpenseCalculationHandler {
     @PostConstruct
     public void init() {
         new ScheduledThreadPoolExecutor(1).scheduleAtFixedRate(
-                new EstimatedExpenseCalculationTask(),
+                new EstimatedExpenseTask(),
                 1,
                 1,
                 TimeUnit.MINUTES);
     }
 
-    @RequiredArgsConstructor
-    private class EstimatedExpenseCalculationTask implements Runnable {
-
+    public class EstimatedExpenseTask implements Runnable {
         @Override
         @Transactional
         public void run() {
-            LOG.info("Calculation of estimated expenses started");
+            log.info("Calculation of estimated expenses started");
             try {
-                List<Expense> expenses = expenseRepository.findAllInInterval(LocalDate.now().minusYears(1), LocalDate.now());
-                long numOfMonthsUnderCalculation = expenses.stream().map(e -> e.getDate().getMonth()).distinct().count();
+                List<Expense> expenses = expenseRepository.findAllRegularInInterval(
+                        LocalDate.now().minusYears(1), LocalDate.now());
+                long numOfMonthsUnderCalculation = expenses.stream()
+                        .map(e -> FullMonth.of(e.getDate()))
+                        .distinct().count();
                 Map<Long, List<Expense>> categoryIdToExpenseMap = expenses.stream().collect(
                         groupingBy(expense -> expense.getCategory().getId()));
 
@@ -70,12 +70,12 @@ public class EstimatedExpenseCalculationHandler {
 
                     setAvgValues(daysBucketListMap, numOfMonthsUnderCalculation);
                     RowEstimatedExpense rowEstimatedExpense = getRowOfEstimatedExpenses(categoryId, daysBucketListMap);
-                    saveRowToDatabase(categoryId, rowEstimatedExpense);
+                    saveRowToDatabase(rowEstimatedExpense);
                 }
             } catch (Exception e) {
-                LOG.error("Exception is thrown during calculation of estimated expenses.", e);
+                log.error("Exception is thrown during calculation of estimated expenses.", e);
             }
-            LOG.info("Calculation of estimated expenses finished");
+            log.info("Calculation of estimated expenses finished");
         }
     }
 
@@ -83,7 +83,7 @@ public class EstimatedExpenseCalculationHandler {
         BigDecimal dividerDecimal = new BigDecimal(divider);
         for (DaysBucket period : DaysBucket.values()) {
             BigDecimal existingValue = daysBucketListMap.getOrDefault(period, ZERO);
-            daysBucketListMap.replace(period, calculatorHelper.average(existingValue, dividerDecimal));
+            daysBucketListMap.replace(period, calculatorHelper.divide(existingValue, dividerDecimal));
         }
     }
 
@@ -97,9 +97,9 @@ public class EstimatedExpenseCalculationHandler {
                 .build();
     }
 
-    private void saveRowToDatabase(Long categoryId, RowEstimatedExpense row) {
-        LOG.info("Saving row for estimated expenses: {}", row);
-        if (rowEstimatedExpenseRepository.existsByCategoryId(categoryId)) {
+    private void saveRowToDatabase(RowEstimatedExpense row) {
+        log.info("Saving row for estimated expenses: {}", row);
+        if (rowEstimatedExpenseRepository.existsByCategoryId(row.getCategory().getId())) {
             rowEstimatedExpenseRepository.updateByCategoryId(row);
         } else {
             rowEstimatedExpenseRepository.save(row);
