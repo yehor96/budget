@@ -88,11 +88,15 @@ public class EstimatedExpenseWorker {
     }
 
     private RowEstimatedExpense getRowOfEstimatedExpenses(Long categoryId, Map<DaysBucket, BigDecimal> daysToSum) {
+        BigDecimal days1to7 = daysToSum.get(DaysBucket.DAYS_1_TO_7);
+        BigDecimal days8to14 = daysToSum.get(DaysBucket.DAYS_8_TO_14);
+        BigDecimal days15to21 = daysToSum.get(DaysBucket.DAYS_15_TO_21);
+        BigDecimal days22to31 = daysToSum.get(DaysBucket.DAYS_22_TO_31);
         return RowEstimatedExpense.builder()
-                .days1to7(Optional.ofNullable(daysToSum.get(DaysBucket.DAYS_1_TO_7)).orElse(ZERO))
-                .days8to14(Optional.ofNullable(daysToSum.get(DaysBucket.DAYS_8_TO_14)).orElse(ZERO))
-                .days15to21(Optional.ofNullable(daysToSum.get(DaysBucket.DAYS_15_TO_21)).orElse(ZERO))
-                .days22to31(Optional.ofNullable(daysToSum.get(DaysBucket.DAYS_22_TO_31)).orElse(ZERO))
+                .days1to7(Optional.ofNullable(days1to7).orElse(ZERO))
+                .days8to14(Optional.ofNullable(days8to14).orElse(ZERO))
+                .days15to21(Optional.ofNullable(days15to21).orElse(ZERO))
+                .days22to31(Optional.ofNullable(days22to31).orElse(ZERO))
                 .category(categoryRepository.getById(categoryId))
                 .build();
     }
