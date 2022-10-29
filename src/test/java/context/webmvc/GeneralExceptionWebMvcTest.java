@@ -1,4 +1,4 @@
-package webmvc;
+package context.webmvc;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;

@@ -1,4 +1,4 @@
-package webmvc;
+package context.webmvc;
 
 import com.fasterxml.jackson.databind.ObjectReader;
 import org.junit.jupiter.api.Test;

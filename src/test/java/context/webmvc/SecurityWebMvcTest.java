@@ -1,4 +1,4 @@
-package webmvc;
+package context.webmvc;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
