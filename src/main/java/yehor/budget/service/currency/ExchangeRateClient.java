@@ -29,13 +29,12 @@ public class ExchangeRateClient implements CurrencyRateClient {
             int status = httpResponse.getStatus();
             if (status != 200) {
                 String statusText = httpResponse.getStatusText();
-                log.error("Failed response to get currency rates. {} status with msg: {}", status, statusText);
-                throw new UnirestException("Failed response to get currency rates");
+                throw new UnirestException(
+                        String.format("Failed to get currency rates. %d status with msg: %s", status, statusText));
             }
-            JSONObject jsonObject = new JSONObject(httpResponse.getBody());
-            BigDecimal rate = jsonObject.getJSONObject("object").getJSONObject("info").getBigDecimal("rate");
+            double rate = httpResponse.getBody().getObject().getJSONObject("info").getDouble("rate");
             log.info("Received currency rates {}:{} {}", fromCurrency, toCurrency, rate);
-            return rate;
+            return BigDecimal.valueOf(rate);
         } catch (Exception e) {
             log.error("Not able to perform a request to " + baseUrl, e);
             throw new InternalClientException("Not able to perform a request to " + baseUrl, e);

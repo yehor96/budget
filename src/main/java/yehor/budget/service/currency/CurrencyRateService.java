@@ -18,7 +18,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 @Slf4j
 public class CurrencyRateService {
 
-    private final CurrencyRateClient ratesClient;
+    private final CurrencyRateClient currencyRateClient;
 
     private final Map<String, BigDecimal> cachedRates = new ConcurrentHashMap<>();
 
@@ -26,7 +26,7 @@ public class CurrencyRateService {
         String currencyPair = fromCurrency + ":" + toCurrency;
         BigDecimal rate = cachedRates.get(currencyPair);
         if (Objects.isNull(rate)) {
-            rate = ratesClient.rate(fromCurrency, toCurrency);
+            rate = currencyRateClient.rate(fromCurrency, toCurrency);
             cachedRates.put(currencyPair, rate);
         }
         return value.multiply(rate);
@@ -36,7 +36,7 @@ public class CurrencyRateService {
     private void cacheEvictionScheduler() {
         new ScheduledThreadPoolExecutor(1)
                 .scheduleAtFixedRate(() -> {
-                    log.info("Evicting rates cache");
+                    log.info("Evicting cached rates");
                     cachedRates.clear();
                 }, 60, 60, MINUTES);
     }
