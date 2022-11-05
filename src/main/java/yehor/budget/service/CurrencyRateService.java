@@ -1,8 +1,11 @@
-package yehor.budget.service.currency;
+package yehor.budget.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import yehor.budget.common.Currency;
+import yehor.budget.common.util.CurrencyUtil;
+import yehor.budget.service.client.currency.CurrencyRateClient;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
@@ -22,8 +25,8 @@ public class CurrencyRateService {
 
     private final Map<String, BigDecimal> cachedRates = new ConcurrentHashMap<>();
 
-    public BigDecimal getRate(Currency fromCurrency, Currency toCurrency, BigDecimal value) {
-        String currencyPair = fromCurrency + ":" + toCurrency;
+    public BigDecimal convert(Currency fromCurrency, Currency toCurrency, BigDecimal value) {
+        String currencyPair = CurrencyUtil.currencyPair(fromCurrency, toCurrency);
         BigDecimal rate = cachedRates.get(currencyPair);
         if (Objects.isNull(rate)) {
             rate = currencyRateClient.rate(fromCurrency, toCurrency);

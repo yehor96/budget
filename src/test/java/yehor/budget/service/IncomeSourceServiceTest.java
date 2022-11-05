@@ -2,6 +2,8 @@ package yehor.budget.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.util.ReflectionTestUtils;
+import yehor.budget.common.Currency;
 import yehor.budget.common.exception.ObjectAlreadyExistsException;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.entity.IncomeSource;
@@ -15,10 +17,14 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
+import static common.factory.IncomeSourceFactory.DEFAULT_BASE_CURRENCY;
 import static common.factory.IncomeSourceFactory.defaultIncomeSource;
 import static common.factory.IncomeSourceFactory.defaultIncomeSourceFullDto;
 import static common.factory.IncomeSourceFactory.defaultIncomeSourceLimitedDto;
 import static common.factory.IncomeSourceFactory.defaultTotalIncomeDto;
+import static common.factory.IncomeSourceFactory.notBaseCurrencyIncomeSource;
+import static common.factory.IncomeSourceFactory.notBaseCurrencyIncomeSourceFullDto;
+import static common.factory.IncomeSourceFactory.totalIncomeWithNotBaseCurrencyDto;
 import static common.factory.IncomeSourceFactory.secondIncomeSource;
 import static common.factory.IncomeSourceFactory.secondIncomeSourceFullDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,12 +40,14 @@ class IncomeSourceServiceTest {
 
     private final IncomeSourceRepository incomeSourceRepositoryMock = mock(IncomeSourceRepository.class);
     private final IncomeSourceConverter incomeSourceConverterMock = mock(IncomeSourceConverter.class);
+    private final CurrencyRateService currencyRateServiceMock = mock(CurrencyRateService.class);
 
     private final IncomeSourceService incomeSourceService =
-            new IncomeSourceService(incomeSourceRepositoryMock, incomeSourceConverterMock);
+            new IncomeSourceService(incomeSourceRepositoryMock, incomeSourceConverterMock, currencyRateServiceMock);
 
     @Test
     void testGetTotalIncome() {
+        setBaseCurrency(DEFAULT_BASE_CURRENCY);
         TotalIncomeDto expectedTotalIncomeDto = defaultTotalIncomeDto();
         IncomeSourceFullDto expectedIncomeSourceDto1 = defaultIncomeSourceFullDto();
         IncomeSourceFullDto expectedIncomeSourceDto2 = secondIncomeSourceFullDto();
@@ -56,10 +64,32 @@ class IncomeSourceServiceTest {
     }
 
     @Test
+    void testGetTotalIncomeWithNotBaseCurrency() {
+        setBaseCurrency(DEFAULT_BASE_CURRENCY);
+        TotalIncomeDto expectedTotalIncomeDto = totalIncomeWithNotBaseCurrencyDto();
+        IncomeSourceFullDto expectedIncomeSourceDto1 = defaultIncomeSourceFullDto();
+        IncomeSourceFullDto expectedIncomeSourceDto2 = notBaseCurrencyIncomeSourceFullDto();
+        IncomeSource expectedIncomeSource1 = defaultIncomeSource();
+        IncomeSource expectedIncomeSource2 = notBaseCurrencyIncomeSource();
+
+        when(incomeSourceRepositoryMock.findAll()).thenReturn(List.of(expectedIncomeSource1, expectedIncomeSource2));
+        when(incomeSourceConverterMock.convert(expectedIncomeSource1)).thenReturn(expectedIncomeSourceDto1);
+        when(incomeSourceConverterMock.convert(expectedIncomeSource2)).thenReturn(expectedIncomeSourceDto2);
+        when(currencyRateServiceMock.convert(Currency.UAH, DEFAULT_BASE_CURRENCY, new BigDecimal("20.00")))
+                .thenReturn(new BigDecimal("2.50"));
+
+        TotalIncomeDto totalIncome = incomeSourceService.getTotalIncome();
+
+        assertEquals(expectedTotalIncomeDto, totalIncome);
+    }
+
+    @Test
     void testGetEmptyTotalIncome() {
+        setBaseCurrency(DEFAULT_BASE_CURRENCY);
         TotalIncomeDto expectedTotalIncomeDto = TotalIncomeDto.builder()
                 .incomeSources(Collections.emptyList())
-                .totalIncome(BigDecimal.ZERO)
+                .total(BigDecimal.ZERO)
+                .totalCurrency(DEFAULT_BASE_CURRENCY)
                 .build();
 
         when(incomeSourceRepositoryMock.findAll()).thenReturn(Collections.emptyList());
@@ -157,5 +187,9 @@ class IncomeSourceServiceTest {
             verify(incomeSourceRepositoryMock, never())
                     .save(expectedIncomeSource);
         }
+    }
+
+    private void setBaseCurrency(Currency currency) {
+        ReflectionTestUtils.setField(incomeSourceService, "baseCurrency", currency, Currency.class);
     }
 }

@@ -1,14 +1,14 @@
-package yehor.budget.service.currency;
+package yehor.budget.service.client.currency;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import yehor.budget.common.exception.InternalClientException;
+import yehor.budget.common.Currency;
 
 import java.math.BigDecimal;
 

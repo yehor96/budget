@@ -1,6 +1,9 @@
 package yehor.budget.service.currency;
 
 import org.junit.jupiter.api.Test;
+import yehor.budget.common.Currency;
+import yehor.budget.service.CurrencyRateService;
+import yehor.budget.service.client.currency.CurrencyRateClient;
 
 import java.math.BigDecimal;
 
@@ -25,8 +28,8 @@ class CurrencyRateServiceTest {
 
         when(currencyRateClient.rate(from, to)).thenReturn(BigDecimal.TEN);
 
-        BigDecimal actualResult1 = currencyRateService.getRate(from, to, value);
-        BigDecimal actualResult2 = currencyRateService.getRate(from, to, value);
+        BigDecimal actualResult1 = currencyRateService.convert(from, to, value);
+        BigDecimal actualResult2 = currencyRateService.convert(from, to, value);
 
         assertEquals(expectedResult, actualResult1);
         assertEquals(expectedResult, actualResult2);

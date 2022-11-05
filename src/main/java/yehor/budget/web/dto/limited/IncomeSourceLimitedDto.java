@@ -2,6 +2,7 @@ package yehor.budget.web.dto.limited;
 
 import lombok.Builder;
 import lombok.Data;
+import yehor.budget.common.Currency;
 
 import java.math.BigDecimal;
 
@@ -10,4 +11,5 @@ import java.math.BigDecimal;
 public class IncomeSourceLimitedDto {
     private String name;
     private BigDecimal value;
+    private Currency currency;
 }

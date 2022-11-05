@@ -79,7 +79,9 @@ CREATE TABLE income_sources (
                             income_source_id SERIAL NOT NULL,
                             name VARCHAR(50) NOT NULL,
                             value NUMERIC(11,2) NOT NULL,
+                            currency VARCHAR(3) NOT NULL,
 
                             CONSTRAINT income_sources_pk PRIMARY KEY (income_source_id),
-                            CONSTRAINT income_sources_name_uq UNIQUE (name)
+                            CONSTRAINT income_sources_name_uq UNIQUE (name),
+                            CONSTRAINT income_sources_currency_check CHECK (currency IN ('UAH', 'USD'))
                             );

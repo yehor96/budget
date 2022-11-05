@@ -30,9 +30,11 @@ class EstimatedExpenseServiceTest {
     private final EstimatedExpenseConverter estimatedExpenseConverterMock =
             mock(EstimatedExpenseConverter.class);
     private final CalculatorHelper calculatorHelperMock = mock(CalculatorHelper.class);
+    private final CurrencyRateService currencyRateServiceMock = mock(CurrencyRateService.class);
 
     private final EstimatedExpenseService estimatedExpenseService = new EstimatedExpenseService(
-            rowEstimatedExpenseRepositoryMock, estimatedExpenseConverterMock, calculatorHelperMock);
+            rowEstimatedExpenseRepositoryMock, estimatedExpenseConverterMock,
+            calculatorHelperMock, currencyRateServiceMock);
 
     @Test
     void testGetOne() {
@@ -51,6 +53,8 @@ class EstimatedExpenseServiceTest {
                 .thenReturn(new BigDecimal("40.00"));
         when(calculatorHelperMock.sum(ArgumentMatchers.<BigDecimal>any())) // matching vararg scenario
                 .thenReturn(new BigDecimal("416.00"));
+        when(currencyRateServiceMock.convert(any(), any(), any()))
+                .thenReturn(new BigDecimal("11.25"));
 
         EstimatedExpenseFullDto actualFullDto = estimatedExpenseService.getOne();
 
@@ -66,6 +70,7 @@ class EstimatedExpenseServiceTest {
                 .total15to21(BigDecimal.ZERO)
                 .total22to31(BigDecimal.ZERO)
                 .total(BigDecimal.ZERO)
+                .totalUsd(BigDecimal.ZERO)
                 .build();
 
         when(rowEstimatedExpenseRepositoryMock.findAll())
@@ -77,6 +82,8 @@ class EstimatedExpenseServiceTest {
         when(calculatorHelperMock.sum(anyList()))
                 .thenReturn(BigDecimal.ZERO);
         when(calculatorHelperMock.sum(ArgumentMatchers.<BigDecimal>any())) // matching vararg scenario
+                .thenReturn(BigDecimal.ZERO);
+        when(currencyRateServiceMock.convert(any(), any(), any()))
                 .thenReturn(BigDecimal.ZERO);
 
         EstimatedExpenseFullDto actualFullDto = estimatedExpenseService.getOne();
