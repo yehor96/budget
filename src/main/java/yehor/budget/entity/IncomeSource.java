@@ -5,9 +5,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import yehor.budget.common.Currency;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,6 +24,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 @Entity
 @Table(name = "income_sources")
 public class IncomeSource {
@@ -35,4 +40,8 @@ public class IncomeSource {
 
     @Column(name = "value")
     private BigDecimal value;
+
+    @Column(name = "currency")
+    @Enumerated(EnumType.STRING)
+    private Currency currency;
 }

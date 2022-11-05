@@ -12,6 +12,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.function.Function;
 
+import static yehor.budget.common.Currency.UAH;
+import static yehor.budget.common.Currency.USD;
+
 @Service
 @RequiredArgsConstructor
 public class EstimatedExpenseService {
@@ -19,6 +22,7 @@ public class EstimatedExpenseService {
     private final RowEstimatedExpenseRepository rowEstimatedExpenseRepository;
     private final EstimatedExpenseConverter estimatedExpenseConverter;
     private final CalculatorHelper calculatorHelper;
+    private final CurrencyRateService currencyRateService;
 
     public EstimatedExpenseFullDto getOne() {
         EstimatedExpenseFullDto fullDto = new EstimatedExpenseFullDto();
@@ -39,6 +43,7 @@ public class EstimatedExpenseService {
                 fullDto.getTotal15to21(),
                 fullDto.getTotal22to31());
         fullDto.setTotal(total);
+        fullDto.setTotalUsd(currencyRateService.convert(UAH, USD, total));
 
         return fullDto;
     }

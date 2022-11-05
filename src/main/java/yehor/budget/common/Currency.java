@@ -1,4 +1,4 @@
-package yehor.budget.service.currency;
+package yehor.budget.common;
 
 public enum Currency {
     USD,

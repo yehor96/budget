@@ -12,6 +12,7 @@ public class IncomeSourceConverter {
                 .id(incomeSource.getId())
                 .name(incomeSource.getName())
                 .value(incomeSource.getValue())
+                .currency(incomeSource.getCurrency())
                 .build();
     }
 
@@ -19,6 +20,7 @@ public class IncomeSourceConverter {
         return IncomeSource.builder()
                 .name(incomeSourceDto.getName())
                 .value(incomeSourceDto.getValue())
+                .currency(incomeSourceDto.getCurrency())
                 .build();
     }
 
@@ -27,6 +29,7 @@ public class IncomeSourceConverter {
                 .id(incomeSourceDto.getId())
                 .name(incomeSourceDto.getName())
                 .value(incomeSourceDto.getValue())
+                .currency(incomeSourceDto.getCurrency())
                 .build();
     }
 }

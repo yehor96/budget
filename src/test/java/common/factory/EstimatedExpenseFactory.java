@@ -25,6 +25,7 @@ public class EstimatedExpenseFactory {
                 .total15to21(new BigDecimal("220.00"))
                 .total22to31(new BigDecimal("40.00"))
                 .total(new BigDecimal("416.00"))
+                .totalUsd(new BigDecimal("11.25"))
                 .build();
     }
 

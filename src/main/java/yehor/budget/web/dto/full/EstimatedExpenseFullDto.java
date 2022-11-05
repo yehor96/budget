@@ -19,4 +19,5 @@ public class EstimatedExpenseFullDto {
     private BigDecimal total15to21;
     private BigDecimal total22to31;
     private BigDecimal total;
+    private BigDecimal totalUsd;
 }

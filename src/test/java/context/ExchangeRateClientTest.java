@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import yehor.budget.BudgetApplication;
 import yehor.budget.common.exception.InternalClientException;
-import yehor.budget.service.currency.Currency;
-import yehor.budget.service.currency.ExchangeRateClient;
+import yehor.budget.common.Currency;
+import yehor.budget.service.client.currency.ExchangeRateClient;
 
 import java.math.BigDecimal;
 
@@ -21,8 +21,8 @@ import static org.mockserver.model.HttpResponse.response;
 import static org.mockserver.model.HttpStatusCode.INTERNAL_SERVER_ERROR_500;
 import static org.mockserver.model.HttpStatusCode.OK_200;
 import static org.mockserver.model.MediaType.APPLICATION_JSON;
-import static yehor.budget.service.currency.Currency.UAH;
-import static yehor.budget.service.currency.Currency.USD;
+import static yehor.budget.common.Currency.UAH;
+import static yehor.budget.common.Currency.USD;
 
 @SpringBootTest(classes = BudgetApplication.class)
 @MockServerTest({"api.exchangerate.host.url=http://localhost:${mockServerPort}"})
