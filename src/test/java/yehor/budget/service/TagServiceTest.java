@@ -11,7 +11,6 @@ import yehor.budget.web.dto.full.TagFullDto;
 import yehor.budget.web.dto.limited.TagLimitedDto;
 
 import java.util.List;
-import java.util.Optional;
 
 import static common.factory.TagFactory.defaultTag;
 import static common.factory.TagFactory.defaultTagFullDto;

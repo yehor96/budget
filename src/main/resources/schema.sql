@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS settings;
 DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS income_sources;
+DROP TABLE IF EXISTS actors;
 
 CREATE TABLE categories (
                        category_id BIGSERIAL NOT NULL,
@@ -76,7 +77,7 @@ CREATE TABLE users      (
                         );
 
 CREATE TABLE income_sources (
-                            income_source_id SERIAL NOT NULL,
+                            income_source_id BIGSERIAL NOT NULL,
                             name VARCHAR(50) NOT NULL,
                             value NUMERIC(11,2) NOT NULL,
                             currency VARCHAR(3) NOT NULL,
@@ -85,3 +86,11 @@ CREATE TABLE income_sources (
                             CONSTRAINT income_sources_name_uq UNIQUE (name),
                             CONSTRAINT income_sources_currency_check CHECK (currency IN ('UAH', 'USD'))
                             );
+
+CREATE TABLE actors (
+                    actor_id BIGSERIAL NOT NULL,
+                    name VARCHAR(50) NOT NULL,
+
+                    CONSTRAINT actors_pk PRIMARY KEY (actor_id),
+                    CONSTRAINT actors_name_uq UNIQUE (name)
+                    );
