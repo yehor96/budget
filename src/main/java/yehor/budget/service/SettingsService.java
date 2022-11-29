@@ -15,6 +15,7 @@ import yehor.budget.web.dto.limited.SettingsLimitedDto;
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -66,13 +67,16 @@ public class SettingsService implements SettingsListener {
     }
 
     private Settings defaultSettings() {
-        Boolean budgetDateValidation = Boolean.TRUE.equals(
-                environment.getProperty("budget.date.validation", Boolean.class));
+        Boolean budgetDateValidation = Boolean.TRUE.equals(environment.getProperty(
+                "settings.budget.date.validation", Boolean.class));
+        Integer startDateStepBack = Optional.ofNullable(environment.getProperty(
+                "settings.budget.start.date.step.back.days", Integer.class))
+                .orElseThrow(() -> new IllegalStateException("Property for budget start date is not provided"));
 
         return Settings.builder()
                 .id(SETTINGS_ID)
                 .isBudgetDateValidation(budgetDateValidation)
-                .budgetStartDate(LocalDate.now().minusDays(30))
+                .budgetStartDate(LocalDate.now().minusDays(startDateStepBack))
                 .budgetEndDate(LocalDate.now())
                 .build();
     }
