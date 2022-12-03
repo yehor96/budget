@@ -13,12 +13,18 @@ public class SettingsConverter {
                 .isBudgetDateValidation(settings.getIsBudgetDateValidation())
                 .budgetStartDate(settings.getBudgetStartDate())
                 .budgetEndDate(settings.getBudgetEndDate())
+                .estimatedExpenseWorkerInitDelay(settings.getEstimatedExpenseWorkerInitDelay())
+                .estimatedExpenseWorkerPeriod(settings.getEstimatedExpenseWorkerPeriod())
+                .estimatedExpenseWorkerEndDateScopePattern(settings.getEstimatedExpenseWorkerEndDateScopePattern())
                 .build();
     }
 
     public Settings convert(SettingsLimitedDto settingsLimitedDto) {
         return Settings.builder()
                 .isBudgetDateValidation(settingsLimitedDto.getIsBudgetDateValidation())
+                .estimatedExpenseWorkerInitDelay(settingsLimitedDto.getEstimatedExpenseWorkerInitDelay())
+                .estimatedExpenseWorkerPeriod(settingsLimitedDto.getEstimatedExpenseWorkerPeriod())
+                .estimatedExpenseWorkerEndDateScopePattern(settingsLimitedDto.getEstimatedExpenseWorkerEndDateScopePattern())
                 .build();
     }
 }

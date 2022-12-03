@@ -67,17 +67,27 @@ public class SettingsService implements SettingsListener {
     }
 
     private Settings defaultSettings() {
+        // todo: create special util class for getting properties, because this is a mess
         Boolean budgetDateValidation = Boolean.TRUE.equals(environment.getProperty(
                 "settings.budget.date.validation", Boolean.class));
         Integer startDateStepBack = Optional.ofNullable(environment.getProperty(
                 "settings.budget.start.date.step.back.days", Integer.class))
                 .orElseThrow(() -> new IllegalStateException("Property for budget start date is not provided"));
+        Integer initDelay = Optional.ofNullable(environment.getProperty(
+                "estimated.expense.worker.init.delay", Integer.class)).orElse(5);
+        Integer period = Optional.ofNullable(environment.getProperty(
+                "estimated.expense.worker.period", Integer.class)).orElse(5);
+        String estimatedExpenseWorkerScopePattern = Optional.ofNullable(environment.getProperty(
+                "estimated.expense.worker.end.date.scope.pattern", String.class)).orElse("1y");
 
         return Settings.builder()
                 .id(SETTINGS_ID)
                 .isBudgetDateValidation(budgetDateValidation)
                 .budgetStartDate(LocalDate.now().minusDays(startDateStepBack))
                 .budgetEndDate(LocalDate.now())
+                .estimatedExpenseWorkerInitDelay(initDelay)
+                .estimatedExpenseWorkerPeriod(period)
+                .estimatedExpenseWorkerEndDateScopePattern(estimatedExpenseWorkerScopePattern)
                 .build();
     }
 
@@ -100,6 +110,23 @@ public class SettingsService implements SettingsListener {
         } else {
             settings.setIsBudgetDateValidation(newSettings.getIsBudgetDateValidation());
         }
+
+        if (Objects.isNull(newSettings.getEstimatedExpenseWorkerInitDelay())) {
+            settings.setEstimatedExpenseWorkerInitDelay(existingSettings.getEstimatedExpenseWorkerInitDelay());
+        } else {
+            settings.setEstimatedExpenseWorkerInitDelay(newSettings.getEstimatedExpenseWorkerInitDelay());
+        }
+        if (Objects.isNull(newSettings.getEstimatedExpenseWorkerPeriod())) {
+            settings.setEstimatedExpenseWorkerPeriod(existingSettings.getEstimatedExpenseWorkerPeriod());
+        } else {
+            settings.setEstimatedExpenseWorkerPeriod(newSettings.getEstimatedExpenseWorkerPeriod());
+        }
+        if (Objects.isNull(newSettings.getEstimatedExpenseWorkerEndDateScopePattern())) {
+            settings.setEstimatedExpenseWorkerEndDateScopePattern(existingSettings.getEstimatedExpenseWorkerEndDateScopePattern());
+        } else {
+            settings.setEstimatedExpenseWorkerEndDateScopePattern(newSettings.getEstimatedExpenseWorkerEndDateScopePattern());
+        }
+
         return settings;
     }
 }

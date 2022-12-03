@@ -3,6 +3,8 @@ package yehor.budget.service.worker;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.mockito.ArgumentCaptor;
+import org.springframework.core.env.Environment;
+import yehor.budget.common.date.DateManager;
 import yehor.budget.common.helper.CalculatorHelper;
 import yehor.budget.entity.Category;
 import yehor.budget.entity.Expense;
@@ -10,6 +12,7 @@ import yehor.budget.entity.RowEstimatedExpense;
 import yehor.budget.repository.CategoryRepository;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.repository.RowEstimatedExpenseRepository;
+import yehor.budget.service.SettingsService;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -32,9 +35,11 @@ class EstimatedExpenseWorkerTest {
     private final CategoryRepository categoryRepository = mock(CategoryRepository.class);
     private final RowEstimatedExpenseRepository rowEstimatedExpenseRepository = mock(RowEstimatedExpenseRepository.class);
     private final CalculatorHelper calculatorHelper = mock(CalculatorHelper.class);
+    private final SettingsService settingsService = mock(SettingsService.class);
+    private final DateManager dateManager = mock(DateManager.class);
 
-    private final EstimatedExpenseWorker worker = new EstimatedExpenseWorker(
-            expenseRepository, categoryRepository, rowEstimatedExpenseRepository, calculatorHelper);
+    private final EstimatedExpenseWorker worker = new EstimatedExpenseWorker(expenseRepository, categoryRepository,
+            rowEstimatedExpenseRepository, calculatorHelper, settingsService, dateManager);
 
     private final ArgumentCaptor<RowEstimatedExpense> rowEstimatedExpenseArgumentCaptor =
             ArgumentCaptor.forClass(RowEstimatedExpense.class);

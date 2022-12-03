@@ -42,6 +42,7 @@ public class SettingsController {
     @PutMapping
     @Operation(summary = "Update settings")
     public ResponseEntity<SettingsLimitedDto> updateSettings(@RequestBody SettingsLimitedDto settingsLimitedDto) {
+        // todo: add validation
         settingsService.updateSettings(settingsLimitedDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }

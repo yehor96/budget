@@ -11,6 +11,7 @@ import yehor.budget.service.SettingsService;
 import yehor.budget.service.client.currency.CurrencyRateClient;
 import yehor.budget.service.client.currency.CurrencyRateSimulator;
 import yehor.budget.service.client.currency.ExchangeRateClient;
+import yehor.budget.service.worker.EstimatedExpenseWorker;
 import yehor.budget.web.converter.SettingsConverter;
 
 @Configuration
@@ -22,6 +23,7 @@ public class SpringConfig {
         SettingsNotificationManager notificationManager = new SettingsNotificationManager();
         notificationManager.addListener(SettingsService.class, dateManager(applicationContext));
         notificationManager.addListener(DateManager.class, settingsService(applicationContext));
+        notificationManager.addListener(SettingsService.class, applicationContext.getBean(EstimatedExpenseWorker.class));
         return notificationManager;
     }
 
