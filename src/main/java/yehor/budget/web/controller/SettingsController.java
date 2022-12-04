@@ -44,9 +44,13 @@ public class SettingsController {
     @PutMapping
     @Operation(summary = "Update settings")
     public ResponseEntity<SettingsLimitedDto> updateSettings(@RequestBody SettingsLimitedDto settingsLimitedDto) {
-        validate(settingsLimitedDto);
+        try { validate(settingsLimitedDto);
         settingsService.updateSettings(settingsLimitedDto);
         return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error updating settings. {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     private void validate(SettingsLimitedDto settingsLimitedDto) {
