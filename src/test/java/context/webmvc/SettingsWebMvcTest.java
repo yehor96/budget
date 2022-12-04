@@ -5,11 +5,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.service.SettingsService;
+import yehor.budget.service.worker.EstimatedExpenseWorker;
 import yehor.budget.web.dto.full.SettingsFullDto;
 import yehor.budget.web.dto.limited.SettingsLimitedDto;
 
 import javax.persistence.EntityNotFoundException;
 
+import static common.factory.SettingsFactory.defaultSettings;
 import static common.factory.SettingsFactory.defaultSettingsFullDto;
 import static common.factory.SettingsFactory.defaultSettingsLimitedDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,6 +29,8 @@ class SettingsWebMvcTest extends BaseWebMvcTest {
     @MockBean
     private SettingsService settingsService;
     @MockBean
+    private EstimatedExpenseWorker expenseWorker;
+    @MockBean
     private DateManager dateManager;
 
     // Get settings
@@ -36,6 +40,7 @@ class SettingsWebMvcTest extends BaseWebMvcTest {
         SettingsFullDto expectedSettings = defaultSettingsFullDto();
 
         when(settingsService.getSettings()).thenReturn(expectedSettings);
+        when(settingsService.getSettingsEntity()).thenReturn(defaultSettings());
 
         String response = mockMvc.perform(get(SETTINGS_URL)
                         .header("Authorization", BASIC_AUTH_STRING))

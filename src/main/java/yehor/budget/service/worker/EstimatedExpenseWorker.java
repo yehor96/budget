@@ -39,7 +39,7 @@ import static java.util.stream.Collectors.reducing;
 @Slf4j
 public class EstimatedExpenseWorker implements SettingsListener {
 
-    private static final Pattern EXPECTED_END_DATE_SCOPE_PATTERN = Pattern.compile("\\d+[dMy]$");
+    public static final Pattern EXPECTED_EXPENSE_END_DATE_SCOPE_PATTERN = Pattern.compile("\\d+[dMy]$");
 
     private final ExpenseRepository expenseRepository;
     private final CategoryRepository categoryRepository;
@@ -48,10 +48,10 @@ public class EstimatedExpenseWorker implements SettingsListener {
     private final SettingsService settingsService;
     private final DateManager dateManager;
 
-    private ScheduledThreadPoolExecutor executor;
-    private int currentInitDelay;
-    private int currentPeriod;
-    private String currentEstimationScopePattern;
+    ScheduledThreadPoolExecutor executor;
+    int currentInitDelay;
+    int currentPeriod;
+    String currentEstimationScopePattern;
 
     @PostConstruct
     private void init() {
@@ -80,7 +80,9 @@ public class EstimatedExpenseWorker implements SettingsListener {
     private void startTask(int initialDelay, int period, String estimationScopePattern) {
         currentInitDelay = initialDelay;
         currentPeriod = period;
-        currentEstimationScopePattern = estimationScopePattern;
+        if (isEstimationScopePatternValid(estimationScopePattern)) {
+            currentEstimationScopePattern = estimationScopePattern;
+        }
         log.info("Starting estimated expense worker with initialDelay: " + initialDelay + "m and period: " + period + "m");
         executor = new ScheduledThreadPoolExecutor(1);
         executor.scheduleAtFixedRate(
@@ -91,9 +93,13 @@ public class EstimatedExpenseWorker implements SettingsListener {
     }
 
     private boolean estimationScopePatternNeedsUpdating(String estimationScopePattern) {
-        return (EXPECTED_END_DATE_SCOPE_PATTERN.matcher(estimationScopePattern).matches() ||
-                dateManager.isValidLocalDatePattern(estimationScopePattern))
+        return isEstimationScopePatternValid(estimationScopePattern)
                 && !currentEstimationScopePattern.equals(estimationScopePattern);
+    }
+
+    private boolean isEstimationScopePatternValid(String estimationScopePattern) {
+        return EXPECTED_EXPENSE_END_DATE_SCOPE_PATTERN.matcher(estimationScopePattern).matches() ||
+                dateManager.isValidLocalDatePattern(estimationScopePattern);
     }
 
     class EstimatedExpenseTask implements Runnable {

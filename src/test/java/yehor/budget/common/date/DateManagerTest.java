@@ -324,6 +324,20 @@ class DateManagerTest {
         }
     }
 
+    @Test
+    void testIsValidLocalDatePatternReturnsTrueWhenPassedValueIsLocalDate() {
+        setUp(defaultSettings());
+        boolean result = dateManager.isValidLocalDatePattern("2020-10-10");
+        assertTrue(result);
+    }
+
+    @Test
+    void testIsValidLocalDatePatternReturnsFalseWhenPassedValueIsNotLocalDate() {
+        setUp(defaultSettings());
+        boolean result = dateManager.isValidLocalDatePattern("not-local-date");
+        assertFalse(result);
+    }
+
     private void setUp(Settings settings) {
         this.settings = settings;
         dateManager = new DateManager(settings);

@@ -1,8 +1,8 @@
 package yehor.budget.service;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.core.env.Environment;
 import yehor.budget.common.SettingsNotificationManager;
+import yehor.budget.common.util.PropertiesHelper;
 import yehor.budget.entity.Settings;
 import yehor.budget.repository.SettingsRepository;
 import yehor.budget.web.converter.SettingsConverter;
@@ -16,24 +16,22 @@ import static common.factory.SettingsFactory.defaultSettings;
 import static common.factory.SettingsFactory.defaultSettingsFullDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class SettingsServiceTest {
 
-    private final Environment environmentMock = mock(Environment.class);
+    private final PropertiesHelper propertiesHelperMock = mock(PropertiesHelper.class);
     private final SettingsRepository settingsRepositoryMock = mock(SettingsRepository.class);
     private final SettingsConverter settingsConverterMock = mock(SettingsConverter.class);
 
     private final SettingsService settingsService =
-            new SettingsService(environmentMock, settingsRepositoryMock, settingsConverterMock);
+            new SettingsService(propertiesHelperMock, settingsRepositoryMock, settingsConverterMock);
 
     @Test
     void testGetSettingsAndGetEntity() {

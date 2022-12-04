@@ -2,10 +2,11 @@ package yehor.budget.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import yehor.budget.common.SettingsListener;
 import yehor.budget.common.SettingsNotificationManager;
+import yehor.budget.common.util.PropertiesHelper;
 import yehor.budget.entity.Settings;
 import yehor.budget.repository.SettingsRepository;
 import yehor.budget.web.converter.SettingsConverter;
@@ -15,15 +16,15 @@ import yehor.budget.web.dto.limited.SettingsLimitedDto;
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
+@Service
 public class SettingsService implements SettingsListener {
 
     private static final Long SETTINGS_ID = 1L;
 
-    private final Environment environment;
+    private final PropertiesHelper propertiesHelper;
     private final SettingsRepository settingsRepository;
     private final SettingsConverter settingsConverter;
 
@@ -67,18 +68,12 @@ public class SettingsService implements SettingsListener {
     }
 
     private Settings defaultSettings() {
-        // todo: create special util class for getting properties, because this is a mess
-        Boolean budgetDateValidation = Boolean.TRUE.equals(environment.getProperty(
-                "settings.budget.date.validation", Boolean.class));
-        Integer startDateStepBack = Optional.ofNullable(environment.getProperty(
-                "settings.budget.start.date.step.back.days", Integer.class))
-                .orElseThrow(() -> new IllegalStateException("Property for budget start date is not provided"));
-        Integer initDelay = Optional.ofNullable(environment.getProperty(
-                "estimated.expense.worker.init.delay", Integer.class)).orElse(5);
-        Integer period = Optional.ofNullable(environment.getProperty(
-                "estimated.expense.worker.period", Integer.class)).orElse(5);
-        String estimatedExpenseWorkerScopePattern = Optional.ofNullable(environment.getProperty(
-                "estimated.expense.worker.end.date.scope.pattern", String.class)).orElse("1y");
+        Boolean budgetDateValidation = propertiesHelper.getBooleanProperty("settings.budget.date.validation");
+        Integer startDateStepBack = propertiesHelper.getIntProperty("settings.budget.start.date.step.back.days");
+        Integer initDelay = propertiesHelper.getIntProperty("estimated.expense.worker.init.delay");
+        Integer period = propertiesHelper.getIntProperty("estimated.expense.worker.period");
+        String estimatedExpenseWorkerScopePattern = propertiesHelper.getStringProperty(
+                "estimated.expense.worker.end.date.scope.pattern");
 
         return Settings.builder()
                 .id(SETTINGS_ID)
