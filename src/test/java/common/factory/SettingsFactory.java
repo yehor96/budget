@@ -17,12 +17,18 @@ public class SettingsFactory {
                 .isBudgetDateValidation(true)
                 .budgetStartDate(LocalDate.now().minusDays(30))
                 .budgetEndDate(LocalDate.now())
+                .estimatedExpenseWorkerInitDelay(5)
+                .estimatedExpenseWorkerPeriod(5)
+                .estimatedExpenseWorkerEndDateScopePattern("1y")
                 .build();
     }
 
     public static SettingsLimitedDto defaultSettingsLimitedDto() {
         return SettingsLimitedDto.builder()
                 .isBudgetDateValidation(true)
+                .estimatedExpenseWorkerInitDelay(5)
+                .estimatedExpenseWorkerPeriod(5)
+                .estimatedExpenseWorkerEndDateScopePattern("1y")
                 .build();
     }
 
@@ -32,6 +38,9 @@ public class SettingsFactory {
                 .isBudgetDateValidation(true)
                 .budgetStartDate(LocalDate.now().minusDays(30))
                 .budgetEndDate(LocalDate.now())
+                .estimatedExpenseWorkerInitDelay(5)
+                .estimatedExpenseWorkerPeriod(5)
+                .estimatedExpenseWorkerEndDateScopePattern("1y")
                 .build();
     }
 
@@ -41,6 +50,21 @@ public class SettingsFactory {
                 .isBudgetDateValidation(false)
                 .budgetStartDate(LocalDate.now().minusDays(30))
                 .budgetEndDate(LocalDate.now())
+                .estimatedExpenseWorkerInitDelay(5)
+                .estimatedExpenseWorkerPeriod(5)
+                .estimatedExpenseWorkerEndDateScopePattern("1y")
+                .build();
+    }
+
+    public static Settings settingsWithNonDefaultEstimatedExpenseWorkerProperties() {
+        return Settings.builder()
+                .id(DEFAULT_SETTINGS_ID)
+                .isBudgetDateValidation(false)
+                .budgetStartDate(LocalDate.now().minusDays(30))
+                .budgetEndDate(LocalDate.now())
+                .estimatedExpenseWorkerInitDelay(3)
+                .estimatedExpenseWorkerPeriod(3)
+                .estimatedExpenseWorkerEndDateScopePattern("5M")
                 .build();
     }
 }

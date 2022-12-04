@@ -63,6 +63,9 @@ CREATE TABLE settings  (
                         budget_start_date DATE NOT NULL,
                         budget_end_date DATE NOT NULL,
                         budget_date_validation BOOLEAN NOT NULL,
+                        estimated_expense_worker_init_delay INT NOT NULL,
+                        estimated_expense_worker_period INT NOT NULL,
+                        estimated_expense_worker_end_date_scope_pattern VARCHAR(50) NOT NULL,
 
                         CONSTRAINT settings_pk PRIMARY KEY (settings_id)
                         );

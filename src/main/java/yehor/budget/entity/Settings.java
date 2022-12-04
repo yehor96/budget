@@ -38,4 +38,13 @@ public class Settings {
 
     @Column(name = "budget_date_validation")
     private Boolean isBudgetDateValidation;
+
+    @Column(name = "estimated_expense_worker_init_delay")
+    private Integer estimatedExpenseWorkerInitDelay;
+
+    @Column(name = "estimated_expense_worker_period")
+    private Integer estimatedExpenseWorkerPeriod;
+
+    @Column(name = "estimated_expense_worker_end_date_scope_pattern")
+    private String estimatedExpenseWorkerEndDateScopePattern;
 }
