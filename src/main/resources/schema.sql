@@ -6,6 +6,8 @@ DROP TABLE IF EXISTS settings;
 DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS income_sources;
+DROP TABLE IF EXISTS balance_items;
+DROP TABLE IF EXISTS balance_records;
 DROP TABLE IF EXISTS actors;
 
 CREATE TABLE categories (
@@ -96,4 +98,24 @@ CREATE TABLE actors (
 
                     CONSTRAINT actors_pk PRIMARY KEY (actor_id),
                     CONSTRAINT actors_name_uq UNIQUE (name)
+                    );
+
+CREATE TABLE balance_records (
+                    balance_record_id BIGSERIAL NOT NULL,
+                    date DATE NOT NULL,
+                    total NUMERIC(11,2) NOT NULL,
+
+                    CONSTRAINT balance_record_pk PRIMARY KEY (balance_record_id)
+                    );
+
+CREATE TABLE balance_items (
+                    balance_item_id BIGSERIAL NOT NULL,
+                    actor_id BIGINT NOT NULL,
+                    balance_record_id BIGINT NOT NULL,
+                    cash NUMERIC(11,2) NOT NULL,
+                    card NUMERIC(11,2) NOT NULL,
+
+                    CONSTRAINT balance_item_pk PRIMARY KEY (balance_item_id),
+                    CONSTRAINT balance_items_to_actors_fk FOREIGN KEY (actor_id) REFERENCES actors (actor_id),
+                    CONSTRAINT balance_items_to_balance_records_fk FOREIGN KEY (balance_record_id) REFERENCES balance_records (balance_record_id)
                     );
