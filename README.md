@@ -1,7 +1,7 @@
 # Budget App
 
 ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/yehor96/budget?label=version&style=plastic)
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/yehor96/budget/build-workflow/master)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/yehor96/budget/build.yml?branch=master&style=plastic)
 ![Sonar Tests](https://img.shields.io/sonar/tests/yehor96_budget/master?compact_message&server=https%3A%2F%2Fsonarcloud.io&style=plastic)
 
 Application that provides functionality for counting one's budget and financial information. Available API is accessible via http://localhost:8080/swagger
