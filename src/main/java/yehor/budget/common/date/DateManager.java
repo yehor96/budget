@@ -133,6 +133,15 @@ public class DateManager implements SettingsListener {
         }
     }
 
+    public boolean isValidLocalDatePattern(String pattern) {
+        try {
+            LocalDate.parse(pattern);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
     @Override
     public void onUpdate(Settings settings) {
         isBudgetDateValidation = settings.getIsBudgetDateValidation();
@@ -148,14 +157,5 @@ public class DateManager implements SettingsListener {
 
     private String incorrectDateArgumentMessage() {
         return "Date argument is out of budget. Start date is " + startDate + ". End date is " + endDate + ".";
-    }
-
-    public boolean isValidLocalDatePattern(String pattern) {
-        try {
-            LocalDate.parse(pattern);
-            return true;
-        } catch (DateTimeParseException e) {
-            return false;
-        }
     }
 }

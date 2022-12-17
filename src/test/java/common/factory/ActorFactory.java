@@ -9,6 +9,7 @@ import yehor.budget.web.dto.limited.ActorLimitedDto;
 public class ActorFactory {
 
     public static final long DEFAULT_ACTOR_ID = 1L;
+    public static final long SECOND_ACTOR_ID = 2L;
 
     public static ActorLimitedDto defaultActorLimitedDto() {
         return ActorLimitedDto.builder()
@@ -38,14 +39,14 @@ public class ActorFactory {
 
     public static ActorFullDto secondActorFullDto() {
         return ActorFullDto.builder()
-                .id(2L)
+                .id(SECOND_ACTOR_ID)
                 .name("Sarah")
                 .build();
     }
 
     public static Actor secondActor() {
         return Actor.builder()
-                .id(2L)
+                .id(SECOND_ACTOR_ID)
                 .name("Sarah")
                 .build();
     }
