@@ -103,7 +103,6 @@ CREATE TABLE actors (
 CREATE TABLE balance_records (
                     balance_record_id BIGSERIAL NOT NULL,
                     date DATE NOT NULL,
-                    total NUMERIC(11,2) NOT NULL,
 
                     CONSTRAINT balance_record_pk PRIMARY KEY (balance_record_id)
                     );

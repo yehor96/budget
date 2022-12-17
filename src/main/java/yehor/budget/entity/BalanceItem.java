@@ -1,7 +1,10 @@
 package yehor.budget.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.Column;
@@ -19,6 +22,8 @@ import java.math.BigDecimal;
 @Entity
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "balance_items")
 public class BalanceItem {
 
@@ -35,6 +40,7 @@ public class BalanceItem {
     @ManyToOne
     @JoinColumn(name = "balance_record_id", nullable = false)
     @ToString.Exclude
+    @JsonBackReference
     private BalanceRecord balanceRecord;
 
     @Column(name = "cash")

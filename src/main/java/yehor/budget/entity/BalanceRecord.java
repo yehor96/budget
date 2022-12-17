@@ -1,7 +1,10 @@
 package yehor.budget.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,13 +14,14 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "balance_records")
 public class BalanceRecord {
 
@@ -31,8 +35,6 @@ public class BalanceRecord {
     private LocalDate date;
 
     @OneToMany(mappedBy = "balanceRecord")
+    @JsonManagedReference
     private List<BalanceItem> balanceItems;
-
-    @Column(name = "total")
-    private BigDecimal total;
 }
