@@ -7,6 +7,8 @@ import yehor.budget.common.SettingsNotificationManager;
 import yehor.budget.entity.Settings;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -157,5 +159,27 @@ public class DateManager implements SettingsListener {
 
     private String incorrectDateArgumentMessage() {
         return "Date argument is out of budget. Start date is " + startDate + ". End date is " + endDate + ".";
+    }
+
+    public LocalDate getMonthEndDate(LocalDate date) {
+        return LocalDate.of(
+                date.getYear(),
+                date.getMonth(),
+                getLastDayOfMonthByDate(date)
+        );
+    }
+
+    public int getLastDayOfMonthByDate(LocalDate date) {
+        int lastDay;
+        if (date.getMonth() == (Month.FEBRUARY)) {
+            if (Year.isLeap(date.getYear())) {
+                lastDay = 29;
+            } else {
+                lastDay = 28;
+            }
+        } else {
+            lastDay = date.getMonth().maxLength();
+        }
+        return lastDay;
     }
 }

@@ -1,6 +1,5 @@
 package yehor.budget.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,7 +39,6 @@ public class BalanceItem {
     @ManyToOne
     @JoinColumn(name = "balance_record_id", nullable = false)
     @ToString.Exclude
-    @JsonBackReference
     private BalanceRecord balanceRecord;
 
     @Column(name = "cash")
