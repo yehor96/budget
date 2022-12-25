@@ -1,12 +1,16 @@
 package yehor.budget.common.date;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import yehor.budget.common.SettingsNotificationManager;
 import yehor.budget.entity.Settings;
 
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static common.factory.SettingsFactory.defaultSettings;
 import static common.factory.SettingsFactory.settingsWithBudgetDateValidationOff;
@@ -336,6 +340,32 @@ class DateManagerTest {
         setUp(defaultSettings());
         boolean result = dateManager.isValidLocalDatePattern("not-local-date");
         assertFalse(result);
+    }
+
+    @Test
+    void testGetMonthEndDate() {
+        setUp(defaultSettings());
+        LocalDate expectedDate = LocalDate.of(2022, 12, 31);
+        LocalDate actualDate = dateManager.getMonthEndDate(LocalDate.of(2022, 12, 10));
+        assertEquals(expectedDate, actualDate);
+    }
+
+    @ParameterizedTest
+    @MethodSource("dateProvider")
+    void testGetLastDayOfMonthByDate(Pair<LocalDate, Integer> paramPair) {
+        setUp(defaultSettings());
+        LocalDate date = paramPair.getKey();
+        Integer expectedResult = paramPair.getValue();
+        int actualResult = dateManager.getLastDayOfMonthByDate(date);
+        assertEquals(expectedResult, actualResult);
+    }
+
+    static Stream<Pair<LocalDate, Integer>> dateProvider() {
+        return Stream.of(
+                Pair.of(LocalDate.of(2020, 2, 1), 29),
+                Pair.of(LocalDate.of(2021, 2, 1), 28),
+                Pair.of(LocalDate.of(2022, 12, 1), 31)
+        );
     }
 
     private void setUp(Settings settings) {

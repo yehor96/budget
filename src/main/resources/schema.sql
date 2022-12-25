@@ -103,6 +103,11 @@ CREATE TABLE actors (
 CREATE TABLE balance_records (
                     balance_record_id BIGSERIAL NOT NULL,
                     date DATE NOT NULL,
+                    total_expected_expenses_days_1_7 NUMERIC(11,2),
+                    total_expected_expenses_days_8_14 NUMERIC(11,2),
+                    total_expected_expenses_days_15_21 NUMERIC(11,2),
+                    total_expected_expenses_days_22_31 NUMERIC(11,2),
+                    total_income NUMERIC(11,2),
 
                     CONSTRAINT balance_record_pk PRIMARY KEY (balance_record_id)
                     );

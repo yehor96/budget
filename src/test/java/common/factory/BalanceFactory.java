@@ -3,8 +3,10 @@ package common.factory;
 import lombok.experimental.UtilityClass;
 import yehor.budget.entity.BalanceItem;
 import yehor.budget.entity.BalanceRecord;
+import yehor.budget.web.dto.TotalIncomeDto;
 import yehor.budget.web.dto.full.BalanceItemFullDto;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
+import yehor.budget.web.dto.full.EstimatedExpenseFullDto;
 import yehor.budget.web.dto.limited.BalanceItemLimitedDto;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 
@@ -18,6 +20,8 @@ import static common.factory.ActorFactory.defaultActor;
 import static common.factory.ActorFactory.defaultActorFullDto;
 import static common.factory.ActorFactory.secondActor;
 import static common.factory.ActorFactory.secondActorFullDto;
+import static common.factory.EstimatedExpenseFactory.defaultEstimatedExpenseFullDto;
+import static common.factory.IncomeSourceFactory.defaultTotalIncomeDto;
 
 @UtilityClass
 public class BalanceFactory {
@@ -35,6 +39,21 @@ public class BalanceFactory {
     }
 
     public static BalanceRecord defaultBalanceRecord() {
+        EstimatedExpenseFullDto estimatedExpenseFullDto = defaultEstimatedExpenseFullDto();
+        TotalIncomeDto incomeSource = defaultTotalIncomeDto();
+        return BalanceRecord.builder()
+                .id(DEFAULT_BALANCE_RECORD_ID)
+                .date(LocalDate.now())
+                .balanceItems(defaultBalanceItemList())
+                .total1to7(estimatedExpenseFullDto.getTotal1to7())
+                .total8to14(estimatedExpenseFullDto.getTotal8to14())
+                .total15to21(estimatedExpenseFullDto.getTotal15to21())
+                .total22to31(estimatedExpenseFullDto.getTotal22to31())
+                .totalIncome(incomeSource.getTotal())
+                .build();
+    }
+
+    public static BalanceRecord balanceRecordWithNotSetExpensesAndIncome() {
         return BalanceRecord.builder()
                 .id(DEFAULT_BALANCE_RECORD_ID)
                 .date(LocalDate.now())

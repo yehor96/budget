@@ -1,12 +1,12 @@
 package yehor.budget.service.worker;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import yehor.budget.common.SettingsListener;
 import yehor.budget.common.date.DateManager;
+import yehor.budget.common.date.MonthWeek;
 import yehor.budget.common.date.FullMonth;
 import yehor.budget.common.helper.CalculatorHelper;
 import yehor.budget.common.util.WaiterUtil;
@@ -119,13 +119,13 @@ public class EstimatedExpenseWorker implements SettingsListener {
                 for (var categoryExpenses : categoryIdToExpenseMap.entrySet()) {
                     Long categoryId = categoryExpenses.getKey();
 
-                    Map<DaysBucket, BigDecimal> daysBucketListMap = categoryExpenses.getValue().stream()
+                    Map<MonthWeek, BigDecimal> weeksListMap = categoryExpenses.getValue().stream()
                             .collect(groupingBy(
-                                    expense -> DaysBucket.of(expense.getDate()),
+                                    expense -> MonthWeek.of(expense.getDate()),
                                     mapping(Expense::getValue, reducing(ZERO, BigDecimal::add))));
 
-                    setAvgValues(daysBucketListMap, numOfMonthsUnderCalculation);
-                    RowEstimatedExpense rowEstimatedExpense = getRowOfEstimatedExpenses(categoryId, daysBucketListMap);
+                    setAvgValues(weeksListMap, numOfMonthsUnderCalculation);
+                    RowEstimatedExpense rowEstimatedExpense = getRowOfEstimatedExpenses(categoryId, weeksListMap);
                     saveRowToDatabase(rowEstimatedExpense);
                 }
             } catch (Exception e) {
@@ -157,19 +157,19 @@ public class EstimatedExpenseWorker implements SettingsListener {
         return Long.parseLong(currentEstimationScopePattern.substring(0, currentEstimationScopePattern.length() - 1));
     }
 
-    private void setAvgValues(Map<DaysBucket, BigDecimal> daysBucketListMap, long divider) {
+    private void setAvgValues(Map<MonthWeek, BigDecimal> weeksListMap, long divider) {
         BigDecimal dividerDecimal = new BigDecimal(divider);
-        for (DaysBucket period : DaysBucket.values()) {
-            BigDecimal existingValue = daysBucketListMap.getOrDefault(period, ZERO);
-            daysBucketListMap.replace(period, calculatorHelper.divide(existingValue, dividerDecimal));
+        for (MonthWeek period : MonthWeek.values()) {
+            BigDecimal existingValue = weeksListMap.getOrDefault(period, ZERO);
+            weeksListMap.replace(period, calculatorHelper.divide(existingValue, dividerDecimal));
         }
     }
 
-    private RowEstimatedExpense getRowOfEstimatedExpenses(Long categoryId, Map<DaysBucket, BigDecimal> daysToSum) {
-        BigDecimal days1to7 = daysToSum.get(DaysBucket.DAYS_1_TO_7);
-        BigDecimal days8to14 = daysToSum.get(DaysBucket.DAYS_8_TO_14);
-        BigDecimal days15to21 = daysToSum.get(DaysBucket.DAYS_15_TO_21);
-        BigDecimal days22to31 = daysToSum.get(DaysBucket.DAYS_22_TO_31);
+    private RowEstimatedExpense getRowOfEstimatedExpenses(Long categoryId, Map<MonthWeek, BigDecimal> daysToSum) {
+        BigDecimal days1to7 = daysToSum.get(MonthWeek.DAYS_1_TO_7);
+        BigDecimal days8to14 = daysToSum.get(MonthWeek.DAYS_8_TO_14);
+        BigDecimal days15to21 = daysToSum.get(MonthWeek.DAYS_15_TO_21);
+        BigDecimal days22to31 = daysToSum.get(MonthWeek.DAYS_22_TO_31);
         return RowEstimatedExpense.builder()
                 .days1to7(Optional.ofNullable(days1to7).orElse(ZERO))
                 .days8to14(Optional.ofNullable(days8to14).orElse(ZERO))
@@ -188,32 +188,4 @@ public class EstimatedExpenseWorker implements SettingsListener {
         }
     }
 
-    private enum DaysBucket {
-        DAYS_1_TO_7(List.of(1, 2, 3, 4, 5, 6, 7)),
-        DAYS_8_TO_14(List.of(8, 9, 10, 11, 12, 13, 14)),
-        DAYS_15_TO_21(List.of(15, 16, 17, 18, 19, 20, 21)),
-        DAYS_22_TO_31(List.of(22, 23, 24, 25, 26, 27, 28, 29, 30, 31));
-
-        @Getter
-        private final List<Integer> range;
-
-        DaysBucket(List<Integer> range) {
-            this.range = range;
-        }
-
-        public static DaysBucket of(LocalDate date) {
-            Integer day = date.getDayOfMonth();
-            if (DAYS_1_TO_7.getRange().contains(day)) {
-                return DAYS_1_TO_7;
-            } else if (DAYS_8_TO_14.getRange().contains(day)) {
-                return DAYS_8_TO_14;
-            } else if (DAYS_15_TO_21.getRange().contains(day)) {
-                return DAYS_15_TO_21;
-            } else if (DAYS_22_TO_31.getRange().contains(day)) {
-                return DAYS_22_TO_31;
-            } else {
-                throw new IllegalArgumentException("Illegal value provided " + date);
-            }
-        }
-    }
 }

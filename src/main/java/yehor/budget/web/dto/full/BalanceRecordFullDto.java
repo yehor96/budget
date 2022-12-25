@@ -14,4 +14,5 @@ public class BalanceRecordFullDto {
     private LocalDate date;
     private List<BalanceItemFullDto> balanceItems;
     private BigDecimal total;
+    private BalanceEstimateDto balanceEstimateDto;
 }
