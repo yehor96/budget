@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import yehor.budget.common.Currency;
 import yehor.budget.common.exception.ObjectAlreadyExistsException;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.entity.IncomeSource;
 import yehor.budget.repository.IncomeSourceRepository;
-import yehor.budget.common.Currency;
 import yehor.budget.web.converter.IncomeSourceConverter;
 import yehor.budget.web.dto.TotalIncomeDto;
 import yehor.budget.web.dto.full.IncomeSourceFullDto;
@@ -72,6 +72,14 @@ public class IncomeSourceService {
         IncomeSource incomeSource = incomeSourceConverter.convert(incomeSourceDto);
         incomeSourceRepository.save(incomeSource);
         log.info("{} is updated", incomeSource);
+    }
+
+    public BigDecimal getIncomeInCurrency(IncomeSourceFullDto income, Currency currency) {
+        if (income.getCurrency() == currency) {
+            return income.getValue();
+        } else {
+            return currencyRateService.convert(income.getCurrency(), currency, income.getValue());
+        }
     }
 
     private void validateNotExists(IncomeSource incomeSource) {

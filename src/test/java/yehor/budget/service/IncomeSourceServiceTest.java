@@ -29,6 +29,7 @@ import static common.factory.IncomeSourceFactory.secondIncomeSource;
 import static common.factory.IncomeSourceFactory.secondIncomeSourceFullDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -187,6 +188,32 @@ class IncomeSourceServiceTest {
             verify(incomeSourceRepositoryMock, never())
                     .save(expectedIncomeSource);
         }
+    }
+
+    @Test
+    void testGetIncomeInCurrencyReturnsValueFromDtoWhenCurrencyMatches() {
+        IncomeSourceFullDto incomeDto = defaultIncomeSourceFullDto();
+        BigDecimal expectedValue = incomeDto.getValue();
+
+        BigDecimal actualValue = incomeSourceService.getIncomeInCurrency(incomeDto, Currency.USD);
+
+        assertEquals(expectedValue, actualValue);
+        verify(currencyRateServiceMock, never())
+                .convert(any(), any(), any());
+    }
+
+    @Test
+    void testGetIncomeInCurrencyReturnsExchangedValueWhenCurrencyDoesNotMatch() {
+        IncomeSourceFullDto incomeDto = defaultIncomeSourceFullDto();
+        BigDecimal expectedValue = new BigDecimal("15.00");
+
+        when(currencyRateServiceMock.convert(any(), any(), any())).thenReturn(expectedValue);
+
+        BigDecimal actualValue = incomeSourceService.getIncomeInCurrency(incomeDto, Currency.UAH);
+
+        assertEquals(expectedValue, actualValue);
+        verify(currencyRateServiceMock, times(1))
+                .convert(any(), any(), any());
     }
 
     private void setBaseCurrency(Currency currency) {

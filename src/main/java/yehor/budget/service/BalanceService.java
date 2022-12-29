@@ -18,7 +18,6 @@ import yehor.budget.repository.ActorRepository;
 import yehor.budget.repository.BalanceItemRepository;
 import yehor.budget.repository.BalanceRecordRepository;
 import yehor.budget.web.converter.BalanceConverter;
-import yehor.budget.web.dto.TotalIncomeDto;
 import yehor.budget.web.dto.full.BalanceEstimateDto;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
 import yehor.budget.web.dto.full.EstimatedExpenseFullDto;
@@ -127,16 +126,11 @@ public class BalanceService {
         balanceRecord.setTotal15to21(estimatedExpenses.getTotal15to21());
         balanceRecord.setTotal22to31(estimatedExpenses.getTotal22to31());
 
-        // todo: add UAH to TotalIncomeDto and use that value instead of checking currency here
-        TotalIncomeDto totalIncome = incomeSourceService.getTotalIncome();
-        Currency currency = totalIncome.getTotalCurrency();
-        BigDecimal income;
-        if (currency == Currency.UAH) {
-            income = totalIncome.getTotal();
-        } else {
-            income = currencyRateService.convert(totalIncome.getTotalCurrency(), Currency.UAH, totalIncome.getTotal());
-        }
-        balanceRecord.setTotalIncome(income);
+        BigDecimal totalIncome = incomeSourceService.getTotalIncome().getIncomeSources().stream()
+                .filter(income -> balanceRecord.getDate().getDayOfMonth() < income.getAccrualDayOfMonth())
+                .map(income -> incomeSourceService.getIncomeInCurrency(income, Currency.UAH))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        balanceRecord.setTotalIncome(totalIncome);
     }
 
     private void setTotalBalance(BalanceRecordFullDto balanceRecordDto) {

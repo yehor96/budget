@@ -86,6 +86,7 @@ CREATE TABLE income_sources (
                             name VARCHAR(50) NOT NULL,
                             value NUMERIC(11,2) NOT NULL,
                             currency VARCHAR(3) NOT NULL,
+                            accrual_day INT NOT NULL,
 
                             CONSTRAINT income_sources_pk PRIMARY KEY (income_source_id),
                             CONSTRAINT income_sources_name_uq UNIQUE (name),

@@ -110,9 +110,10 @@ class BalanceServiceTest {
     }
 
     @Test
-    void testSaveSuccessfullyWhileSettingExpensesAndIncome() {
+    void testSaveSuccessfullyWhileSettingExpensesAndIncomeWithAllSourcesIncludedIntoTotalIncome() {
         BalanceRecordLimitedDto recordLimitedDto = defaultBalanceRecordLimitedDto();
         BalanceRecord balanceRecord = balanceRecordWithNotSetExpensesAndIncome();
+        balanceRecord.setDate(LocalDate.of(2022, 10, 10));
 
         when(actorRepository.existsById(any())).thenReturn(true);
         when(balanceConverter.convert(any(BalanceRecordLimitedDto.class))).thenReturn(balanceRecord);
@@ -121,6 +122,9 @@ class BalanceServiceTest {
         when(estimatedExpenseService.getOne()).thenReturn(defaultEstimatedExpenseFullDto());
         when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
         when(currencyRateService.convert(any(), any(), any())).thenReturn(BigDecimal.TEN);
+        when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
+        when(incomeSourceService.getIncomeInCurrency(any(), any()))
+                .thenReturn(new BigDecimal("50.00"));
 
         balanceService.save(recordLimitedDto);
 
@@ -129,6 +133,36 @@ class BalanceServiceTest {
         assertNotNull(balanceRecord.getTotal8to14());
         assertNotNull(balanceRecord.getTotal15to21());
         assertNotNull(balanceRecord.getTotal22to31());
+        assertEquals(new BigDecimal("100.00"), balanceRecord.getTotalIncome());
+        verify(balanceRecordRepository, times(1)).save(balanceRecord);
+        verify(balanceItemRepository, times(2)).save(any(BalanceItem.class));
+    }
+
+    @Test
+    void testSaveSuccessfullyWhileSettingExpensesAndIncomeWithOnlySourcesAfterBalanceRecordDateIncludedIntoTotalIncome() {
+        BalanceRecordLimitedDto recordLimitedDto = defaultBalanceRecordLimitedDto();
+        BalanceRecord balanceRecord = balanceRecordWithNotSetExpensesAndIncome();
+        balanceRecord.setDate(LocalDate.of(2022, 10, 23));
+
+        when(actorRepository.existsById(any())).thenReturn(true);
+        when(balanceConverter.convert(any(BalanceRecordLimitedDto.class))).thenReturn(balanceRecord);
+        when(balanceRecordRepository.save(balanceRecord)).thenReturn(balanceRecord);
+        when(balanceConverter.convert(anyList(), any(BalanceRecord.class))).thenReturn(balanceRecord.getBalanceItems());
+        when(estimatedExpenseService.getOne()).thenReturn(defaultEstimatedExpenseFullDto());
+        when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
+        when(currencyRateService.convert(any(), any(), any())).thenReturn(BigDecimal.TEN);
+        when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
+        when(incomeSourceService.getIncomeInCurrency(any(), any()))
+                .thenReturn(new BigDecimal("50.00"));
+
+        balanceService.save(recordLimitedDto);
+
+        assertNotNull(balanceRecord.getTotalIncome());
+        assertNotNull(balanceRecord.getTotal1to7());
+        assertNotNull(balanceRecord.getTotal8to14());
+        assertNotNull(balanceRecord.getTotal15to21());
+        assertNotNull(balanceRecord.getTotal22to31());
+        assertEquals(new BigDecimal("50.00"), balanceRecord.getTotalIncome());
         verify(balanceRecordRepository, times(1)).save(balanceRecord);
         verify(balanceItemRepository, times(2)).save(any(BalanceItem.class));
     }

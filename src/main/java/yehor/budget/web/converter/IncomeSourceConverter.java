@@ -13,6 +13,7 @@ public class IncomeSourceConverter {
                 .name(incomeSource.getName())
                 .value(incomeSource.getValue())
                 .currency(incomeSource.getCurrency())
+                .accrualDayOfMonth(incomeSource.getAccrualDay())
                 .build();
     }
 
@@ -21,6 +22,7 @@ public class IncomeSourceConverter {
                 .name(incomeSourceDto.getName())
                 .value(incomeSourceDto.getValue())
                 .currency(incomeSourceDto.getCurrency())
+                .accrualDay(incomeSourceDto.getAccrualDayOfMonth())
                 .build();
     }
 
@@ -30,6 +32,7 @@ public class IncomeSourceConverter {
                 .name(incomeSourceDto.getName())
                 .value(incomeSourceDto.getValue())
                 .currency(incomeSourceDto.getCurrency())
+                .accrualDay(incomeSourceDto.getAccrualDayOfMonth())
                 .build();
     }
 }

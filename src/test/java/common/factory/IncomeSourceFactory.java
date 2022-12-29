@@ -22,6 +22,7 @@ public class IncomeSourceFactory {
                 .name("My salary")
                 .value(new BigDecimal("100.00"))
                 .currency(DEFAULT_BASE_CURRENCY)
+                .accrualDay(20)
                 .build();
     }
 
@@ -31,6 +32,7 @@ public class IncomeSourceFactory {
                 .name("My salary")
                 .value(new BigDecimal("100.00"))
                 .currency(DEFAULT_BASE_CURRENCY)
+                .accrualDayOfMonth(20)
                 .build();
     }
 
@@ -39,6 +41,7 @@ public class IncomeSourceFactory {
                 .name("My salary")
                 .value(new BigDecimal("100.00"))
                 .currency(DEFAULT_BASE_CURRENCY)
+                .accrualDayOfMonth(20)
                 .build();
     }
 
@@ -48,6 +51,7 @@ public class IncomeSourceFactory {
                 .name("Dividends")
                 .value(new BigDecimal("10.00"))
                 .currency(DEFAULT_BASE_CURRENCY)
+                .accrualDay(25)
                 .build();
     }
 
@@ -57,6 +61,7 @@ public class IncomeSourceFactory {
                 .name("Dividends")
                 .value(new BigDecimal("10.00"))
                 .currency(DEFAULT_BASE_CURRENCY)
+                .accrualDayOfMonth(25)
                 .build();
     }
 
@@ -66,6 +71,7 @@ public class IncomeSourceFactory {
                 .name("Local business")
                 .value(new BigDecimal("100.00"))
                 .currency(Currency.UAH)
+                .accrualDay(20)
                 .build();
     }
 
@@ -75,6 +81,7 @@ public class IncomeSourceFactory {
                 .name("Local business")
                 .value(new BigDecimal("20.00"))
                 .currency(Currency.UAH)
+                .accrualDayOfMonth(20)
                 .build();
     }
 
