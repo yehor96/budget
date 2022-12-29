@@ -13,4 +13,5 @@ public class IncomeSourceFullDto {
     private String name;
     private BigDecimal value;
     private Currency currency;
+    private Integer accrualDayOfMonth;
 }

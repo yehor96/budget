@@ -44,4 +44,7 @@ public class IncomeSource {
     @Column(name = "currency")
     @Enumerated(EnumType.STRING)
     private Currency currency;
+
+    @Column(name = "accrual_day")
+    private Integer accrualDay;
 }
