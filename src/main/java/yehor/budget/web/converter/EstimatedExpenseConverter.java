@@ -11,10 +11,11 @@ import yehor.budget.web.dto.full.RowEstimatedExpenseFullDto;
 public class EstimatedExpenseConverter {
 
     private final CalculatorHelper calculatorHelper;
+    private final CategoryConverter categoryConverter;
 
     public RowEstimatedExpenseFullDto convert(RowEstimatedExpense row) {
         return RowEstimatedExpenseFullDto.builder()
-                .categoryId(row.getCategory().getId())
+                .category(categoryConverter.convert(row.getCategory()))
                 .days1to7(row.getDays1to7())
                 .days8to14(row.getDays8to14())
                 .days15to21(row.getDays15to21())

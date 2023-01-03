@@ -8,9 +8,10 @@ import yehor.budget.web.dto.full.RowEstimatedExpenseFullDto;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static common.factory.CategoryFactory.DEFAULT_CATEGORY_ID;
 import static common.factory.CategoryFactory.defaultCategory;
+import static common.factory.CategoryFactory.defaultCategoryFullDto;
 import static common.factory.CategoryFactory.secondCategory;
+import static common.factory.CategoryFactory.secondCategoryFullDto;
 
 @UtilityClass
 public class EstimatedExpenseFactory {
@@ -31,7 +32,7 @@ public class EstimatedExpenseFactory {
 
     public static RowEstimatedExpenseFullDto defaultRowEstimatedExpenseFullDto() {
         return RowEstimatedExpenseFullDto.builder()
-                .categoryId(DEFAULT_CATEGORY_ID)
+                .category(defaultCategoryFullDto())
                 .days1to7(new BigDecimal("50.00"))
                 .days8to14(new BigDecimal("100.00"))
                 .days15to21(new BigDecimal("20.00"))
@@ -42,7 +43,7 @@ public class EstimatedExpenseFactory {
 
     public static RowEstimatedExpenseFullDto secondRowEstimatedExpenseFullDto() {
         return RowEstimatedExpenseFullDto.builder()
-                .categoryId(2L)
+                .category(secondCategoryFullDto())
                 .days1to7(BigDecimal.ONE)
                 .days8to14(new BigDecimal("5.00"))
                 .days15to21(new BigDecimal("200.00"))
