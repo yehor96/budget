@@ -14,7 +14,7 @@ public class ExpenseFullDto {
     private BigDecimal value;
     private LocalDate date;
     private Boolean isRegular;
-    private Long categoryId;
-    private Set<Long> tagIds;
+    private CategoryFullDto category;
+    private Set<TagFullDto> tags;
     private String note;
 }

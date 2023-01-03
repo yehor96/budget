@@ -12,6 +12,7 @@ import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.repository.TagRepository;
 import yehor.budget.web.converter.ExpenseConverter;
 import yehor.budget.web.dto.full.ExpenseFullDto;
+import yehor.budget.web.dto.full.TagFullDto;
 import yehor.budget.web.dto.limited.ExpenseLimitedDto;
 
 import java.math.BigDecimal;
@@ -52,6 +53,7 @@ public class ExpenseService {
         dateManager.updateBudgetDatesIfNecessary(expense.getDate());
     }
 
+    @Transactional(readOnly = true)
     public ExpenseFullDto getById(Long id) {
         Expense expense = expenseRepository.getById(id);
         return expenseConverter.convert(expense);
@@ -60,8 +62,8 @@ public class ExpenseService {
     @Transactional
     public void update(ExpenseFullDto expenseDto) {
         validateExists(expenseDto.getId());
-        validateCategoryWithIdExists(expenseDto.getCategoryId());
-        validateTagsWithIdsExist(expenseDto.getTagIds());
+        validateCategoryWithIdExists(expenseDto.getCategory().getId());
+        validateTagsExist(expenseDto.getTags());
 
         Expense expense = expenseConverter.convert(expenseDto);
         expenseRepository.save(expense);
@@ -91,6 +93,14 @@ public class ExpenseService {
         for (Long tagId : tagIds) {
             if (!tagRepository.existsById(tagId)) {
                 throw new ObjectNotFoundException(String.format("Tag with id %s does not exist", tagId));
+            }
+        }
+    }
+
+    private void validateTagsExist(Set<TagFullDto> tags) {
+        for (TagFullDto tag : tags) {
+            if (!tagRepository.existsById(tag.getId())) {
+                throw new ObjectNotFoundException(String.format("Tag with id %s does not exist", tag.getId()));
             }
         }
     }

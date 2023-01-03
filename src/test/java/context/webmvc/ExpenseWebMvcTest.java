@@ -7,7 +7,9 @@ import org.springframework.http.MediaType;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.service.ExpenseService;
+import yehor.budget.web.dto.full.CategoryFullDto;
 import yehor.budget.web.dto.full.ExpenseFullDto;
+import yehor.budget.web.dto.full.TagFullDto;
 import yehor.budget.web.dto.limited.ExpenseLimitedDto;
 
 import javax.persistence.EntityNotFoundException;
@@ -213,7 +215,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
     @Test
     void testTryUpdatingExpenseWithIllegalCategoryId() throws Exception {
         ExpenseFullDto expenseFullDto = defaultExpenseFullDto();
-        expenseFullDto.setCategoryId(-1L);
+        expenseFullDto.setCategory(CategoryFullDto.builder().id(-1L).name("name").build());
         String expectedErrorMessage = "Provided category id is not valid - -1. Please provide valid category id";
 
         String response = mockMvc.perform(put(EXPENSES_URL)
@@ -230,8 +232,9 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
     @Test
     void testTryUpdatingExpenseWithIllegalTagId() throws Exception {
         ExpenseFullDto expenseFullDto = defaultExpenseFullDto();
-        expenseFullDto.setTagIds(Collections.singleton(-1L));
-        String expectedErrorMessage = "Tag cannot be negative or 0: [-1]";
+        TagFullDto faultyTag = TagFullDto.builder().id(-1L).name("name").build();
+        expenseFullDto.setTags(Collections.singleton(faultyTag));
+        String expectedErrorMessage = "Tag ids cannot be negative or 0: [" + faultyTag + "]";
 
         String response = mockMvc.perform(put(EXPENSES_URL)
                         .header("Authorization", BASIC_AUTH_STRING)
@@ -264,7 +267,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
 
     @Test
     void testTryUpdatingExpenseWhenNoteIsTooLong() throws Exception {
-        ExpenseLimitedDto expenseLimitedDto = defaultExpenseLimitedDto();
+        ExpenseFullDto expenseLimitedDto = defaultExpenseFullDto();
         expenseLimitedDto.setNote("charscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharsrscharscharscharscharsrscharscharscharscharsrscharscharscharschars");
 
         String response = mockMvc.perform(put(EXPENSES_URL)

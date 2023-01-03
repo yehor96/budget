@@ -3,7 +3,6 @@ package yehor.budget.web.converter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import yehor.budget.entity.Expense;
-import yehor.budget.entity.Tag;
 import yehor.budget.repository.CategoryRepository;
 import yehor.budget.repository.TagRepository;
 import yehor.budget.web.dto.full.ExpenseFullDto;
@@ -17,6 +16,8 @@ public class ExpenseConverter {
 
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
+    private final CategoryConverter categoryConverter;
+    private final TagConverter tagConverter;
 
     public ExpenseFullDto convert(Expense expense) {
         return ExpenseFullDto.builder()
@@ -24,8 +25,8 @@ public class ExpenseConverter {
                 .value(expense.getValue())
                 .date(expense.getDate())
                 .isRegular(expense.getIsRegular())
-                .categoryId(expense.getCategory().getId())
-                .tagIds(expense.getTags().stream().map(Tag::getId).collect(toSet()))
+                .category(categoryConverter.convert(expense.getCategory()))
+                .tags(expense.getTags().stream().map(tagConverter::convert).collect(toSet()))
                 .note(expense.getNote())
                 .build();
     }
@@ -47,8 +48,8 @@ public class ExpenseConverter {
                 .value(expenseDto.getValue())
                 .date(expenseDto.getDate())
                 .isRegular(expenseDto.getIsRegular())
-                .category(categoryRepository.getById(expenseDto.getCategoryId()))
-                .tags(expenseDto.getTagIds().stream().map(tagRepository::getById).collect(toSet()))
+                .category(categoryConverter.convert(expenseDto.getCategory()))
+                .tags(expenseDto.getTags().stream().map(tagConverter::convert).collect(toSet()))
                 .note(expenseDto.getNote())
                 .build();
     }

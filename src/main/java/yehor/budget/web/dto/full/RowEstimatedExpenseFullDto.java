@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Data
 @Builder
 public class RowEstimatedExpenseFullDto {
-    private Long categoryId;
+    private CategoryFullDto category;
     private BigDecimal days1to7;
     private BigDecimal days8to14;
     private BigDecimal days15to21;
