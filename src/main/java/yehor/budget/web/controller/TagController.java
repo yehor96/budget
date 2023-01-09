@@ -35,7 +35,7 @@ public class TagController {
 
     @GetMapping
     @Operation(summary = "Get all tags")
-    public List<TagFullDto> getAllTags() {
+    public List<TagFullDto> getAllTags() { //todo: make it pageable
         return tagService.getAll();
     }
 

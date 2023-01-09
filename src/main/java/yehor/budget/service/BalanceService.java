@@ -43,7 +43,6 @@ public class BalanceService {
     private final IncomeSourceService incomeSourceService;
     private final EstimatedExpenseService estimatedExpenseService;
     private final DateManager dateManager;
-    private final CurrencyRateService currencyRateService;
 
     @Transactional(readOnly = true)
     public Optional<BalanceRecordFullDto> getLatest() {

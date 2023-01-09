@@ -50,7 +50,6 @@ class BalanceServiceTest {
     private final IncomeSourceService incomeSourceService = mock(IncomeSourceService.class);
     private final EstimatedExpenseService estimatedExpenseService = mock(EstimatedExpenseService.class);
     private final DateManager dateManager = mock(DateManager.class);
-    private final CurrencyRateService currencyRateService = mock(CurrencyRateService.class);
 
     private final BalanceService balanceService = new BalanceService(
             balanceItemRepository,
@@ -59,8 +58,7 @@ class BalanceServiceTest {
             actorRepository,
             incomeSourceService,
             estimatedExpenseService,
-            dateManager,
-            currencyRateService
+            dateManager
     );
 
     @Test
@@ -121,7 +119,6 @@ class BalanceServiceTest {
         when(balanceConverter.convert(anyList(), any(BalanceRecord.class))).thenReturn(balanceRecord.getBalanceItems());
         when(estimatedExpenseService.getOne()).thenReturn(defaultEstimatedExpenseFullDto());
         when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
-        when(currencyRateService.convert(any(), any(), any())).thenReturn(BigDecimal.TEN);
         when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
         when(incomeSourceService.getIncomeInCurrency(any(), any()))
                 .thenReturn(new BigDecimal("50.00"));
@@ -150,7 +147,6 @@ class BalanceServiceTest {
         when(balanceConverter.convert(anyList(), any(BalanceRecord.class))).thenReturn(balanceRecord.getBalanceItems());
         when(estimatedExpenseService.getOne()).thenReturn(defaultEstimatedExpenseFullDto());
         when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
-        when(currencyRateService.convert(any(), any(), any())).thenReturn(BigDecimal.TEN);
         when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
         when(incomeSourceService.getIncomeInCurrency(any(), any()))
                 .thenReturn(new BigDecimal("50.00"));

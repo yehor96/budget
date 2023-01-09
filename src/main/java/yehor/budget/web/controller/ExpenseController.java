@@ -42,6 +42,8 @@ public class ExpenseController {
     private final DateManager dateManager;
     private final ExpenseService expenseService;
 
+    //todo: add getAllExpenses with pageable (sorted by latest)
+
     @GetMapping
     @Operation(summary = "Get expense by id")
     public ResponseEntity<ExpenseFullDto> getExpense(@RequestParam("id") Long id) {
