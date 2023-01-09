@@ -6,7 +6,7 @@
 
 Application that provides functionality for counting one's budget and financial information. Available API is accessible via http://localhost:8080/swagger
 
-Stack: Java 17, Spring Boot, Spring Data JPA, Swagger, PostgreSQL, Docker, Lombok, Mockito
+Stack: Java 17, Spring Boot, Spring Data, PostgreSQL, Maven, Swagger, Docker, Lombok, Mockito
 
 Set up Postgres Db in Docker before working with the application:
 ```
