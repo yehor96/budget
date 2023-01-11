@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.mockito.ArgumentCaptor;
 import yehor.budget.common.date.DateManager;
-import yehor.budget.common.helper.CalculatorHelper;
+import yehor.budget.common.util.CalculatorHelper;
 import yehor.budget.entity.Category;
 import yehor.budget.entity.Expense;
 import yehor.budget.entity.RowEstimatedExpense;

@@ -1,4 +1,4 @@
-package yehor.budget.common.helper;
+package yehor.budget.common.util;
 
 import org.springframework.stereotype.Component;
 

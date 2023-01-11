@@ -2,7 +2,7 @@ package yehor.budget.web.converter;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import yehor.budget.common.helper.CalculatorHelper;
+import yehor.budget.common.util.CalculatorHelper;
 import yehor.budget.entity.RowEstimatedExpense;
 import yehor.budget.web.dto.full.RowEstimatedExpenseFullDto;
 

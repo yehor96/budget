@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.date.MonthWeek;
+import yehor.budget.common.util.PageableHelper;
 import yehor.budget.entity.Actor;
 import yehor.budget.entity.BalanceItem;
 import yehor.budget.entity.BalanceRecord;
@@ -50,6 +51,7 @@ class BalanceServiceTest {
     private final IncomeSourceService incomeSourceService = mock(IncomeSourceService.class);
     private final EstimatedExpenseService estimatedExpenseService = mock(EstimatedExpenseService.class);
     private final DateManager dateManager = mock(DateManager.class);
+    private final PageableHelper pageableHelper = mock(PageableHelper.class);
 
     private final BalanceService balanceService = new BalanceService(
             balanceItemRepository,
@@ -58,7 +60,8 @@ class BalanceServiceTest {
             actorRepository,
             incomeSourceService,
             estimatedExpenseService,
-            dateManager
+            dateManager,
+            pageableHelper
     );
 
     @Test
@@ -93,8 +96,8 @@ class BalanceServiceTest {
 
         assertTrue(optActualBalanceRecordDto.isPresent());
         BalanceRecordFullDto actualRecordDto = optActualBalanceRecordDto.get();
-        assertNotNull(actualRecordDto.getTotal());
-        assertEquals(DEFAULT_BALANCE_RECORD_TOTAL, actualRecordDto.getTotal());
+        assertNotNull(actualRecordDto.getTotalBalance());
+        assertEquals(DEFAULT_BALANCE_RECORD_TOTAL, actualRecordDto.getTotalBalance());
 
         BalanceEstimateDto balanceEstimateDto = actualRecordDto.getBalanceEstimateDto();
         assertNotNull(balanceEstimateDto);

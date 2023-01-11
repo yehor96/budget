@@ -2,16 +2,13 @@ package yehor.budget.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import yehor.budget.common.Currency;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.date.MonthWeek;
+import yehor.budget.common.util.PageableHelper;
 import yehor.budget.entity.BalanceItem;
 import yehor.budget.entity.BalanceRecord;
 import yehor.budget.repository.ActorRepository;
@@ -43,15 +40,15 @@ public class BalanceService {
     private final IncomeSourceService incomeSourceService;
     private final EstimatedExpenseService estimatedExpenseService;
     private final DateManager dateManager;
+    private final PageableHelper pageableHelper;
 
     @Transactional(readOnly = true)
     public Optional<BalanceRecordFullDto> getLatest() {
-        Pageable pageable = PageRequest.of(0, 1, Sort.Direction.DESC, "date");
-        Page<BalanceRecord> balanceRecords = balanceRecordRepository.findAll(pageable);
-        if (balanceRecords.isEmpty()) {
+        Optional<BalanceRecord> latestOpt = pageableHelper.getLatestByDate(balanceRecordRepository);
+        if (latestOpt.isEmpty()) {
             return Optional.empty();
         }
-        BalanceRecord balanceRecord = balanceRecords.toList().get(0);
+        BalanceRecord balanceRecord = latestOpt.get();
         BalanceRecordFullDto balanceRecordDto = balanceConverter.convert(balanceRecord);
         setTotalBalance(balanceRecordDto);
         setBalanceEstimates(balanceRecord, balanceRecordDto);
@@ -111,7 +108,7 @@ public class BalanceService {
         BigDecimal totalExpensesLeftInMonth = expensesForFullWeekLeft.add(expensesForDaysLeftInWeek);
 
         BalanceEstimateDto balanceEstimateDto = new BalanceEstimateDto(
-                balanceRecordDto.getTotal(),
+                balanceRecordDto.getTotalBalance(),
                 totalExpensesLeftInMonth,
                 balanceRecord.getTotalIncome(),
                 dateManager.getMonthEndDate(currentDate));
@@ -136,7 +133,7 @@ public class BalanceService {
         BigDecimal total = balanceRecordDto.getBalanceItems().stream()
                 .map(item -> item.getCard().add(item.getCash()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        balanceRecordDto.setTotal(total);
+        balanceRecordDto.setTotalBalance(total);
     }
 
     private void validateActorsExist(BalanceRecordLimitedDto balanceRecordDto) {

@@ -8,7 +8,7 @@ import yehor.budget.common.SettingsListener;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.date.MonthWeek;
 import yehor.budget.common.date.FullMonth;
-import yehor.budget.common.helper.CalculatorHelper;
+import yehor.budget.common.util.CalculatorHelper;
 import yehor.budget.common.util.WaiterUtil;
 import yehor.budget.entity.Expense;
 import yehor.budget.entity.RowEstimatedExpense;

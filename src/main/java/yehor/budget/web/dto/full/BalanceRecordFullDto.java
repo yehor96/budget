@@ -13,6 +13,6 @@ public class BalanceRecordFullDto {
     private Long id;
     private LocalDate date;
     private List<BalanceItemFullDto> balanceItems;
-    private BigDecimal total;
+    private BigDecimal totalBalance;
     private BalanceEstimateDto balanceEstimateDto;
 }
