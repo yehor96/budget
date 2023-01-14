@@ -5,6 +5,7 @@ import org.mockito.ArgumentMatchers;
 import yehor.budget.common.util.CalculatorHelper;
 import yehor.budget.entity.RowEstimatedExpense;
 import yehor.budget.repository.RowEstimatedExpenseRepository;
+import yehor.budget.service.client.currency.CurrencyRateService;
 import yehor.budget.web.converter.EstimatedExpenseConverter;
 import yehor.budget.web.dto.full.EstimatedExpenseFullDto;
 

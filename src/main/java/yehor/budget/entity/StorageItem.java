@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import yehor.budget.common.Currency;
+import yehor.budget.service.client.currency.Exchangeable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,7 +27,7 @@ import java.math.BigDecimal;
 @Data
 @Builder
 @Table(name = "storage_items")
-public class StorageItem {
+public class StorageItem implements Exchangeable {
 
     @Id
     @SequenceGenerator(name = "storage_items_sequence", sequenceName = "storage_items_storage_item_id_seq", allocationSize = 1)

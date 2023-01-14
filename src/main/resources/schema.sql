@@ -130,7 +130,7 @@ CREATE TABLE balance_items (
 CREATE TABLE storage_records (
                     storage_record_id BIGSERIAL NOT NULL,
                     date DATE NOT NULL,
-                    total_storage NUMERIC(11,2),
+                    stored_in_total NUMERIC(11,2),
 
                     CONSTRAINT storage_record_pk PRIMARY KEY (storage_record_id)
                     );

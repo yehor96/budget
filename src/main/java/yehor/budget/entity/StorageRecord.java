@@ -37,6 +37,6 @@ public class StorageRecord {
     @Column(name = "date")
     private LocalDate date;
 
-    @Column(name = "total_storage")
-    private BigDecimal totalStorage;
+    @Column(name = "stored_in_total")
+    private BigDecimal storedInTotal;
 }

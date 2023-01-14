@@ -12,6 +12,7 @@ import yehor.budget.entity.BalanceRecord;
 import yehor.budget.repository.ActorRepository;
 import yehor.budget.repository.BalanceItemRepository;
 import yehor.budget.repository.BalanceRecordRepository;
+import yehor.budget.service.client.currency.CurrencyRateService;
 import yehor.budget.web.converter.BalanceConverter;
 import yehor.budget.web.dto.full.BalanceEstimateDto;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
@@ -52,6 +53,7 @@ class BalanceServiceTest {
     private final EstimatedExpenseService estimatedExpenseService = mock(EstimatedExpenseService.class);
     private final DateManager dateManager = mock(DateManager.class);
     private final PageableHelper pageableHelper = mock(PageableHelper.class);
+    private final CurrencyRateService currencyRateService = mock(CurrencyRateService.class);
 
     private final BalanceService balanceService = new BalanceService(
             balanceItemRepository,
@@ -61,16 +63,13 @@ class BalanceServiceTest {
             incomeSourceService,
             estimatedExpenseService,
             dateManager,
-            pageableHelper
+            pageableHelper,
+            currencyRateService
     );
 
     @Test
     void testGetLatestReturnsEmptyOptionalWhenThereAreNoRecords() {
-        @SuppressWarnings("unchecked")
-        Page<BalanceRecord> page = mock(Page.class);
-
-        when(balanceRecordRepository.findAll(any(Pageable.class))).thenReturn(page);
-        when(page.isEmpty()).thenReturn(true);
+        when(pageableHelper.getLatestByDate(any())).thenReturn(Optional.empty());
 
         Optional<BalanceRecordFullDto> result = balanceService.getLatest();
 
@@ -79,16 +78,11 @@ class BalanceServiceTest {
 
     @Test
     void testGetLatestReturnsOptionalWithValueWhenThereAreRecords() {
-        @SuppressWarnings("unchecked")
-        Page<BalanceRecord> page = mock(Page.class);
         BalanceRecordFullDto balanceRecordFullDto = defaultBalanceRecordFullDto();
         BalanceRecord balanceRecord = defaultBalanceRecord();
-        List<BalanceRecord> balanceRecordList = List.of(balanceRecord);
         LocalDate expectedDateEOM = LocalDate.of(2010, 1, 31);
 
-        when(balanceRecordRepository.findAll(any(Pageable.class))).thenReturn(page);
-        when(page.isEmpty()).thenReturn(false);
-        when(page.toList()).thenReturn(balanceRecordList);
+        when(pageableHelper.getLatestByDate(any())).thenReturn(Optional.of(balanceRecord));
         when(balanceConverter.convert(balanceRecord)).thenReturn(balanceRecordFullDto);
         when(dateManager.getMonthEndDate(LocalDate.now())).thenReturn(expectedDateEOM);
 
@@ -123,7 +117,7 @@ class BalanceServiceTest {
         when(estimatedExpenseService.getOne()).thenReturn(defaultEstimatedExpenseFullDto());
         when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
         when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
-        when(incomeSourceService.getIncomeInCurrency(any(), any()))
+        when(currencyRateService.getValueInCurrency(any(), any()))
                 .thenReturn(new BigDecimal("50.00"));
 
         balanceService.save(recordLimitedDto);
@@ -151,7 +145,7 @@ class BalanceServiceTest {
         when(estimatedExpenseService.getOne()).thenReturn(defaultEstimatedExpenseFullDto());
         when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
         when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
-        when(incomeSourceService.getIncomeInCurrency(any(), any()))
+        when(currencyRateService.getValueInCurrency(any(), any()))
                 .thenReturn(new BigDecimal("50.00"));
 
         balanceService.save(recordLimitedDto);
