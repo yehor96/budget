@@ -7,12 +7,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-@Data
 @Builder
-public class BalanceRecordFullDto {
+@Data
+public class StorageRecordFullDto {
     private Long id;
+    private List<StorageItemFullDto> storageItems;
     private LocalDate date;
-    private List<BalanceItemFullDto> balanceItems;
-    private BigDecimal totalBalance;
-    private BalanceEstimateDto balanceEstimateDto;
+    private BigDecimal storedInTotal;
 }

@@ -8,6 +8,7 @@ import yehor.budget.common.exception.ObjectAlreadyExistsException;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.entity.IncomeSource;
 import yehor.budget.repository.IncomeSourceRepository;
+import yehor.budget.service.client.currency.CurrencyRateService;
 import yehor.budget.web.converter.IncomeSourceConverter;
 import yehor.budget.web.dto.TotalIncomeDto;
 import yehor.budget.web.dto.full.IncomeSourceFullDto;
@@ -188,32 +189,6 @@ class IncomeSourceServiceTest {
             verify(incomeSourceRepositoryMock, never())
                     .save(expectedIncomeSource);
         }
-    }
-
-    @Test
-    void testGetIncomeInCurrencyReturnsValueFromDtoWhenCurrencyMatches() {
-        IncomeSourceFullDto incomeDto = defaultIncomeSourceFullDto();
-        BigDecimal expectedValue = incomeDto.getValue();
-
-        BigDecimal actualValue = incomeSourceService.getIncomeInCurrency(incomeDto, Currency.USD);
-
-        assertEquals(expectedValue, actualValue);
-        verify(currencyRateServiceMock, never())
-                .convert(any(), any(), any());
-    }
-
-    @Test
-    void testGetIncomeInCurrencyReturnsExchangedValueWhenCurrencyDoesNotMatch() {
-        IncomeSourceFullDto incomeDto = defaultIncomeSourceFullDto();
-        BigDecimal expectedValue = new BigDecimal("15.00");
-
-        when(currencyRateServiceMock.convert(any(), any(), any())).thenReturn(expectedValue);
-
-        BigDecimal actualValue = incomeSourceService.getIncomeInCurrency(incomeDto, Currency.UAH);
-
-        assertEquals(expectedValue, actualValue);
-        verify(currencyRateServiceMock, times(1))
-                .convert(any(), any(), any());
     }
 
     private void setBaseCurrency(Currency currency) {

@@ -32,7 +32,7 @@ public class BalanceController {
     private final DateManager dateManager;
 
     @GetMapping
-    @Operation(summary = "Get latest balance")
+    @Operation(summary = "Get latest balance record")
     public BalanceRecordFullDto getLatest() {
         return balanceService.getLatest().orElseThrow(
                 () -> new ResponseStatusException(NOT_FOUND, "There are no balance records"));

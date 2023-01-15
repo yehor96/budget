@@ -4,6 +4,7 @@ import yehor.budget.common.Currency;
 
 import java.math.BigDecimal;
 
-public interface CurrencyRateClient {
-    BigDecimal rate(Currency fromCurrency, Currency toCurrency);
+public interface Exchangeable {
+    Currency getCurrency();
+    BigDecimal getValue();
 }

@@ -26,7 +26,8 @@ class SecurityWebMvcTest extends BaseWebMvcTest {
                 ESTIMATED_EXPENSES_URL,
                 INCOME_SOURCES_URL,
                 ACTORS_URL,
-                BALANCE_URL
+                BALANCE_URL,
+                STORAGE_URL
         );
     }
 }

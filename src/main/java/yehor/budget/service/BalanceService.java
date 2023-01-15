@@ -2,21 +2,18 @@ package yehor.budget.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import yehor.budget.common.Currency;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.date.MonthWeek;
-import yehor.budget.entity.BalanceItem;
+import yehor.budget.common.util.PageableHelper;
 import yehor.budget.entity.BalanceRecord;
 import yehor.budget.repository.ActorRepository;
 import yehor.budget.repository.BalanceItemRepository;
 import yehor.budget.repository.BalanceRecordRepository;
+import yehor.budget.service.client.currency.CurrencyRateService;
 import yehor.budget.web.converter.BalanceConverter;
 import yehor.budget.web.dto.full.BalanceEstimateDto;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
@@ -36,6 +33,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BalanceService {
 
+    private static final Currency TOTAL_BALANCE_CURRENCY = Currency.UAH;
+
     private final BalanceItemRepository balanceItemRepository;
     private final BalanceRecordRepository balanceRecordRepository;
     private final BalanceConverter balanceConverter;
@@ -43,15 +42,16 @@ public class BalanceService {
     private final IncomeSourceService incomeSourceService;
     private final EstimatedExpenseService estimatedExpenseService;
     private final DateManager dateManager;
+    private final PageableHelper pageableHelper;
+    private final CurrencyRateService currencyRateService;
 
     @Transactional(readOnly = true)
     public Optional<BalanceRecordFullDto> getLatest() {
-        Pageable pageable = PageRequest.of(0, 1, Sort.Direction.DESC, "date");
-        Page<BalanceRecord> balanceRecords = balanceRecordRepository.findAll(pageable);
-        if (balanceRecords.isEmpty()) {
+        Optional<BalanceRecord> latestOpt = pageableHelper.getLatestByDate(balanceRecordRepository);
+        if (latestOpt.isEmpty()) {
             return Optional.empty();
         }
-        BalanceRecord balanceRecord = balanceRecords.toList().get(0);
+        BalanceRecord balanceRecord = latestOpt.get();
         BalanceRecordFullDto balanceRecordDto = balanceConverter.convert(balanceRecord);
         setTotalBalance(balanceRecordDto);
         setBalanceEstimates(balanceRecord, balanceRecordDto);
@@ -62,12 +62,11 @@ public class BalanceService {
     public void save(BalanceRecordLimitedDto balanceRecordDto) {
         validateActorsExist(balanceRecordDto);
         BalanceRecord balanceRecord = balanceConverter.convert(balanceRecordDto);
-        setCurrentIncomesAndExpenses(balanceRecord);
-        BalanceRecord savedBalanceRecord = balanceRecordRepository.save(balanceRecord);
+        setCurrentIncome(balanceRecord);
+        setExpenses(balanceRecord);
 
-        List<BalanceItem> balanceItems = balanceConverter.convert(
-                balanceRecordDto.getBalanceItems(), savedBalanceRecord);
-        balanceItems.forEach(balanceItemRepository::save);
+        balanceRecordRepository.save(balanceRecord);
+        balanceRecord.getBalanceItems().forEach(balanceItemRepository::save);
     }
 
     BigDecimal getExpensesForFullWeeksLeftInCurrentMonth(MonthWeek currentMonthWeek,
@@ -111,32 +110,34 @@ public class BalanceService {
         BigDecimal totalExpensesLeftInMonth = expensesForFullWeekLeft.add(expensesForDaysLeftInWeek);
 
         BalanceEstimateDto balanceEstimateDto = new BalanceEstimateDto(
-                balanceRecordDto.getTotal(),
+                balanceRecordDto.getTotalBalance(),
                 totalExpensesLeftInMonth,
                 balanceRecord.getTotalIncome(),
                 dateManager.getMonthEndDate(currentDate));
         balanceRecordDto.setBalanceEstimateDto(balanceEstimateDto);
     }
 
-    private void setCurrentIncomesAndExpenses(BalanceRecord balanceRecord) {
+    private void setCurrentIncome(BalanceRecord balanceRecord) {
+        BigDecimal totalIncome = incomeSourceService.getTotalIncome().getIncomeSources().stream()
+                .filter(income -> balanceRecord.getDate().getDayOfMonth() < income.getAccrualDayOfMonth())
+                .map(income -> currencyRateService.getValueInCurrency(income, TOTAL_BALANCE_CURRENCY))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        balanceRecord.setTotalIncome(totalIncome);
+    }
+
+    private void setExpenses(BalanceRecord balanceRecord) {
         EstimatedExpenseFullDto estimatedExpenses = estimatedExpenseService.getOne();
         balanceRecord.setTotal1to7(estimatedExpenses.getTotal1to7());
         balanceRecord.setTotal8to14(estimatedExpenses.getTotal8to14());
         balanceRecord.setTotal15to21(estimatedExpenses.getTotal15to21());
         balanceRecord.setTotal22to31(estimatedExpenses.getTotal22to31());
-
-        BigDecimal totalIncome = incomeSourceService.getTotalIncome().getIncomeSources().stream()
-                .filter(income -> balanceRecord.getDate().getDayOfMonth() < income.getAccrualDayOfMonth())
-                .map(income -> incomeSourceService.getIncomeInCurrency(income, Currency.UAH))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        balanceRecord.setTotalIncome(totalIncome);
     }
 
     private void setTotalBalance(BalanceRecordFullDto balanceRecordDto) {
         BigDecimal total = balanceRecordDto.getBalanceItems().stream()
                 .map(item -> item.getCard().add(item.getCash()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        balanceRecordDto.setTotal(total);
+        balanceRecordDto.setTotalBalance(total);
     }
 
     private void validateActorsExist(BalanceRecordLimitedDto balanceRecordDto) {

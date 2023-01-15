@@ -9,6 +9,8 @@ DROP TABLE IF EXISTS income_sources;
 DROP TABLE IF EXISTS balance_items;
 DROP TABLE IF EXISTS balance_records;
 DROP TABLE IF EXISTS actors;
+DROP TABLE IF EXISTS storage_items;
+DROP TABLE IF EXISTS storage_records;
 
 CREATE TABLE categories (
                        category_id BIGSERIAL NOT NULL,
@@ -123,4 +125,24 @@ CREATE TABLE balance_items (
                     CONSTRAINT balance_item_pk PRIMARY KEY (balance_item_id),
                     CONSTRAINT balance_items_to_actors_fk FOREIGN KEY (actor_id) REFERENCES actors (actor_id),
                     CONSTRAINT balance_items_to_balance_records_fk FOREIGN KEY (balance_record_id) REFERENCES balance_records (balance_record_id)
+                    );
+
+CREATE TABLE storage_records (
+                    storage_record_id BIGSERIAL NOT NULL,
+                    date DATE NOT NULL,
+                    stored_in_total NUMERIC(11,2),
+
+                    CONSTRAINT storage_record_pk PRIMARY KEY (storage_record_id)
+                    );
+
+CREATE TABLE storage_items (
+                    storage_item_id BIGSERIAL NOT NULL,
+                    storage_record_id BIGINT NOT NULL,
+                    currency VARCHAR(3) NOT NULL,
+                    value NUMERIC(11,2) NOT NULL,
+                    name VARCHAR(50) NOT NULL,
+
+                    CONSTRAINT storage_item_pk PRIMARY KEY (storage_item_id),
+                    CONSTRAINT storage_items_to_storage_records_fk FOREIGN KEY (storage_record_id) REFERENCES storage_records (storage_record_id),
+                    CONSTRAINT storage_items_currency_check CHECK (currency IN ('UAH', 'USD'))
                     );

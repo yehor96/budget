@@ -2,8 +2,9 @@ package yehor.budget.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import yehor.budget.common.helper.CalculatorHelper;
+import yehor.budget.common.util.CalculatorHelper;
 import yehor.budget.repository.RowEstimatedExpenseRepository;
+import yehor.budget.service.client.currency.CurrencyRateService;
 import yehor.budget.web.converter.EstimatedExpenseConverter;
 import yehor.budget.web.dto.full.EstimatedExpenseFullDto;
 import yehor.budget.web.dto.full.RowEstimatedExpenseFullDto;

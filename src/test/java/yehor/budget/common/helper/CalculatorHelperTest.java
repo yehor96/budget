@@ -1,6 +1,7 @@
 package yehor.budget.common.helper;
 
 import org.junit.jupiter.api.Test;
+import yehor.budget.common.util.CalculatorHelper;
 
 import java.math.BigDecimal;
 import java.util.Collections;

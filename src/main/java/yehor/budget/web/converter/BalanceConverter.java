@@ -20,9 +20,12 @@ public class BalanceConverter {
     private final ActorConverter actorConverter;
 
     public BalanceRecord convert(BalanceRecordLimitedDto dto) {
-        return BalanceRecord.builder()
+        BalanceRecord balanceRecord = BalanceRecord.builder()
                 .date(dto.getDate())
                 .build();
+        List<BalanceItem> balanceItems = convert(dto.getBalanceItems(), balanceRecord);
+        balanceRecord.setBalanceItems(balanceItems);
+        return balanceRecord;
     }
 
     public List<BalanceItem> convert(List<BalanceItemLimitedDto> itemDtos, BalanceRecord balanceRecord) {

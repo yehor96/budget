@@ -1,11 +1,10 @@
-package yehor.budget.service;
+package yehor.budget.service.client.currency;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import yehor.budget.common.Currency;
 import yehor.budget.common.util.CurrencyUtil;
-import yehor.budget.service.client.currency.CurrencyRateClient;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
@@ -33,6 +32,16 @@ public class CurrencyRateService {
             cachedRates.put(currencyPair, rate);
         }
         return value.multiply(rate);
+    }
+
+    public BigDecimal getValueInCurrency(Exchangeable exchangeable, Currency requiredCurrency) {
+        Currency actualCurrency = exchangeable.getCurrency();
+        BigDecimal value = exchangeable.getValue();
+        if (actualCurrency == requiredCurrency) {
+            return value;
+        } else {
+            return convert(actualCurrency, requiredCurrency, value);
+        }
     }
 
     @PostConstruct
