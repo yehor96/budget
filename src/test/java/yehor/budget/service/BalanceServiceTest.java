@@ -1,8 +1,6 @@
 package yehor.budget.service;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.date.MonthWeek;
 import yehor.budget.common.util.PageableHelper;
@@ -32,11 +30,11 @@ import static common.factory.BalanceFactory.defaultBalanceRecordLimitedDto;
 import static common.factory.EstimatedExpenseFactory.defaultEstimatedExpenseFullDto;
 import static common.factory.IncomeSourceFactory.defaultTotalIncomeDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -102,6 +100,7 @@ class BalanceServiceTest {
                 .subtract(balanceEstimateDto.getExpenseByEOM());
         assertEquals(profit, balanceEstimateDto.getProfitByEOM());
         assertEquals(expectedDateEOM, balanceEstimateDto.getEndOfMonthDate());
+        assertFalse(actualRecordDto.getBalanceItems().isEmpty());
     }
 
     @Test
@@ -112,8 +111,6 @@ class BalanceServiceTest {
 
         when(actorRepository.existsById(any())).thenReturn(true);
         when(balanceConverter.convert(any(BalanceRecordLimitedDto.class))).thenReturn(balanceRecord);
-        when(balanceRecordRepository.save(balanceRecord)).thenReturn(balanceRecord);
-        when(balanceConverter.convert(anyList(), any(BalanceRecord.class))).thenReturn(balanceRecord.getBalanceItems());
         when(estimatedExpenseService.getOne()).thenReturn(defaultEstimatedExpenseFullDto());
         when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
         when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
@@ -140,8 +137,6 @@ class BalanceServiceTest {
 
         when(actorRepository.existsById(any())).thenReturn(true);
         when(balanceConverter.convert(any(BalanceRecordLimitedDto.class))).thenReturn(balanceRecord);
-        when(balanceRecordRepository.save(balanceRecord)).thenReturn(balanceRecord);
-        when(balanceConverter.convert(anyList(), any(BalanceRecord.class))).thenReturn(balanceRecord.getBalanceItems());
         when(estimatedExpenseService.getOne()).thenReturn(defaultEstimatedExpenseFullDto());
         when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
         when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());

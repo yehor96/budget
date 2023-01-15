@@ -17,7 +17,7 @@ public class StorageConverter {
         return StorageRecordFullDto.builder()
                 .id(storageRecord.getId())
                 .date(storageRecord.getDate())
-                .totalStorage(storageRecord.getStoredInTotal())
+                .storedInTotal(storageRecord.getStoredInTotal())
                 .storageItems(convert(storageRecord.getStorageItems()))
                 .build();
     }
@@ -43,7 +43,7 @@ public class StorageConverter {
         return storageRecord;
     }
 
-    private StorageItem convert(StorageItemLimitedDto storageItemLimitedDto, StorageRecord storageRecord) {
+    public StorageItem convert(StorageItemLimitedDto storageItemLimitedDto, StorageRecord storageRecord) {
         return StorageItem.builder()
                 .name(storageItemLimitedDto.getName())
                 .value(storageItemLimitedDto.getValue())
@@ -52,7 +52,7 @@ public class StorageConverter {
                 .build();
     }
 
-    private List<StorageItem> convert(List<StorageItemLimitedDto> storageItemLimitedDtos, StorageRecord storageRecord) {
+    public List<StorageItem> convert(List<StorageItemLimitedDto> storageItemLimitedDtos, StorageRecord storageRecord) {
         return storageItemLimitedDtos.stream().map(item -> convert(item, storageRecord)).toList();
     }
 }

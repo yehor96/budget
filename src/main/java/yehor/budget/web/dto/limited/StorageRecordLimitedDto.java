@@ -9,6 +9,6 @@ import java.util.List;
 @Data
 @Builder
 public class StorageRecordLimitedDto {
-    private final List<StorageItemLimitedDto> storageItems;
-    private final LocalDate date;
+    private List<StorageItemLimitedDto> storageItems;
+    private LocalDate date;
 }

@@ -10,8 +10,8 @@ import java.util.List;
 @Builder
 @Data
 public class StorageRecordFullDto {
-    private final Long id;
-    private final List<StorageItemFullDto> storageItems;
-    private final LocalDate date;
-    private final BigDecimal totalStorage;
+    private Long id;
+    private List<StorageItemFullDto> storageItems;
+    private LocalDate date;
+    private BigDecimal storedInTotal;
 }

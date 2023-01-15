@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 @Data
 @Builder
 public class StorageItemFullDto {
-    private final Long id;
-    private final String name;
-    private final Currency currency;
-    private final BigDecimal value;
+    private Long id;
+    private String name;
+    private Currency currency;
+    private BigDecimal value;
 }
