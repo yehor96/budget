@@ -35,7 +35,7 @@ public class ExpenseConverter {
         return Expense.builder()
                 .value(expenseDto.getValue())
                 .date(expenseDto.getDate())
-                .isRegular(expenseDto.getIsRegular())
+                .isRegular(expenseDto.isRegular())
                 .category(categoryRepository.getById(expenseDto.getCategoryId()))
                 .tags(expenseDto.getTagIds().stream().map(tagRepository::getById).collect(toSet()))
                 .note(expenseDto.getNote())

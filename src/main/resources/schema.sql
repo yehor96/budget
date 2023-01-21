@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS settings;
 DROP TABLE IF EXISTS tags;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS income_sources;
+DROP TABLE IF EXISTS income_source_records;
 DROP TABLE IF EXISTS balance_items;
 DROP TABLE IF EXISTS balance_records;
 DROP TABLE IF EXISTS actors;
@@ -110,10 +111,22 @@ CREATE TABLE balance_records (
                     total_expected_expenses_days_8_14 NUMERIC(11,2),
                     total_expected_expenses_days_15_21 NUMERIC(11,2),
                     total_expected_expenses_days_22_31 NUMERIC(11,2),
-                    total_income NUMERIC(11,2),
 
                     CONSTRAINT balance_record_pk PRIMARY KEY (balance_record_id)
                     );
+
+CREATE TABLE income_source_records (
+                    income_source_record_id BIGSERIAL NOT NULL,
+                    name VARCHAR(50) NOT NULL,
+                    value NUMERIC(11,2) NOT NULL,
+                    currency VARCHAR(3) NOT NULL,
+                    accrual_day INT NOT NULL,
+                    balance_record_id BIGINT NOT NULL,
+
+                    CONSTRAINT income_source_records_pk PRIMARY KEY (income_source_record_id),
+                    CONSTRAINT income_source_records_currency_check CHECK (currency IN ('UAH', 'USD')),
+                    CONSTRAINT income_source_records_to_balance_records_fk FOREIGN KEY (balance_record_id) REFERENCES balance_records (balance_record_id)
+);
 
 CREATE TABLE balance_items (
                     balance_item_id BIGSERIAL NOT NULL,

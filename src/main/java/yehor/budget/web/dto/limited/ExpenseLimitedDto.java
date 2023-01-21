@@ -12,7 +12,7 @@ import java.util.Set;
 public class ExpenseLimitedDto {
     private BigDecimal value;
     private LocalDate date;
-    private Boolean isRegular;
+    private boolean isRegular;
     private Long categoryId;
     private Set<Long> tagIds;
     private String note;

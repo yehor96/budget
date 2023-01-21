@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import yehor.budget.common.date.DateManager;
-import yehor.budget.service.BalanceService;
+import yehor.budget.service.recording.BalanceRecordingService;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 
@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class BalanceWebMvcTest extends BaseWebMvcTest {
 
     @MockBean
-    private BalanceService balanceService;
+    private BalanceRecordingService balanceRecordingService;
     @MockBean
     private DateManager dateManager;
 
@@ -39,7 +39,7 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
     void testGetLatestSuccessfully() throws Exception {
         BalanceRecordFullDto expectedBalanceRecordDto = defaultBalanceRecordFullDto();
 
-        when(balanceService.getLatest()).thenReturn(Optional.of(expectedBalanceRecordDto));
+        when(balanceRecordingService.getLatest()).thenReturn(Optional.of(expectedBalanceRecordDto));
 
         String response = mockMvc.perform(get(BALANCE_URL)
                         .header("Authorization", BASIC_AUTH_STRING))
@@ -55,7 +55,7 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
     void testGetLatestThrowsExceptionWhenNotFound() throws Exception {
         String expectedErrorMessage = "There are no balance records";
 
-        when(balanceService.getLatest()).thenReturn(Optional.empty());
+        when(balanceRecordingService.getLatest()).thenReturn(Optional.empty());
 
         String response = mockMvc.perform(get(BALANCE_URL)
                         .header("Authorization", BASIC_AUTH_STRING))
@@ -77,7 +77,7 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
                         .content(objectMapper.writeValueAsString(balanceRecordDto)))
                 .andExpect(status().isOk());
 
-        verify(balanceService, times(1)).save(balanceRecordDto);
+        verify(balanceRecordingService, times(1)).save(balanceRecordDto);
     }
 
     @Test
@@ -96,7 +96,7 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
 
         verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
 
-        verify(balanceService, never()).save(balanceRecordDto);
+        verify(balanceRecordingService, never()).save(balanceRecordDto);
     }
 
     @Test
@@ -114,7 +114,7 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
 
         verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
 
-        verify(balanceService, never()).save(balanceRecordDto);
+        verify(balanceRecordingService, never()).save(balanceRecordDto);
     }
 
     @Test
@@ -132,6 +132,6 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
 
         verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
 
-        verify(balanceService, never()).save(balanceRecordDto);
+        verify(balanceRecordingService, never()).save(balanceRecordDto);
     }
 }
