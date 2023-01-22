@@ -3,6 +3,7 @@ package common.factory;
 import lombok.experimental.UtilityClass;
 import yehor.budget.common.Currency;
 import yehor.budget.entity.IncomeSource;
+import yehor.budget.entity.recording.IncomeSourceRecord;
 import yehor.budget.web.dto.TotalIncomeDto;
 import yehor.budget.web.dto.full.IncomeSourceFullDto;
 import yehor.budget.web.dto.limited.IncomeSourceLimitedDto;
@@ -45,6 +46,16 @@ public class IncomeSourceFactory {
                 .build();
     }
 
+    public static IncomeSourceRecord defaultIncomeSourceRecord() {
+        return IncomeSourceRecord.builder()
+                .id(DEFAULT_INCOME_SOURCE_ID)
+                .name("My salary")
+                .value(new BigDecimal("100.00"))
+                .currency(DEFAULT_BASE_CURRENCY)
+                .accrualDay(20)
+                .build();
+    }
+
     public static IncomeSource secondIncomeSource() {
         return IncomeSource.builder()
                 .id(2L)
@@ -63,6 +74,20 @@ public class IncomeSourceFactory {
                 .currency(DEFAULT_BASE_CURRENCY)
                 .accrualDayOfMonth(25)
                 .build();
+    }
+
+    public static IncomeSourceRecord secondIncomeSourceRecord() {
+        return IncomeSourceRecord.builder()
+                .id(2L)
+                .name("Dividends")
+                .value(new BigDecimal("10.00"))
+                .currency(DEFAULT_BASE_CURRENCY)
+                .accrualDay(25)
+                .build();
+    }
+
+    public static List<IncomeSourceRecord> defaultIncomeSourceRecords() {
+        return List.of(defaultIncomeSourceRecord(), secondIncomeSourceRecord());
     }
 
     public static IncomeSource notBaseCurrencyIncomeSource() {

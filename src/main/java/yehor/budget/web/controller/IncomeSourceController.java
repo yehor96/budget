@@ -45,7 +45,7 @@ public class IncomeSourceController {
     @Operation(summary = "Save income source")
     public ResponseEntity<IncomeSourceLimitedDto> saveIncomeSource(@RequestBody IncomeSourceLimitedDto incomeSourceDto) {
         try {
-            dateManager.validateDayOfMonth(incomeSourceDto.getAccrualDayOfMonth()); //todo test
+            dateManager.validateDayOfMonth(incomeSourceDto.getAccrualDayOfMonth());
             incomeSourceService.save(incomeSourceDto);
         } catch (ObjectAlreadyExistsException | IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());

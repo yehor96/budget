@@ -169,7 +169,6 @@ public class DateManager implements SettingsListener {
         );
     }
 
-    //todo test
     public void validateDayOfMonth(Integer day) {
         if (day < 1 || day > 31) {
             throw new IllegalArgumentException("Provided value is not a day of month - " + day);

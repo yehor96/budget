@@ -26,12 +26,10 @@ public class BalanceEstimationService {
     private final DateManager dateManager;
     private final CurrencyRateService currencyRateService;
 
-    private Map<MonthWeek, BigDecimal> estimatedExpensePerWeek;
-
     public List<BalanceEstimateDto> getBalanceEstimation(BalanceRecord balanceRecord,
                                                          LocalDate currentDate,
                                                          BigDecimal currentTotal) {
-        estimatedExpensePerWeek = Map.of(
+        Map<MonthWeek, BigDecimal> estimatedExpensePerWeek = Map.of(
                 MonthWeek.DAYS_1_TO_7, balanceRecord.getTotal1to7(),
                 MonthWeek.DAYS_8_TO_14, balanceRecord.getTotal8to14(),
                 MonthWeek.DAYS_15_TO_21, balanceRecord.getTotal15to21(),
@@ -39,23 +37,26 @@ public class BalanceEstimationService {
         );
 
         List<BalanceEstimateDto> estimates = new ArrayList<>();
-        BalanceEstimateDto balanceEstimateDto = estimateForMonth(currentDate, currentTotal, balanceRecord);
+        BalanceEstimateDto balanceEstimateDto = estimateForMonth(
+                currentDate, currentTotal, balanceRecord, estimatedExpensePerWeek);
         estimates.add(balanceEstimateDto);
         for (int i = 0; i < NUMBER_OF_MONTH_TO_ESTIMATE_FOR - 1; i++) {
             BalanceEstimateDto estimate = estimateForMonth(
                     estimates.get(estimates.size() - 1).getEndOfMonthDate().plusDays(1),
                     estimates.get(estimates.size() - 1).getProfitByEndOfMonth(),
-                    balanceRecord);
+                    balanceRecord,
+                    estimatedExpensePerWeek);
             estimates.add(estimate);
         }
         return estimates;
     }
 
     BalanceEstimateDto estimateForMonth(LocalDate currentDate,
-                                               BigDecimal previousTotal,
-                                               BalanceRecord balanceRecord) {
-        BigDecimal totalExpensesLeftInMonth = estimatedExpensesTilEOF(currentDate);
-        BigDecimal totalIncomesLeftInMonth = estimatedIncomesTilEOF(currentDate, balanceRecord);
+                                        BigDecimal previousTotal,
+                                        BalanceRecord balanceRecord,
+                                        Map<MonthWeek, BigDecimal> estimatedExpensePerWeek) {
+        BigDecimal totalExpensesLeftInMonth = getExpensesTilEndOfMonth(currentDate, estimatedExpensePerWeek);
+        BigDecimal totalIncomesLeftInMonth = getIncomesTilEndOfMonth(currentDate, balanceRecord);
         return new BalanceEstimateDto(
                 previousTotal,
                 totalExpensesLeftInMonth,
@@ -63,24 +64,24 @@ public class BalanceEstimationService {
                 dateManager.getMonthEndDate(currentDate));
     }
 
-    BigDecimal estimatedIncomesTilEOF(LocalDate currentDate, BalanceRecord balanceRecord) {
+    BigDecimal getIncomesTilEndOfMonth(LocalDate currentDate, BalanceRecord balanceRecord) {
         return balanceRecord.getIncomeSourceRecords().stream()
                 .filter(income -> currentDate.getDayOfMonth() < income.getAccrualDay())
                 .map(income -> currencyRateService.getValueInCurrency(income, CURRENCY_FOR_ESTIMATION))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    BigDecimal estimatedExpensesTilEOF(LocalDate currentDate) {
+    BigDecimal getExpensesTilEndOfMonth(LocalDate currentDate, Map<MonthWeek, BigDecimal> estimatedExpensePerWeek) {
         MonthWeek currentMonthWeek = MonthWeek.of(currentDate);
-        BigDecimal expensesForFullWeekLeft = getExpensesForFullWeeksLeftTilEOF(
+        BigDecimal expensesForFullWeekLeft = getExpensesForFullWeeksLeftTilEndOfMonth(
                 currentMonthWeek, estimatedExpensePerWeek);
         BigDecimal expensesForDaysLeftInWeek = getExpensesForDaysLeftInCurrentWeek(
                 currentMonthWeek, currentDate, estimatedExpensePerWeek);
         return expensesForFullWeekLeft.add(expensesForDaysLeftInWeek);
     }
 
-    BigDecimal getExpensesForFullWeeksLeftTilEOF(MonthWeek currentMonthWeek,
-                                                 Map<MonthWeek, BigDecimal> estimatedExpensePerWeek) {
+    BigDecimal getExpensesForFullWeeksLeftTilEndOfMonth(MonthWeek currentMonthWeek,
+                                                        Map<MonthWeek, BigDecimal> estimatedExpensePerWeek) {
         List<MonthWeek> monthWeeksAfter = currentMonthWeek.getMonthWeeksAfter();
         return estimatedExpensePerWeek.entrySet().stream()
                 .filter(weekExpense -> monthWeeksAfter.contains(weekExpense.getKey()))

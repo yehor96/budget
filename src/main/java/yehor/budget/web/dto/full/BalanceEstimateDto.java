@@ -1,5 +1,6 @@
 package yehor.budget.web.dto.full;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -7,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @ToString
+@EqualsAndHashCode
 public final class BalanceEstimateDto {
 
     @Getter
