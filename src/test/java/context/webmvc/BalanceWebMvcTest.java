@@ -11,7 +11,7 @@ import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 import java.util.Collections;
 import java.util.Optional;
 
-import static common.factory.BalanceFactory.defaultBalanceRecordFullDto;
+import static common.factory.BalanceFactory.balanceRecordFullDtoWithEstimates;
 import static common.factory.BalanceFactory.defaultBalanceRecordLimitedDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,7 +37,7 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
 
     @Test
     void testGetLatestSuccessfully() throws Exception {
-        BalanceRecordFullDto expectedBalanceRecordDto = defaultBalanceRecordFullDto();
+        BalanceRecordFullDto expectedBalanceRecordDto = balanceRecordFullDtoWithEstimates();
 
         when(balanceRecordingService.getLatest()).thenReturn(Optional.of(expectedBalanceRecordDto));
 

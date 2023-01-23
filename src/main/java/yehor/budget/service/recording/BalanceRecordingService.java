@@ -60,10 +60,7 @@ public class BalanceRecordingService {
     public void save(BalanceRecordLimitedDto balanceRecordDto) {
         validateActorsExist(balanceRecordDto);
         BalanceRecord balanceRecord = balanceConverter.convert(balanceRecordDto);
-
-        //todo these values should be stored in separate repository with expense records
         saveEstimatedExpenses(balanceRecord);
-
         balanceRecordRepository.save(balanceRecord);
         saveIncomeSourceRecords(balanceRecord);
         balanceRecord.getBalanceItems().forEach(balanceItemRepository::save);

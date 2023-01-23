@@ -1,11 +1,12 @@
 package yehor.budget.service.recording;
 
 import org.junit.jupiter.api.Test;
-import yehor.budget.common.date.MonthWeek;
+import org.springframework.util.CollectionUtils;
 import yehor.budget.common.util.PageableHelper;
 import yehor.budget.entity.Actor;
 import yehor.budget.entity.recording.BalanceItem;
 import yehor.budget.entity.recording.BalanceRecord;
+import yehor.budget.entity.recording.IncomeSourceRecord;
 import yehor.budget.repository.ActorRepository;
 import yehor.budget.repository.recording.BalanceItemRepository;
 import yehor.budget.repository.recording.BalanceRecordRepository;
@@ -21,16 +22,18 @@ import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static common.factory.BalanceFactory.DEFAULT_BALANCE_RECORD_TOTAL;
 import static common.factory.BalanceFactory.balanceRecordWithNotSetExpensesAndIncome;
+import static common.factory.BalanceFactory.defaultBalanceEstimationDto;
 import static common.factory.BalanceFactory.defaultBalanceRecord;
 import static common.factory.BalanceFactory.defaultBalanceRecordFullDto;
 import static common.factory.BalanceFactory.defaultBalanceRecordLimitedDto;
 import static common.factory.EstimatedExpenseFactory.defaultEstimatedExpenseFullDto;
+import static common.factory.IncomeSourceFactory.defaultIncomeSourceRecord;
 import static common.factory.IncomeSourceFactory.defaultTotalIncomeDto;
+import static common.factory.IncomeSourceFactory.secondIncomeSourceRecord;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -78,104 +81,78 @@ class BalanceRecordingServiceTest {
         assertTrue(result.isEmpty());
     }
 
-//    @Test
-//    void testGetLatestReturnsOptionalWithValueWhenThereAreRecords() {
-//        BalanceRecordFullDto balanceRecordFullDto = defaultBalanceRecordFullDto();
-//        BalanceRecord balanceRecord = defaultBalanceRecord();
-//        LocalDate expectedDateEOM = LocalDate.of(2010, 1, 31);
-//
-//        when(pageableHelper.getLatestByDate(any())).thenReturn(Optional.of(balanceRecord));
-//        when(balanceConverter.convert(balanceRecord)).thenReturn(balanceRecordFullDto);
-//        when(dateManager.getMonthEndDate(LocalDate.now())).thenReturn(expectedDateEOM);
-//
-//        Optional<BalanceRecordFullDto> optActualBalanceRecordDto = balanceRecordingService.getLatest();
-//
-//        assertTrue(optActualBalanceRecordDto.isPresent());
-//        BalanceRecordFullDto actualRecordDto = optActualBalanceRecordDto.get();
-//        assertNotNull(actualRecordDto.getTotalBalance());
-//        assertEquals(DEFAULT_BALANCE_RECORD_TOTAL, actualRecordDto.getTotalBalance());
-//
-//        BalanceEstimateDto balanceEstimateDto = actualRecordDto.getBalanceEstimate();
-//        assertNotNull(balanceEstimateDto);
-//        assertNotNull(balanceEstimateDto.getExpenseByEndOfMonth());
-//        assertEquals(balanceRecord.getTotalIncome(), balanceEstimateDto.getIncomeByEndOfMonth());
-//        BigDecimal profit = balanceEstimateDto.getIncomeByEndOfMonth()
-//                .add(balanceEstimateDto.getPreviousTotal())
-//                .subtract(balanceEstimateDto.getExpenseByEndOfMonth());
-//        assertEquals(profit, balanceEstimateDto.getProfitByEndOfMonth());
-//        assertEquals(expectedDateEOM, balanceEstimateDto.getEndOfMonthDate());
-//        assertFalse(actualRecordDto.getBalanceItems().isEmpty());
-//    }
-//
-//    @Test
-//    void testSaveSuccessfullyWhileSettingExpensesAndIncomeWithAllSourcesIncludedIntoTotalIncome() {
-//        BalanceRecordLimitedDto recordLimitedDto = defaultBalanceRecordLimitedDto();
-//        BalanceRecord balanceRecord = balanceRecordWithNotSetExpensesAndIncome();
-//        balanceRecord.setDate(LocalDate.of(2022, 10, 10));
-//
-//        when(actorRepository.existsById(any())).thenReturn(true);
-//        when(balanceConverter.convert(any(BalanceRecordLimitedDto.class))).thenReturn(balanceRecord);
-//        when(estimatedExpenseService.getOne()).thenReturn(defaultEstimatedExpenseFullDto());
-//        when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
-//        when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
-//        when(currencyRateService.getValueInCurrency(any(), any()))
-//                .thenReturn(new BigDecimal("50.00"));
-//
-//        balanceRecordingService.save(recordLimitedDto);
-//
-//        assertNotNull(balanceRecord.getTotalIncome());
-//        assertNotNull(balanceRecord.getTotal1to7());
-//        assertNotNull(balanceRecord.getTotal8to14());
-//        assertNotNull(balanceRecord.getTotal15to21());
-//        assertNotNull(balanceRecord.getTotal22to31());
-//        assertEquals(new BigDecimal("100.00"), balanceRecord.getTotalIncome());
-//        verify(balanceRecordRepository, times(1)).save(balanceRecord);
-//        verify(balanceItemRepository, times(2)).save(any(BalanceItem.class));
-//    }
-//
-//    @Test
-//    void testSaveSuccessfullyWhileSettingExpensesAndIncomeWithOnlySourcesAfterBalanceRecordDateIncludedIntoTotalIncome() {
-//        BalanceRecordLimitedDto recordLimitedDto = defaultBalanceRecordLimitedDto();
-//        BalanceRecord balanceRecord = balanceRecordWithNotSetExpensesAndIncome();
-//        balanceRecord.setDate(LocalDate.of(2022, 10, 23));
-//
-//        when(actorRepository.existsById(any())).thenReturn(true);
-//        when(balanceConverter.convert(any(BalanceRecordLimitedDto.class))).thenReturn(balanceRecord);
-//        when(estimatedExpenseService.getOne()).thenReturn(defaultEstimatedExpenseFullDto());
-//        when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
-//        when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
-//        when(currencyRateService.getValueInCurrency(any(), any()))
-//                .thenReturn(new BigDecimal("50.00"));
-//
-//        balanceRecordingService.save(recordLimitedDto);
-//
-//        assertNotNull(balanceRecord.getTotalIncome());
-//        assertNotNull(balanceRecord.getTotal1to7());
-//        assertNotNull(balanceRecord.getTotal8to14());
-//        assertNotNull(balanceRecord.getTotal15to21());
-//        assertNotNull(balanceRecord.getTotal22to31());
-//        assertEquals(new BigDecimal("50.00"), balanceRecord.getTotalIncome());
-//        verify(balanceRecordRepository, times(1)).save(balanceRecord);
-//        verify(balanceItemRepository, times(2)).save(any(BalanceItem.class));
-//    }
-//
-//    @Test
-//    void testTrySavingWithNotExistingActors() {
-//        BalanceRecordLimitedDto recordLimitedDto = defaultBalanceRecordLimitedDto();
-//        BalanceRecord balanceRecord = defaultBalanceRecord();
-//        List<Long> invalidIds = balanceRecord.getBalanceItems().stream().map(BalanceItem::getActor).map(Actor::getId).toList();
-//
-//        when(actorRepository.existsById(any())).thenReturn(false);
-//
-//        try {
-//            balanceRecordingService.save(recordLimitedDto);
-//            fail("Exception was not thrown");
-//        } catch (Exception exception) {
-//            assertEquals(IllegalArgumentException.class, exception.getClass());
-//            assertEquals("Provided actor ids do not exist: " + invalidIds, exception.getMessage());
-//        }
-//        verify(balanceRecordRepository, never()).save(balanceRecord);
-//        verify(balanceItemRepository, never()).save(any(BalanceItem.class));
-//    }
+    @Test
+    void testGetLatestReturnsOptionalWithValueWhenThereAreRecords() {
+        BalanceRecordFullDto balanceRecordFullDto = defaultBalanceRecordFullDto();
+        BalanceRecord balanceRecord = defaultBalanceRecord();
+        LocalDate expectedDateEOM = LocalDate.of(2023, 1, 31);
+
+        when(pageableHelper.getLatestByDate(any())).thenReturn(Optional.of(balanceRecord));
+        when(balanceConverter.convert(balanceRecord)).thenReturn(balanceRecordFullDto);
+        when(balanceEstimationService.getBalanceEstimation(any(), any(), any()))
+                .thenReturn(List.of(defaultBalanceEstimationDto()));
+
+        Optional<BalanceRecordFullDto> optActualBalanceRecordDto = balanceRecordingService.getLatest();
+
+        assertTrue(optActualBalanceRecordDto.isPresent());
+        BalanceRecordFullDto actualRecordDto = optActualBalanceRecordDto.get();
+        assertNotNull(actualRecordDto.getTotalBalance());
+        assertEquals(DEFAULT_BALANCE_RECORD_TOTAL, actualRecordDto.getTotalBalance());
+
+        assertFalse(CollectionUtils.isEmpty(actualRecordDto.getBalanceEstimates()));
+        BalanceEstimateDto balanceEstimateDto = actualRecordDto.getBalanceEstimates().get(0);
+        assertNotNull(balanceEstimateDto);
+        assertNotNull(balanceEstimateDto.getExpenseByEndOfMonth());
+        BigDecimal profit = balanceEstimateDto.getIncomeByEndOfMonth()
+                .add(balanceEstimateDto.getPreviousTotal())
+                .subtract(balanceEstimateDto.getExpenseByEndOfMonth());
+        assertEquals(profit, balanceEstimateDto.getProfitByEndOfMonth());
+        assertEquals(expectedDateEOM, balanceEstimateDto.getEndOfMonthDate());
+        assertFalse(CollectionUtils.isEmpty(actualRecordDto.getBalanceItems()));
+    }
+
+    @Test
+    void testSaveSuccessfullyWhileSettingExpensesAndSavingIncomes() {
+        BalanceRecordLimitedDto recordLimitedDto = defaultBalanceRecordLimitedDto();
+        BalanceRecord balanceRecord = balanceRecordWithNotSetExpensesAndIncome();
+        balanceRecord.setDate(LocalDate.of(2022, 10, 10));
+
+        when(actorRepository.existsById(any())).thenReturn(true);
+        when(balanceConverter.convert(any(BalanceRecordLimitedDto.class))).thenReturn(balanceRecord);
+        when(estimatedExpenseService.getOne()).thenReturn(defaultEstimatedExpenseFullDto());
+        when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
+        when(incomeSourceConverter.convert(any(), any()))
+                .thenReturn(defaultIncomeSourceRecord())
+                .thenReturn(secondIncomeSourceRecord());
+
+        balanceRecordingService.save(recordLimitedDto);
+
+        assertNotNull(balanceRecord.getTotal1to7());
+        assertNotNull(balanceRecord.getTotal8to14());
+        assertNotNull(balanceRecord.getTotal15to21());
+        assertNotNull(balanceRecord.getTotal22to31());
+        verify(balanceRecordRepository, times(1)).save(balanceRecord);
+        verify(balanceItemRepository, times(2)).save(any(BalanceItem.class));
+        verify(incomeSourceRecordRepository, times(2)).save(any(IncomeSourceRecord.class));
+    }
+
+    @Test
+    void testTrySavingWithNotExistingActors() {
+        BalanceRecordLimitedDto recordLimitedDto = defaultBalanceRecordLimitedDto();
+        BalanceRecord balanceRecord = defaultBalanceRecord();
+        List<Long> invalidIds = balanceRecord.getBalanceItems().stream().map(BalanceItem::getActor).map(Actor::getId).toList();
+
+        when(actorRepository.existsById(any())).thenReturn(false);
+
+        try {
+            balanceRecordingService.save(recordLimitedDto);
+            fail("Exception was not thrown");
+        } catch (Exception exception) {
+            assertEquals(IllegalArgumentException.class, exception.getClass());
+            assertEquals("Provided actor ids do not exist: " + invalidIds, exception.getMessage());
+        }
+        verify(balanceRecordRepository, never()).save(balanceRecord);
+        verify(balanceItemRepository, never()).save(any(BalanceItem.class));
+    }
 
 }
