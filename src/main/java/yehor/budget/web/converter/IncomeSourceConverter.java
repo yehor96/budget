@@ -2,6 +2,8 @@ package yehor.budget.web.converter;
 
 import org.springframework.stereotype.Component;
 import yehor.budget.entity.IncomeSource;
+import yehor.budget.entity.recording.BalanceRecord;
+import yehor.budget.entity.recording.IncomeSourceRecord;
 import yehor.budget.web.dto.full.IncomeSourceFullDto;
 import yehor.budget.web.dto.limited.IncomeSourceLimitedDto;
 
@@ -33,6 +35,17 @@ public class IncomeSourceConverter {
                 .value(incomeSourceDto.getValue())
                 .currency(incomeSourceDto.getCurrency())
                 .accrualDay(incomeSourceDto.getAccrualDayOfMonth())
+                .build();
+    }
+
+    public IncomeSourceRecord convert(IncomeSourceFullDto incomeSourceDto, BalanceRecord balanceRecord) {
+        return IncomeSourceRecord.builder()
+                .id(incomeSourceDto.getId())
+                .name(incomeSourceDto.getName())
+                .value(incomeSourceDto.getValue())
+                .currency(incomeSourceDto.getCurrency())
+                .accrualDay(incomeSourceDto.getAccrualDayOfMonth())
+                .balanceRecord(balanceRecord)
                 .build();
     }
 }

@@ -1,4 +1,4 @@
-package yehor.budget.entity;
+package yehor.budget.entity.recording;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,6 +37,9 @@ public class BalanceRecord {
     @OneToMany(mappedBy = "balanceRecord")
     private List<BalanceItem> balanceItems;
 
+    @OneToMany(mappedBy = "balanceRecord")
+    private List<IncomeSourceRecord> incomeSourceRecords;
+
     @Column(name = "total_expected_expenses_days_1_7")
     private BigDecimal total1to7;
 
@@ -48,7 +51,4 @@ public class BalanceRecord {
 
     @Column(name = "total_expected_expenses_days_22_31")
     private BigDecimal total22to31;
-
-    @Column(name = "total_income")
-    private BigDecimal totalIncome;
 }

@@ -169,6 +169,12 @@ public class DateManager implements SettingsListener {
         );
     }
 
+    public void validateDayOfMonth(Integer day) {
+        if (day < 1 || day > 31) {
+            throw new IllegalArgumentException("Provided value is not a day of month - " + day);
+        }
+    }
+
     public int getLastDayOfMonthByDate(LocalDate date) {
         int lastDay;
         if (date.getMonth() == (Month.FEBRUARY)) {

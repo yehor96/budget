@@ -351,6 +351,35 @@ class DateManagerTest {
     }
 
     @ParameterizedTest
+    @MethodSource("dayProvider")
+    void testValidateDayOfMonth(int day) {
+        setUp(defaultSettings());
+        dateManager.validateDayOfMonth(day);
+    }
+
+    static Stream<Integer> dayProvider() {
+        return Stream.of(1, 29, 31);
+    }
+
+    @ParameterizedTest
+    @MethodSource("illegalDayProvider")
+    void testValidateDayOfMonthIllegalValue(int day) {
+        setUp(defaultSettings());
+        try {
+            dateManager.validateDayOfMonth(day);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+            IllegalArgumentException exception = (IllegalArgumentException) e;
+            assertEquals("Provided value is not a day of month - " + day, exception.getMessage());
+        }
+    }
+
+    static Stream<Integer> illegalDayProvider() {
+        return Stream.of(-1, 0, 32);
+    }
+
+    @ParameterizedTest
     @MethodSource("dateProvider")
     void testGetLastDayOfMonthByDate(Pair<LocalDate, Integer> paramPair) {
         setUp(defaultSettings());

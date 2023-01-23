@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.common.date.DateManager;
-import yehor.budget.service.BalanceService;
+import yehor.budget.service.recording.BalanceRecordingService;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
 import yehor.budget.web.dto.limited.BalanceItemLimitedDto;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
@@ -28,13 +28,13 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Tag(name = "Balance Controller")
 public class BalanceController {
 
-    private final BalanceService balanceService;
+    private final BalanceRecordingService balanceRecordingService;
     private final DateManager dateManager;
 
     @GetMapping
     @Operation(summary = "Get latest balance record")
     public BalanceRecordFullDto getLatest() {
-        return balanceService.getLatest().orElseThrow(
+        return balanceRecordingService.getLatest().orElseThrow(
                 () -> new ResponseStatusException(NOT_FOUND, "There are no balance records"));
     }
 
@@ -46,7 +46,7 @@ public class BalanceController {
             validateBalanceItems(balanceRecordDto);
             validateActors(balanceRecordDto);
 
-            balanceService.save(balanceRecordDto);
+            balanceRecordingService.save(balanceRecordDto);
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
         }

@@ -1,9 +1,10 @@
 package common.factory;
 
 import lombok.experimental.UtilityClass;
-import yehor.budget.entity.BalanceItem;
-import yehor.budget.entity.BalanceRecord;
-import yehor.budget.web.dto.TotalIncomeDto;
+import yehor.budget.entity.recording.BalanceItem;
+import yehor.budget.entity.recording.BalanceRecord;
+import yehor.budget.entity.recording.IncomeSourceRecord;
+import yehor.budget.web.dto.full.BalanceEstimateDto;
 import yehor.budget.web.dto.full.BalanceItemFullDto;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
 import yehor.budget.web.dto.full.EstimatedExpenseFullDto;
@@ -21,7 +22,7 @@ import static common.factory.ActorFactory.defaultActorFullDto;
 import static common.factory.ActorFactory.secondActor;
 import static common.factory.ActorFactory.secondActorFullDto;
 import static common.factory.EstimatedExpenseFactory.defaultEstimatedExpenseFullDto;
-import static common.factory.IncomeSourceFactory.defaultTotalIncomeDto;
+import static common.factory.IncomeSourceFactory.defaultIncomeSourceRecords;
 
 @UtilityClass
 public class BalanceFactory {
@@ -38,9 +39,26 @@ public class BalanceFactory {
                 .build();
     }
 
+    public static BalanceRecordFullDto balanceRecordFullDtoWithEstimates() {
+        return BalanceRecordFullDto.builder()
+                .id(DEFAULT_BALANCE_RECORD_ID)
+                .date(LocalDate.now())
+                .balanceItems(defaultBalanceItemFullDtoList())
+                .balanceEstimates(List.of(defaultBalanceEstimationDto()))
+                .build();
+    }
+
+    public static BalanceEstimateDto defaultBalanceEstimationDto() {
+        return new BalanceEstimateDto(
+                new BigDecimal("10.00"),
+                new BigDecimal("10.00"),
+                new BigDecimal("10.00"),
+                LocalDate.of(2023, 1, 31)
+        );
+    }
+
     public static BalanceRecord defaultBalanceRecord() {
         EstimatedExpenseFullDto estimatedExpenseFullDto = defaultEstimatedExpenseFullDto();
-        TotalIncomeDto incomeSource = defaultTotalIncomeDto();
         return BalanceRecord.builder()
                 .id(DEFAULT_BALANCE_RECORD_ID)
                 .date(LocalDate.now())
@@ -49,8 +67,24 @@ public class BalanceFactory {
                 .total8to14(estimatedExpenseFullDto.getTotal8to14())
                 .total15to21(estimatedExpenseFullDto.getTotal15to21())
                 .total22to31(estimatedExpenseFullDto.getTotal22to31())
-                .totalIncome(incomeSource.getTotal())
                 .build();
+    }
+
+    public static BalanceRecord balanceRecordWithSetIncomes() {
+        EstimatedExpenseFullDto estimatedExpenseFullDto = defaultEstimatedExpenseFullDto();
+        BalanceRecord balanceRecord = BalanceRecord.builder()
+                .id(DEFAULT_BALANCE_RECORD_ID)
+                .date(LocalDate.now())
+                .balanceItems(defaultBalanceItemList())
+                .total1to7(estimatedExpenseFullDto.getTotal1to7())
+                .total8to14(estimatedExpenseFullDto.getTotal8to14())
+                .total15to21(estimatedExpenseFullDto.getTotal15to21())
+                .total22to31(estimatedExpenseFullDto.getTotal22to31())
+                .build();
+        List<IncomeSourceRecord> incomeSourceRecords = defaultIncomeSourceRecords();
+        incomeSourceRecords.forEach(i -> i.setBalanceRecord(balanceRecord));
+        balanceRecord.setIncomeSourceRecords(incomeSourceRecords);
+        return balanceRecord;
     }
 
     public static BalanceRecord balanceRecordWithNotSetExpensesAndIncome() {

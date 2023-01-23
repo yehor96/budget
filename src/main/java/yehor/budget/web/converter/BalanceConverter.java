@@ -2,8 +2,8 @@ package yehor.budget.web.converter;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import yehor.budget.entity.BalanceItem;
-import yehor.budget.entity.BalanceRecord;
+import yehor.budget.entity.recording.BalanceItem;
+import yehor.budget.entity.recording.BalanceRecord;
 import yehor.budget.repository.ActorRepository;
 import yehor.budget.web.dto.full.BalanceItemFullDto;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;

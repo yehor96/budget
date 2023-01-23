@@ -1,10 +1,11 @@
-package yehor.budget.entity;
+package yehor.budget.entity.recording;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import yehor.budget.entity.Actor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

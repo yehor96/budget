@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import yehor.budget.common.date.DateManager;
 import yehor.budget.common.exception.ObjectAlreadyExistsException;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.service.IncomeSourceService;
@@ -31,6 +32,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class IncomeSourceController {
 
     private final IncomeSourceService incomeSourceService;
+    private final DateManager dateManager;
 
     @GetMapping
     @Operation(summary = "Get total income source")
@@ -43,8 +45,9 @@ public class IncomeSourceController {
     @Operation(summary = "Save income source")
     public ResponseEntity<IncomeSourceLimitedDto> saveIncomeSource(@RequestBody IncomeSourceLimitedDto incomeSourceDto) {
         try {
+            dateManager.validateDayOfMonth(incomeSourceDto.getAccrualDayOfMonth());
             incomeSourceService.save(incomeSourceDto);
-        } catch (ObjectAlreadyExistsException exception) {
+        } catch (ObjectAlreadyExistsException | IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
         }
         return new ResponseEntity<>(HttpStatus.OK);
