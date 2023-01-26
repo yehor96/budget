@@ -4,11 +4,15 @@
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/yehor96/budget/build.yml?branch=master&style=plastic)
 ![Sonar Tests](https://img.shields.io/sonar/tests/yehor96_budget/master?compact_message&server=https%3A%2F%2Fsonarcloud.io&style=plastic)
 
-Application that provides functionality for counting one's budget and financial information. Available API is accessible via http://localhost:8080/swagger
+Application that provides functionality for counting one's budget and financial information.
+Stack: Java 17, Spring Boot, Spring Data, Hibernate, PostgreSQL, Maven, Swagger, Docker, Lombok, Mockito
 
-Stack: Java 17, Spring Boot, Spring Data, PostgreSQL, Maven, Swagger, Docker, Lombok, Mockito
-
-Set up Postgres Db in Docker before working with the application:
-```
-docker run --name budget -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=root -e POSTGRES_DB=budget -d postgres:alpine
-```
+Setup:
+- Make sure Java, Maven and Docker are installed. Docker should be up and running
+- Clone repository 
+ `git clone git@github.com:yehor96/budget.git budget-app`
+- Enter project root folder and build a jar file:
+ `mvn clean package -Dmaven.test.skip`
+- Run docker compose to start the application:
+ `docker-compose up --build`
+- Access application at http://localhost:18080/swagger-ui/index.html (currently only API via Swagger)
