@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+
+  budget-app:
+    build: .
+    container_name: budget-app
+    depends_on:
+      - budget-db
+    ports:
+      - target: 8080
+        published: 18080
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://budget-db:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=root
+
+  budget-db:
+    image: postgres
+    container_name: budget-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=budget
