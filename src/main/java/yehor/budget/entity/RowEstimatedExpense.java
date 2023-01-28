@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,7 +35,6 @@ public class RowEstimatedExpense {
             strategy = GenerationType.SEQUENCE,
             generator = "row_estimated_expenses_sequence")
     @Column(name = "row_estimated_expense_id")
-    @ToString.Exclude
     private Long id;
 
     @OneToOne
