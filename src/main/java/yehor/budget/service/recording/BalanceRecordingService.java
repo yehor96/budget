@@ -62,14 +62,19 @@ public class BalanceRecordingService {
         BalanceRecord balanceRecord = balanceConverter.convert(balanceRecordDto);
         saveEstimatedExpenses(balanceRecord);
         balanceRecordRepository.save(balanceRecord);
+        log.info("{} is saved", balanceRecord);
         saveIncomeSourceRecords(balanceRecord);
         balanceRecord.getBalanceItems().forEach(balanceItemRepository::save);
+        log.info("List of saved balance items: {}", balanceRecord.getBalanceItems());
     }
 
     private void saveIncomeSourceRecords(BalanceRecord balanceRecord) {
         incomeSourceService.getTotalIncome().getIncomeSources().stream()
                 .map(incomeSource -> incomeSourceConverter.convert(incomeSource, balanceRecord))
-                .forEach(incomeSourceRecordRepository::save);
+                .forEach(incSourceRec -> {
+                    incomeSourceRecordRepository.save(incSourceRec);
+                    log.info("{} is saved", incSourceRec);
+                });
     }
 
     private void saveEstimatedExpenses(BalanceRecord balanceRecord) {

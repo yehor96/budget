@@ -33,8 +33,8 @@ public class BalanceItem {
     @Column(name = "balance_item_id")
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "actor_id")
+    @ManyToOne
+    @JoinColumn(name = "actor_id", nullable = false)
     private Actor actor;
 
     @ManyToOne

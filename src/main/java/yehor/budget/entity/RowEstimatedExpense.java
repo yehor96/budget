@@ -56,8 +56,7 @@ public class RowEstimatedExpense {
     @Override
     public String toString() {
         return "RowEstimatedExpense{" +
-                "id=" + id +
-                ", category=" + category.getId() +
+                "categoryId=" + category.getId() +
                 ", days1to7=" + days1to7 +
                 ", days8to14=" + days8to14 +
                 ", days15to21=" + days15to21 +
