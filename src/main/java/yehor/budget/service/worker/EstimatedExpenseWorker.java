@@ -10,10 +10,10 @@ import yehor.budget.common.date.MonthWeek;
 import yehor.budget.common.date.FullMonth;
 import yehor.budget.common.util.CalculatorHelper;
 import yehor.budget.common.util.WaiterUtil;
+import yehor.budget.entity.Category;
 import yehor.budget.entity.Expense;
 import yehor.budget.entity.RowEstimatedExpense;
 import yehor.budget.entity.Settings;
-import yehor.budget.repository.CategoryRepository;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.repository.RowEstimatedExpenseRepository;
 import yehor.budget.service.SettingsService;
@@ -42,7 +42,6 @@ public class EstimatedExpenseWorker implements SettingsListener {
     public static final Pattern EXPECTED_EXPENSE_END_DATE_SCOPE_PATTERN = Pattern.compile("\\d+[dMy]$");
 
     private final ExpenseRepository expenseRepository;
-    private final CategoryRepository categoryRepository;
     private final RowEstimatedExpenseRepository rowEstimatedExpenseRepository;
     private final CalculatorHelper calculatorHelper;
     private final SettingsService settingsService;
@@ -113,19 +112,19 @@ public class EstimatedExpenseWorker implements SettingsListener {
                 long numOfMonthsUnderCalculation = expenses.stream()
                         .map(e -> FullMonth.of(e.getDate()))
                         .distinct().count();
-                Map<Long, List<Expense>> categoryIdToExpenseMap = expenses.stream().collect(
-                        groupingBy(expense -> expense.getCategory().getId()));
+                Map<Category, List<Expense>> categorisedExpenses = expenses.stream().collect(
+                        groupingBy(Expense::getCategory));
 
-                for (var categoryExpenses : categoryIdToExpenseMap.entrySet()) {
-                    Long categoryId = categoryExpenses.getKey();
+                for (var categorisedExpense : categorisedExpenses.entrySet()) {
+                    Category category = categorisedExpense.getKey();
 
-                    Map<MonthWeek, BigDecimal> weeksListMap = categoryExpenses.getValue().stream()
+                    Map<MonthWeek, BigDecimal> weeksListMap = categorisedExpense.getValue().stream()
                             .collect(groupingBy(
                                     expense -> MonthWeek.of(expense.getDate()),
                                     mapping(Expense::getValue, reducing(ZERO, BigDecimal::add))));
 
                     setAvgValues(weeksListMap, numOfMonthsUnderCalculation);
-                    RowEstimatedExpense rowEstimatedExpense = getRowOfEstimatedExpenses(categoryId, weeksListMap);
+                    RowEstimatedExpense rowEstimatedExpense = getRowOfEstimatedExpenses(category, weeksListMap);
                     saveRowToDatabase(rowEstimatedExpense);
                 }
             } catch (Exception e) {
@@ -165,7 +164,7 @@ public class EstimatedExpenseWorker implements SettingsListener {
         }
     }
 
-    private RowEstimatedExpense getRowOfEstimatedExpenses(Long categoryId, Map<MonthWeek, BigDecimal> daysToSum) {
+    private RowEstimatedExpense getRowOfEstimatedExpenses(Category category, Map<MonthWeek, BigDecimal> daysToSum) {
         BigDecimal days1to7 = daysToSum.get(MonthWeek.DAYS_1_TO_7);
         BigDecimal days8to14 = daysToSum.get(MonthWeek.DAYS_8_TO_14);
         BigDecimal days15to21 = daysToSum.get(MonthWeek.DAYS_15_TO_21);
@@ -175,7 +174,7 @@ public class EstimatedExpenseWorker implements SettingsListener {
                 .days8to14(Optional.ofNullable(days8to14).orElse(ZERO))
                 .days15to21(Optional.ofNullable(days15to21).orElse(ZERO))
                 .days22to31(Optional.ofNullable(days22to31).orElse(ZERO))
-                .category(categoryRepository.getById(categoryId))
+                .category(category)
                 .build();
     }
 

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,6 +36,7 @@ public class RowEstimatedExpense {
             strategy = GenerationType.SEQUENCE,
             generator = "row_estimated_expenses_sequence")
     @Column(name = "row_estimated_expense_id")
+    @ToString.Exclude
     private Long id;
 
     @OneToOne
@@ -56,8 +58,7 @@ public class RowEstimatedExpense {
     @Override
     public String toString() {
         return "RowEstimatedExpense{" +
-                "id=" + id +
-                ", category=" + category.getId() +
+                "categoryId=" + category.getId() +
                 ", days1to7=" + days1to7 +
                 ", days8to14=" + days8to14 +
                 ", days15to21=" + days15to21 +

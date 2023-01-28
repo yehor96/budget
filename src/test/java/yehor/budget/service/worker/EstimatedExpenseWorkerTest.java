@@ -9,7 +9,6 @@ import yehor.budget.entity.Category;
 import yehor.budget.entity.Expense;
 import yehor.budget.entity.RowEstimatedExpense;
 import yehor.budget.entity.Settings;
-import yehor.budget.repository.CategoryRepository;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.repository.RowEstimatedExpenseRepository;
 import yehor.budget.service.SettingsService;
@@ -35,13 +34,12 @@ import static org.mockito.Mockito.when;
 class EstimatedExpenseWorkerTest {
 
     private final ExpenseRepository expenseRepository = mock(ExpenseRepository.class);
-    private final CategoryRepository categoryRepository = mock(CategoryRepository.class);
     private final RowEstimatedExpenseRepository rowEstimatedExpenseRepository = mock(RowEstimatedExpenseRepository.class);
     private final CalculatorHelper calculatorHelper = mock(CalculatorHelper.class);
     private final SettingsService settingsService = mock(SettingsService.class);
     private final DateManager dateManager = mock(DateManager.class);
 
-    private final EstimatedExpenseWorker worker = new EstimatedExpenseWorker(expenseRepository, categoryRepository,
+    private final EstimatedExpenseWorker worker = new EstimatedExpenseWorker(expenseRepository,
             rowEstimatedExpenseRepository, calculatorHelper, settingsService, dateManager);
 
     private final ArgumentCaptor<RowEstimatedExpense> rowEstimatedExpenseArgumentCaptor =
@@ -133,7 +131,6 @@ class EstimatedExpenseWorkerTest {
 
         when(expenseRepository.findAllRegularInInterval(any(), any())).thenReturn(expenses);
         when(calculatorHelper.divide(BigDecimal.TEN, BigDecimal.ONE)).thenReturn(BigDecimal.TEN);
-        when(categoryRepository.getById(1L)).thenReturn(category1);
         when(rowEstimatedExpenseRepository.existsByCategoryId(1L)).thenReturn(false);
 
         worker.new EstimatedExpenseTask().run();
@@ -165,7 +162,6 @@ class EstimatedExpenseWorkerTest {
 
         when(expenseRepository.findAllRegularInInterval(any(), any())).thenReturn(expenses);
         when(calculatorHelper.divide(BigDecimal.TEN, BigDecimal.ONE)).thenReturn(BigDecimal.TEN);
-        when(categoryRepository.getById(1L)).thenReturn(category1);
         when(rowEstimatedExpenseRepository.existsByCategoryId(1L)).thenReturn(true);
 
         worker.new EstimatedExpenseTask().run();
@@ -221,8 +217,6 @@ class EstimatedExpenseWorkerTest {
 
         when(expenseRepository.findAllRegularInInterval(any(), any())).thenReturn(expenses);
         when(calculatorHelper.divide(BigDecimal.TEN, BigDecimal.ONE)).thenReturn(BigDecimal.TEN);
-        when(categoryRepository.getById(1L)).thenReturn(category1);
-        when(categoryRepository.getById(2L)).thenReturn(category2);
         when(rowEstimatedExpenseRepository.existsByCategoryId(1L)).thenReturn(true);
         when(rowEstimatedExpenseRepository.existsByCategoryId(2L)).thenReturn(false);
 
@@ -264,8 +258,6 @@ class EstimatedExpenseWorkerTest {
 
         when(expenseRepository.findAllRegularInInterval(any(), any())).thenReturn(expenses);
         when(calculatorHelper.divide(BigDecimal.TEN, BigDecimal.valueOf(2))).thenReturn(BigDecimal.valueOf(5));
-        when(categoryRepository.getById(1L)).thenReturn(category1);
-        when(categoryRepository.getById(2L)).thenReturn(category2);
         when(rowEstimatedExpenseRepository.existsByCategoryId(1L)).thenReturn(true);
         when(rowEstimatedExpenseRepository.existsByCategoryId(2L)).thenReturn(false);
 
@@ -307,8 +299,6 @@ class EstimatedExpenseWorkerTest {
 
         when(expenseRepository.findAllRegularInInterval(any(), any())).thenReturn(expenses);
         when(calculatorHelper.divide(BigDecimal.TEN, BigDecimal.valueOf(2))).thenReturn(BigDecimal.valueOf(5));
-        when(categoryRepository.getById(1L)).thenReturn(category1);
-        when(categoryRepository.getById(2L)).thenReturn(category2);
         when(rowEstimatedExpenseRepository.existsByCategoryId(1L)).thenReturn(true);
         when(rowEstimatedExpenseRepository.existsByCategoryId(2L)).thenReturn(false);
 
@@ -350,7 +340,6 @@ class EstimatedExpenseWorkerTest {
 
         when(expenseRepository.findAllRegularInInterval(any(), any())).thenReturn(expenses);
         when(calculatorHelper.divide(BigDecimal.valueOf(20), BigDecimal.valueOf(2))).thenReturn(BigDecimal.TEN);
-        when(categoryRepository.getById(1L)).thenReturn(category1);
         when(rowEstimatedExpenseRepository.existsByCategoryId(1L)).thenReturn(true);
 
         worker.new EstimatedExpenseTask().run();
