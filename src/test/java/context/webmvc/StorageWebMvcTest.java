@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import yehor.budget.common.date.DateManager;
-import yehor.budget.service.StorageService;
+import yehor.budget.service.recording.StorageRecordingService;
 import yehor.budget.web.dto.full.StorageRecordFullDto;
 import yehor.budget.web.dto.limited.StorageRecordLimitedDto;
 
@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class StorageWebMvcTest extends BaseWebMvcTest {
 
     @MockBean
-    private StorageService storageService;
+    private StorageRecordingService storageRecordingService;
     @MockBean
     private DateManager dateManager;
 
@@ -39,7 +39,7 @@ class StorageWebMvcTest extends BaseWebMvcTest {
     void testGetLatestSuccessfully() throws Exception {
         StorageRecordFullDto expectedStorageRecordDto = defaultStorageRecordFullDto();
 
-        when(storageService.getLatest()).thenReturn(Optional.of(expectedStorageRecordDto));
+        when(storageRecordingService.getLatest()).thenReturn(Optional.of(expectedStorageRecordDto));
 
         String response = mockMvc.perform(get(STORAGE_URL)
                         .header("Authorization", BASIC_AUTH_STRING))
@@ -55,7 +55,7 @@ class StorageWebMvcTest extends BaseWebMvcTest {
     void testGetLatestThrowsExceptionWhenNotFound() throws Exception {
         String expectedErrorMessage = "There are no storage records";
 
-        when(storageService.getLatest()).thenReturn(Optional.empty());
+        when(storageRecordingService.getLatest()).thenReturn(Optional.empty());
 
         String response = mockMvc.perform(get(STORAGE_URL)
                         .header("Authorization", BASIC_AUTH_STRING))
@@ -77,7 +77,7 @@ class StorageWebMvcTest extends BaseWebMvcTest {
                         .content(objectMapper.writeValueAsString(storageRecordDto)))
                 .andExpect(status().isOk());
 
-        verify(storageService, times(1)).save(storageRecordDto);
+        verify(storageRecordingService, times(1)).save(storageRecordDto);
     }
 
     @Test
@@ -96,7 +96,7 @@ class StorageWebMvcTest extends BaseWebMvcTest {
 
         verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
 
-        verify(storageService, never()).save(storageRecordDto);
+        verify(storageRecordingService, never()).save(storageRecordDto);
     }
 
     @Test
@@ -114,6 +114,6 @@ class StorageWebMvcTest extends BaseWebMvcTest {
 
         verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
 
-        verify(storageService, never()).save(storageRecordDto);
+        verify(storageRecordingService, never()).save(storageRecordDto);
     }
 }

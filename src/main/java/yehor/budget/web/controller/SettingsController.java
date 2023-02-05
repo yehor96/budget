@@ -17,6 +17,7 @@ import yehor.budget.web.dto.full.SettingsFullDto;
 import yehor.budget.web.dto.limited.SettingsLimitedDto;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Objects;
 
 import static yehor.budget.service.worker.EstimatedExpenseWorker.EXPECTED_EXPENSE_END_DATE_SCOPE_PATTERN;
 
@@ -44,9 +45,10 @@ public class SettingsController {
     @PutMapping
     @Operation(summary = "Update settings")
     public ResponseEntity<SettingsLimitedDto> updateSettings(@RequestBody SettingsLimitedDto settingsLimitedDto) {
-        try { validate(settingsLimitedDto);
-        settingsService.updateSettings(settingsLimitedDto);
-        return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            validate(settingsLimitedDto);
+            settingsService.updateSettings(settingsLimitedDto);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error updating settings. {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -55,7 +57,7 @@ public class SettingsController {
 
     private void validate(SettingsLimitedDto settingsLimitedDto) {
         String scopePattern = settingsLimitedDto.getEstimatedExpenseWorkerEndDateScopePattern();
-        if (!EXPECTED_EXPENSE_END_DATE_SCOPE_PATTERN.matcher(scopePattern).matches()) {
+        if (Objects.nonNull(scopePattern) && !EXPECTED_EXPENSE_END_DATE_SCOPE_PATTERN.matcher(scopePattern).matches()) {
             throw new IllegalArgumentException("Illegal estimated expense end date scope pattern provided: "
                     + scopePattern);
         }

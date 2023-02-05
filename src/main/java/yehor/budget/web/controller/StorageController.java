@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.common.date.DateManager;
-import yehor.budget.service.StorageService;
+import yehor.budget.service.recording.StorageRecordingService;
 import yehor.budget.web.dto.full.StorageRecordFullDto;
 import yehor.budget.web.dto.limited.StorageRecordLimitedDto;
 
@@ -24,13 +24,13 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Tag(name = "Storage Controller")
 public class StorageController {
 
-    private final StorageService storageService;
+    private final StorageRecordingService storageRecordingService;
     private final DateManager dateManager;
 
     @GetMapping
     @Operation(summary = "Get latest storage record")
     public StorageRecordFullDto getLatest() {
-        return storageService.getLatest().orElseThrow(
+        return storageRecordingService.getLatest().orElseThrow(
                 () -> new ResponseStatusException(NOT_FOUND, "There are no storage records"));
     }
 
@@ -40,7 +40,7 @@ public class StorageController {
         try {
             dateManager.validateDateAfterStart(storageRecord.getDate());
             validateStorageItems(storageRecord);
-            storageService.save(storageRecord);
+            storageRecordingService.save(storageRecord);
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
         }

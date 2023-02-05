@@ -35,7 +35,7 @@ public class TagService {
         Tag tag = tagConverter.convert(tagDto);
         validateNotExists(tag);
         tagRepository.save(tag);
-        log.info("{} is saved", tag);
+        log.info("Saved: {}", tag);
     }
 
     public void delete(Long id) {
@@ -54,7 +54,7 @@ public class TagService {
         validateExists(tagDto.getId());
         Tag tag = tagConverter.convert(tagDto);
         tagRepository.save(tag);
-        log.info("{} is updated", tag);
+        log.info("Updated: {}", tag);
     }
 
     private void validateNotExists(Tag tag) {

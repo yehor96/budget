@@ -48,8 +48,10 @@ public class CurrencyRateService {
     private void cacheEvictionScheduler() {
         new ScheduledThreadPoolExecutor(1)
                 .scheduleAtFixedRate(() -> {
-                    log.info("Evicting cached rates");
-                    cachedRates.clear();
+                    if (!cachedRates.isEmpty()) {
+                        log.info("Evicting cached rates");
+                        cachedRates.clear();
+                    }
                 }, 60, 60, MINUTES);
     }
 

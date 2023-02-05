@@ -1,6 +1,7 @@
-package yehor.budget.service;
+package yehor.budget.service.recording;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import yehor.budget.common.Currency;
@@ -18,7 +19,8 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class StorageService {
+@Slf4j
+public class StorageRecordingService {
 
     private static final Currency TOTAL_STORED_CURRENCY = Currency.USD;
 
@@ -38,9 +40,10 @@ public class StorageService {
     public void save(StorageRecordLimitedDto storageRecordDto) {
         StorageRecord storageRecord = storageConverter.convert(storageRecordDto);
         setStoredInTotal(storageRecord);
-
         storageRecordRepository.save(storageRecord);
+        log.info("Saved: {}", storageRecord);
         storageRecord.getStorageItems().forEach(storageItemRepository::save);
+        log.info("List of saved storage items: {}", storageRecord.getStorageItems());
     }
 
     private void setStoredInTotal(StorageRecord storageRecord) {

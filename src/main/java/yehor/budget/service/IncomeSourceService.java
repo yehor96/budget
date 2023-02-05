@@ -55,7 +55,7 @@ public class IncomeSourceService {
         IncomeSource incomeSource = incomeSourceConverter.convert(incomeSourceDto);
         validateNotExists(incomeSource);
         incomeSourceRepository.save(incomeSource);
-        log.info("{} is saved", incomeSource);
+        log.info("Saved: {}", incomeSource);
     }
 
     public void delete(Long id) {
@@ -72,7 +72,7 @@ public class IncomeSourceService {
         validateExists(incomeSourceDto.getId());
         IncomeSource incomeSource = incomeSourceConverter.convert(incomeSourceDto);
         incomeSourceRepository.save(incomeSource);
-        log.info("{} is updated", incomeSource);
+        log.info("Updated: {}", incomeSource);
     }
 
     private void validateNotExists(IncomeSource incomeSource) {
