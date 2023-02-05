@@ -7,6 +7,7 @@ import yehor.budget.entity.StorageRecord;
 import yehor.budget.repository.StorageItemRepository;
 import yehor.budget.repository.StorageRecordRepository;
 import yehor.budget.service.client.currency.CurrencyRateService;
+import yehor.budget.service.recording.StorageRecordingService;
 import yehor.budget.web.converter.StorageConverter;
 import yehor.budget.web.dto.full.StorageRecordFullDto;
 import yehor.budget.web.dto.limited.StorageRecordLimitedDto;
@@ -28,7 +29,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class StorageServiceTest {
+class StorageRecordingServiceTest {
 
     private final StorageItemRepository storageItemRepository = mock(StorageItemRepository.class);
     private final StorageRecordRepository storageRecordRepository = mock(StorageRecordRepository.class);
@@ -36,7 +37,7 @@ class StorageServiceTest {
     private final StorageConverter storageConverter = mock(StorageConverter.class);
     private final CurrencyRateService currencyRateService = mock(CurrencyRateService.class);
 
-    private final StorageService storageService = new StorageService(
+    private final StorageRecordingService storageRecordingService = new StorageRecordingService(
             storageItemRepository,
             storageRecordRepository,
             pageableHelper,
@@ -48,7 +49,7 @@ class StorageServiceTest {
     void testGetLatestReturnsEmptyOptionalWhenThereAreNoRecords() {
         when(pageableHelper.getLatestByDate(any())).thenReturn(Optional.empty());
 
-        Optional<StorageRecordFullDto> result = storageService.getLatest();
+        Optional<StorageRecordFullDto> result = storageRecordingService.getLatest();
 
         assertTrue(result.isEmpty());
     }
@@ -61,7 +62,7 @@ class StorageServiceTest {
         when(pageableHelper.getLatestByDate(any())).thenReturn(Optional.of(storageRecord));
         when(storageConverter.convert(storageRecord)).thenReturn(storageRecordFullDto);
 
-        Optional<StorageRecordFullDto> optActualStorageRecordDto = storageService.getLatest();
+        Optional<StorageRecordFullDto> optActualStorageRecordDto = storageRecordingService.getLatest();
 
         assertTrue(optActualStorageRecordDto.isPresent());
         StorageRecordFullDto actualRecordDto = optActualStorageRecordDto.get();
@@ -81,7 +82,7 @@ class StorageServiceTest {
                 .thenReturn(new BigDecimal("50.00"))
                 .thenReturn(new BigDecimal("50.00"));
 
-        storageService.save(recordLimitedDto);
+        storageRecordingService.save(recordLimitedDto);
 
         assertNotNull(storageRecord.getStoredInTotal());
         assertEquals(new BigDecimal("100.00"), storageRecord.getStoredInTotal());

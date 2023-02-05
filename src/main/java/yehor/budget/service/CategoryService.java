@@ -35,7 +35,7 @@ public class CategoryService {
         Category category = categoryConverter.convert(categoryDto);
         validateNotExists(category);
         categoryRepository.save(category);
-        log.info("{} is saved", category);
+        log.info("Saved: {}", category);
     }
 
     public void delete(Long id) {
@@ -54,7 +54,7 @@ public class CategoryService {
         validateExists(categoryDto.getId());
         Category category = categoryConverter.convert(categoryDto);
         categoryRepository.save(category);
-        log.info("{} is updated", category);
+        log.info("Updated: {}", category);
     }
 
     private void validateNotExists(Category category) {

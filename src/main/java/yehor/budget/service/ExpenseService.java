@@ -49,7 +49,7 @@ public class ExpenseService {
 
         Expense expense = expenseConverter.convert(expenseDto);
         expenseRepository.save(expense);
-        log.info("{} is saved", expense);
+        log.info("Saved: {}", expense);
         dateManager.updateBudgetDatesIfNecessary(expense.getDate());
     }
 
@@ -67,7 +67,7 @@ public class ExpenseService {
 
         Expense expense = expenseConverter.convert(expenseDto);
         expenseRepository.save(expense);
-        log.info("{} is updated", expense);
+        log.info("Updated: {}", expense);
         dateManager.updateBudgetDatesIfNecessary(expense.getDate());
     }
 

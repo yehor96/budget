@@ -62,7 +62,7 @@ public class BalanceRecordingService {
         BalanceRecord balanceRecord = balanceConverter.convert(balanceRecordDto);
         saveEstimatedExpenses(balanceRecord);
         balanceRecordRepository.save(balanceRecord);
-        log.info("{} is saved", balanceRecord);
+        log.info("Saved: {}", balanceRecord);
         saveIncomeSourceRecords(balanceRecord);
         balanceRecord.getBalanceItems().forEach(balanceItemRepository::save);
         log.info("List of saved balance items: {}", balanceRecord.getBalanceItems());

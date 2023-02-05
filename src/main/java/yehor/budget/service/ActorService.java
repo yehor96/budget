@@ -35,7 +35,7 @@ public class ActorService {
         Actor actor = actorConverter.convert(actorDto);
         validateNotExists(actor);
         actorRepository.save(actor);
-        log.info("{} is saved", actor);
+        log.info("Saved: {}", actor);
     }
 
     public void delete(Long id) {
@@ -52,7 +52,7 @@ public class ActorService {
         validateExists(actorDto.getId());
         Actor actor = actorConverter.convert(actorDto);
         actorRepository.save(actor);
-        log.info("{} is updated", actor);
+        log.info("Updated: {}", actor);
     }
 
     private void validateNotExists(Actor actor) {
