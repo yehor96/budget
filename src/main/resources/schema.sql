@@ -92,8 +92,7 @@ CREATE TABLE income_sources (
                             accrual_day INT NOT NULL,
 
                             CONSTRAINT income_sources_pk PRIMARY KEY (income_source_id),
-                            CONSTRAINT income_sources_name_uq UNIQUE (name),
-                            CONSTRAINT income_sources_currency_check CHECK (currency IN ('UAH', 'USD'))
+                            CONSTRAINT income_sources_name_uq UNIQUE (name)
                             );
 
 CREATE TABLE actors (
@@ -124,7 +123,6 @@ CREATE TABLE income_source_records (
                     balance_record_id BIGINT NOT NULL,
 
                     CONSTRAINT income_source_records_pk PRIMARY KEY (income_source_record_id),
-                    CONSTRAINT income_source_records_currency_check CHECK (currency IN ('UAH', 'USD')),
                     CONSTRAINT income_source_records_to_balance_records_fk FOREIGN KEY (balance_record_id) REFERENCES balance_records (balance_record_id)
 );
 
@@ -156,6 +154,5 @@ CREATE TABLE storage_items (
                     name VARCHAR(50) NOT NULL,
 
                     CONSTRAINT storage_item_pk PRIMARY KEY (storage_item_id),
-                    CONSTRAINT storage_items_to_storage_records_fk FOREIGN KEY (storage_record_id) REFERENCES storage_records (storage_record_id),
-                    CONSTRAINT storage_items_currency_check CHECK (currency IN ('UAH', 'USD'))
+                    CONSTRAINT storage_items_to_storage_records_fk FOREIGN KEY (storage_record_id) REFERENCES storage_records (storage_record_id)
                     );
