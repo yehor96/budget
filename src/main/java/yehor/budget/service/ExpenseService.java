@@ -20,7 +20,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+
+import static java.util.Collections.emptySet;
 
 @Slf4j
 @Service
@@ -81,7 +84,9 @@ public class ExpenseService {
     @Transactional(readOnly = true)
     public ExpensesByTagDto getExpensesByTagId(Long id) {
         validateTagsWithIdsExist(Set.of(id));
-        Set<Expense> expenses = tagRepository.getById(id).getExpenses();
+        Set<Expense> expenses = Optional.ofNullable(
+                tagRepository.getById(id).getExpenses())
+                .orElse(emptySet());
         List<ExpenseFullDto> expenseDtos = expenses.stream()
                 .map(expenseConverter::convert)
                 .toList();

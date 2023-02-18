@@ -5,6 +5,12 @@ import yehor.budget.entity.Tag;
 import yehor.budget.web.dto.full.TagFullDto;
 import yehor.budget.web.dto.limited.TagLimitedDto;
 
+import java.util.Set;
+
+import static common.factory.ExpenseFactory.DEFAULT_EXPENSE_ID;
+import static common.factory.ExpenseFactory.defaultExpense;
+import static common.factory.ExpenseFactory.thirdExpense;
+
 @UtilityClass
 public class TagFactory {
 
@@ -48,6 +54,14 @@ public class TagFactory {
         return Tag.builder()
                 .id(SECOND_TAG_ID)
                 .name("Trip-22")
+                .build();
+    }
+
+    public static Tag tagWithExpenses() {
+        return Tag.builder()
+                .id(DEFAULT_EXPENSE_ID)
+                .name("MyTag")
+                .expenses(Set.of(defaultExpense(), thirdExpense()))
                 .build();
     }
 }

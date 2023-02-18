@@ -2,6 +2,7 @@ package common.factory;
 
 import lombok.experimental.UtilityClass;
 import yehor.budget.entity.Expense;
+import yehor.budget.web.dto.ExpensesByTagDto;
 import yehor.budget.web.dto.full.ExpenseFullDto;
 import yehor.budget.web.dto.limited.ExpenseLimitedDto;
 
@@ -19,6 +20,7 @@ import static common.factory.TagFactory.defaultTag;
 import static common.factory.TagFactory.defaultTagFullDto;
 import static common.factory.TagFactory.secondTag;
 import static common.factory.TagFactory.secondTagFullDto;
+import static java.util.Collections.emptyList;
 
 @UtilityClass
 public class ExpenseFactory {
@@ -89,6 +91,7 @@ public class ExpenseFactory {
                 .date(LocalDate.now().minusDays(2))
                 .isRegular(false)
                 .category(defaultCategoryFullDto())
+                .tags(Collections.singleton(defaultTagFullDto()))
                 .build();
     }
 
@@ -99,6 +102,7 @@ public class ExpenseFactory {
                 .date(LocalDate.now().minusDays(2))
                 .isRegular(false)
                 .category(defaultCategory())
+                .tags(Collections.singleton(defaultTag()))
                 .build();
     }
 
@@ -125,6 +129,20 @@ public class ExpenseFactory {
         Expense expense3 = thirdExpense();
         Expense expense4 = expenseWithAnotherCategory();
         return List.of(expense1, expense2, expense3, expense4);
+    }
+
+    public static ExpensesByTagDto defaultExpenseByTagDto() {
+        return ExpensesByTagDto.builder()
+                .total(new BigDecimal("25.50"))
+                .expenses(List.of(defaultExpenseFullDto(), thirdExpenseFullDto()))
+                .build();
+    }
+
+    public static ExpensesByTagDto emptyExpenseByTagDto() {
+        return ExpensesByTagDto.builder()
+                .total(BigDecimal.ZERO)
+                .expenses(emptyList())
+                .build();
     }
 
 }

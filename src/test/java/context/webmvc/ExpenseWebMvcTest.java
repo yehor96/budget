@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.service.ExpenseService;
+import yehor.budget.web.dto.ExpensesByTagDto;
 import yehor.budget.web.dto.full.CategoryFullDto;
 import yehor.budget.web.dto.full.ExpenseFullDto;
 import yehor.budget.web.dto.full.TagFullDto;
@@ -19,9 +20,11 @@ import java.util.Collections;
 import java.util.List;
 
 import static common.factory.ExpenseFactory.DEFAULT_EXPENSE_ID;
+import static common.factory.ExpenseFactory.defaultExpenseByTagDto;
 import static common.factory.ExpenseFactory.defaultExpenseFullDto;
 import static common.factory.ExpenseFactory.defaultExpenseFullDtoList;
 import static common.factory.ExpenseFactory.defaultExpenseLimitedDto;
+import static common.factory.TagFactory.DEFAULT_TAG_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -510,4 +513,36 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
         verifyResponseErrorObject(response, NOT_FOUND, expectedErrorMessage);
     }
 
+    // Get expenses by tag id
+    @Test
+    void testGetExpensesByTagId() throws Exception {
+        ExpensesByTagDto expectedDto = defaultExpenseByTagDto();
+
+        when(expenseService.getExpensesByTagId(DEFAULT_TAG_ID)).thenReturn(expectedDto);
+
+        String response = mockMvc.perform(get(EXPENSES_URL.concat("/tag"))
+                        .header("Authorization", BASIC_AUTH_STRING)
+                        .param("tagId", String.valueOf(DEFAULT_TAG_ID)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        ExpensesByTagDto actualDto = objectMapper.readValue(response, ExpensesByTagDto.class);
+
+        assertEquals(expectedDto, actualDto);
+    }
+
+    @Test
+    void testTryGettingExpensesByNotExistingTagId() throws Exception {
+        String expectedErrorMessage = "Tag with id " + DEFAULT_TAG_ID + " not found";
+
+        when(expenseService.getExpensesByTagId(DEFAULT_TAG_ID)).thenThrow(new ObjectNotFoundException(expectedErrorMessage));
+
+        String response = mockMvc.perform(get(EXPENSES_URL.concat("/tag"))
+                        .header("Authorization", BASIC_AUTH_STRING)
+                        .param("tagId", String.valueOf(DEFAULT_EXPENSE_ID)))
+                .andExpect(status().isNotFound())
+                .andReturn().getResponse().getContentAsString();
+
+        verifyResponseErrorObject(response, NOT_FOUND, expectedErrorMessage);
+    }
 }
