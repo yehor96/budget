@@ -9,6 +9,7 @@ import yehor.budget.repository.CategoryRepository;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.repository.TagRepository;
 import yehor.budget.web.converter.ExpenseConverter;
+import yehor.budget.web.dto.ExpensesByTagDto;
 import yehor.budget.web.dto.full.ExpenseFullDto;
 import yehor.budget.web.dto.limited.ExpenseLimitedDto;
 
@@ -22,11 +23,16 @@ import static common.factory.CategoryFactory.DEFAULT_CATEGORY_ID;
 import static common.factory.CategoryFactory.defaultCategory;
 import static common.factory.ExpenseFactory.DEFAULT_EXPENSE_ID;
 import static common.factory.ExpenseFactory.defaultExpense;
+import static common.factory.ExpenseFactory.defaultExpenseByTagDto;
 import static common.factory.ExpenseFactory.defaultExpenseFullDto;
 import static common.factory.ExpenseFactory.defaultExpenseLimitedDto;
+import static common.factory.ExpenseFactory.emptyExpenseByTagDto;
 import static common.factory.ExpenseFactory.secondExpense;
 import static common.factory.ExpenseFactory.secondExpenseFullDto;
+import static common.factory.ExpenseFactory.thirdExpenseFullDto;
 import static common.factory.TagFactory.DEFAULT_TAG_ID;
+import static common.factory.TagFactory.defaultTag;
+import static common.factory.TagFactory.tagWithExpenses;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -304,6 +310,51 @@ class ExpenseServiceTest {
             assertEquals("Expense with id " + id + " does not exist", exception.getMessage());
             verify(expenseRepositoryMock, never())
                     .deleteById(any());
+        }
+    }
+
+    @Test
+    void testGetExpensesByTagId() {
+        Long id = 1L;
+        ExpensesByTagDto expectedResult = defaultExpenseByTagDto();
+
+        when(tagRepositoryMock.existsById(id)).thenReturn(true);
+        when(tagRepositoryMock.getById(id)).thenReturn(tagWithExpenses());
+        when(expenseConverterMock.convert(any(Expense.class)))
+                .thenReturn(defaultExpenseFullDto())
+                .thenReturn(thirdExpenseFullDto());
+
+        ExpensesByTagDto actualResult = expenseService.getExpensesByTagId(1L);
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testGetExpensesByTagIdWithoutExpenses() {
+        Long id = 1L;
+        ExpensesByTagDto expectedResult = emptyExpenseByTagDto();
+
+        when(tagRepositoryMock.existsById(id)).thenReturn(true);
+        when(tagRepositoryMock.getById(id)).thenReturn(defaultTag());
+
+        ExpensesByTagDto actualResult = expenseService.getExpensesByTagId(1L);
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testTryGettingExpensesByNotExistingTagId() {
+        Long id = 1L;
+        when(tagRepositoryMock.existsById(id)).thenReturn(false);
+        try {
+            expenseService.getExpensesByTagId(id);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            ObjectNotFoundException exception = (ObjectNotFoundException) e;
+            assertEquals("Tag with id " + id + " does not exist", exception.getMessage());
+            verify(tagRepositoryMock, never())
+                    .getById(any());
         }
     }
 }

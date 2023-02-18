@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.service.ExpenseService;
+import yehor.budget.web.dto.ExpensesByTagDto;
 import yehor.budget.web.dto.full.CategoryFullDto;
 import yehor.budget.web.dto.full.ExpenseFullDto;
 import yehor.budget.web.dto.full.TagFullDto;
@@ -41,8 +42,6 @@ public class ExpenseController {
 
     private final DateManager dateManager;
     private final ExpenseService expenseService;
-
-    //todo: add getAllExpenses with pageable (sorted by latest)
 
     @GetMapping
     @Operation(summary = "Get expense by id")
@@ -139,6 +138,17 @@ public class ExpenseController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/tag")
+    @Operation(summary = "Get expenses by tag id")
+    public ExpensesByTagDto getExpensesByTagId(@RequestParam("tagId") Long tagId) {
+        try {
+            validateTagIds(Set.of(tagId));
+            return expenseService.getExpensesByTagId(tagId);
+        } catch (ObjectNotFoundException exception) {
+            throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
+        }
+    }
+
     private void validateCategory(CategoryFullDto category) {
         if (Objects.isNull(category)) {
             throw new IllegalArgumentException("Category is not provided. Please provide a category");
@@ -168,7 +178,13 @@ public class ExpenseController {
         if (Objects.isNull(tagIds)) {
             tagIds = Collections.emptySet();
             expenseDto.setTagIds(tagIds);
-        } else if (tagIds.stream().anyMatch(id -> id < 1)) {
+        } else {
+            validateTagIds(tagIds);
+        }
+    }
+
+    private void validateTagIds(Set<Long> tagIds) {
+        if (tagIds.stream().anyMatch(id -> id < 1)) {
             throw new IllegalArgumentException("Tag cannot be negative or 0: " + tagIds);
         }
     }
