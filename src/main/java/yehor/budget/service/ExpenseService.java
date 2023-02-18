@@ -11,6 +11,7 @@ import yehor.budget.repository.CategoryRepository;
 import yehor.budget.repository.ExpenseRepository;
 import yehor.budget.repository.TagRepository;
 import yehor.budget.web.converter.ExpenseConverter;
+import yehor.budget.web.dto.ExpensesByTagDto;
 import yehor.budget.web.dto.full.ExpenseFullDto;
 import yehor.budget.web.dto.full.TagFullDto;
 import yehor.budget.web.dto.limited.ExpenseLimitedDto;
@@ -75,6 +76,22 @@ public class ExpenseService {
         validateExists(id);
         expenseRepository.deleteById(id);
         log.info("Expense with id {} is deleted", id);
+    }
+
+    @Transactional(readOnly = true)
+    public ExpensesByTagDto getExpensesByTagId(Long id) {
+        validateTagsWithIdsExist(Set.of(id));
+        Set<Expense> expenses = tagRepository.getById(id).getExpenses();
+        List<ExpenseFullDto> expenseDtos = expenses.stream()
+                .map(expenseConverter::convert)
+                .toList();
+        BigDecimal total = expenseDtos.stream()
+                .map(ExpenseFullDto::getValue)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return ExpensesByTagDto.builder()
+                .expenses(expenseDtos)
+                .total(total)
+                .build();
     }
 
     private void validateExists(Long id) {
