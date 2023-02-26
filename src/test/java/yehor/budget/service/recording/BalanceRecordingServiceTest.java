@@ -1,7 +1,9 @@
 package yehor.budget.service.recording;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.util.CollectionUtils;
+import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.common.util.PageableHelper;
 import yehor.budget.entity.Actor;
 import yehor.budget.entity.recording.BalanceItem;
@@ -40,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -117,6 +120,7 @@ class BalanceRecordingServiceTest {
         BalanceRecord balanceRecord = balanceRecordWithNotSetExpensesAndIncome();
         balanceRecord.setDate(LocalDate.of(2022, 10, 10));
 
+        when(balanceRecordRepository.existsByDate(any())).thenReturn(false);
         when(actorRepository.existsById(any())).thenReturn(true);
         when(balanceConverter.convert(any(BalanceRecordLimitedDto.class))).thenReturn(balanceRecord);
         when(estimatedExpenseService.getOne()).thenReturn(defaultEstimatedExpenseFullDto());
@@ -143,6 +147,7 @@ class BalanceRecordingServiceTest {
         List<Long> invalidIds = balanceRecord.getBalanceItems().stream().map(BalanceItem::getActor).map(Actor::getId).toList();
 
         when(actorRepository.existsById(any())).thenReturn(false);
+        when(balanceRecordRepository.existsByDate(any())).thenReturn(false);
 
         try {
             balanceRecordingService.save(recordLimitedDto);
@@ -153,6 +158,42 @@ class BalanceRecordingServiceTest {
         }
         verify(balanceRecordRepository, never()).save(balanceRecord);
         verify(balanceItemRepository, never()).save(any(BalanceItem.class));
+    }
+
+    @Test
+    void testTrySavingBalanceRecordWithExistingDate() {
+        BalanceRecordLimitedDto recordLimitedDto = defaultBalanceRecordLimitedDto();
+
+        when(balanceRecordRepository.existsByDate(any())).thenReturn(true);
+
+        try {
+            balanceRecordingService.save(recordLimitedDto);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+            assertEquals("Record with provided date " + recordLimitedDto.getDate() + " already exists", e.getMessage());
+        }
+        verify(balanceRecordRepository, never()).save(any(BalanceRecord.class));
+        verify(balanceItemRepository, never()).save(any(BalanceItem.class));
+    }
+
+    @Test
+    void testDeleteBalanceRecord() {
+        Long id = 1L;
+        balanceRecordingService.delete(id);
+        verify(balanceRecordRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void testTryDeleteBalanceRecordWithNotExistingId() {
+        Long id = 1L;
+        doThrow(EmptyResultDataAccessException.class).when(balanceRecordRepository).deleteById(id);
+        try {
+            balanceRecordingService.delete(id);
+        } catch (Exception e) {
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            assertEquals("Balance with id " + id + " not found", e.getMessage());
+        }
     }
 
 }

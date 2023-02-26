@@ -2,9 +2,11 @@ package yehor.budget.service.recording;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.common.util.PageableHelper;
 import yehor.budget.entity.recording.BalanceRecord;
 import yehor.budget.repository.ActorRepository;
@@ -22,6 +24,7 @@ import yehor.budget.web.dto.limited.BalanceItemLimitedDto;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,8 +61,10 @@ public class BalanceRecordingService {
 
     @Transactional
     public void save(BalanceRecordLimitedDto balanceRecordDto) {
+        validateRecordWithDateNotExists(balanceRecordDto.getDate());
         validateActorsExist(balanceRecordDto);
         BalanceRecord balanceRecord = balanceConverter.convert(balanceRecordDto);
+
         saveEstimatedExpenses(balanceRecord);
         balanceRecordRepository.save(balanceRecord);
         log.info("Saved: {}", balanceRecord);
@@ -68,12 +73,28 @@ public class BalanceRecordingService {
         log.info("List of saved balance items: {}", balanceRecord.getBalanceItems());
     }
 
+    @Transactional
+    public void delete(Long id) {
+        try {
+            balanceRecordRepository.deleteById(id);
+            log.info("Balance record with id {} is deleted", id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ObjectNotFoundException("Balance with id " + id + " not found");
+        }
+    }
+
+    private void validateRecordWithDateNotExists(LocalDate date) {
+        if (balanceRecordRepository.existsByDate(date)) {
+            throw new IllegalArgumentException("Record with provided date " + date + " already exists");
+        }
+    }
+
     private void saveIncomeSourceRecords(BalanceRecord balanceRecord) {
         incomeSourceService.getTotalIncome().getIncomeSources().stream()
                 .map(incomeSource -> incomeSourceConverter.convert(incomeSource, balanceRecord))
                 .forEach(incSourceRec -> {
                     incomeSourceRecordRepository.save(incSourceRec);
-                    log.info("{} is saved", incSourceRec);
+                    log.info("Saved: {}", incSourceRec);
                 });
     }
 

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import yehor.budget.common.date.DateManager;
+import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.service.recording.StorageRecordingService;
 import yehor.budget.web.dto.full.StorageRecordFullDto;
 import yehor.budget.web.dto.limited.StorageRecordLimitedDto;
@@ -11,6 +12,7 @@ import yehor.budget.web.dto.limited.StorageRecordLimitedDto;
 import java.util.Collections;
 import java.util.Optional;
 
+import static common.factory.StorageFactory.DEFAULT_STORAGE_RECORD_ID;
 import static common.factory.StorageFactory.defaultStorageRecordFullDto;
 import static common.factory.StorageFactory.defaultStorageRecordLimitedDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -115,5 +118,33 @@ class StorageWebMvcTest extends BaseWebMvcTest {
         verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
 
         verify(storageRecordingService, never()).save(storageRecordDto);
+    }
+
+    // Delete storage record
+
+    @Test
+    void testDeleteSuccessfully() throws Exception {
+        mockMvc.perform(delete(STORAGE_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
+                        .param("id", String.valueOf(DEFAULT_STORAGE_RECORD_ID)))
+                .andExpect(status().isOk());
+
+        verify(storageRecordingService, times(1)).delete(DEFAULT_STORAGE_RECORD_ID);
+    }
+
+    @Test
+    void testTryDeletingNotExistingStorageRecord() throws Exception {
+        String expectedErrorMessage = "expectedErrorMessage";
+
+        doThrow(new ObjectNotFoundException(expectedErrorMessage))
+                .when(storageRecordingService).delete(DEFAULT_STORAGE_RECORD_ID);
+
+        String response = mockMvc.perform(delete(STORAGE_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
+                        .param("id", String.valueOf(DEFAULT_STORAGE_RECORD_ID)))
+                .andExpect(status().isNotFound())
+                .andReturn().getResponse().getContentAsString();
+
+        verifyResponseErrorObject(response, NOT_FOUND, expectedErrorMessage);
     }
 }

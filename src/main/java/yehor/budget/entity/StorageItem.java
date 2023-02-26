@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import yehor.budget.common.Currency;
 import yehor.budget.service.client.currency.Exchangeable;
 
