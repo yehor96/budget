@@ -35,7 +35,7 @@ public class CategoryController {
 
     @GetMapping
     @Operation(summary = "Get all categories")
-    public List<CategoryFullDto> getAllCategories() { //todo: make it pageable
+    public List<CategoryFullDto> getAllCategories() {
         return categoryService.getAll();
     }
 

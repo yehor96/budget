@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,6 +34,7 @@ public class StorageRecord {
     private Long id;
 
     @OneToMany(mappedBy = "storageRecord")
+    @Cascade(CascadeType.DELETE)
     private List<StorageItem> storageItems;
 
     @Column(name = "date")

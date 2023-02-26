@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,9 +37,11 @@ public class BalanceRecord {
     private LocalDate date;
 
     @OneToMany(mappedBy = "balanceRecord")
+    @Cascade(CascadeType.DELETE)
     private List<BalanceItem> balanceItems;
 
     @OneToMany(mappedBy = "balanceRecord")
+    @Cascade(CascadeType.DELETE)
     private List<IncomeSourceRecord> incomeSourceRecords;
 
     @Column(name = "total_expected_expenses_days_1_7")

@@ -2,9 +2,11 @@ package yehor.budget.service.recording;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import yehor.budget.common.Currency;
+import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.common.util.PageableHelper;
 import yehor.budget.entity.StorageRecord;
 import yehor.budget.repository.StorageItemRepository;
@@ -15,6 +17,7 @@ import yehor.budget.web.dto.full.StorageRecordFullDto;
 import yehor.budget.web.dto.limited.StorageRecordLimitedDto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -38,12 +41,29 @@ public class StorageRecordingService {
 
     @Transactional
     public void save(StorageRecordLimitedDto storageRecordDto) {
+        validateRecordWithDateNotExists(storageRecordDto.getDate());
         StorageRecord storageRecord = storageConverter.convert(storageRecordDto);
         setStoredInTotal(storageRecord);
         storageRecordRepository.save(storageRecord);
         log.info("Saved: {}", storageRecord);
         storageRecord.getStorageItems().forEach(storageItemRepository::save);
         log.info("List of saved storage items: {}", storageRecord.getStorageItems());
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        try {
+            storageRecordRepository.deleteById(id);
+            log.info("Storage record with id {} is deleted", id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ObjectNotFoundException("Storage with id " + id + " not found");
+        }
+    }
+
+    private void validateRecordWithDateNotExists(LocalDate date) {
+        if (storageRecordRepository.existsByDate(date)) {
+            throw new IllegalArgumentException("Record with provided date " + date + " already exists");
+        }
     }
 
     private void setStoredInTotal(StorageRecord storageRecord) {

@@ -1,13 +1,14 @@
-package yehor.budget.service;
+package yehor.budget.service.recording;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.EmptyResultDataAccessException;
+import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.common.util.PageableHelper;
 import yehor.budget.entity.StorageItem;
 import yehor.budget.entity.StorageRecord;
 import yehor.budget.repository.StorageItemRepository;
 import yehor.budget.repository.StorageRecordRepository;
 import yehor.budget.service.client.currency.CurrencyRateService;
-import yehor.budget.service.recording.StorageRecordingService;
 import yehor.budget.web.converter.StorageConverter;
 import yehor.budget.web.dto.full.StorageRecordFullDto;
 import yehor.budget.web.dto.limited.StorageRecordLimitedDto;
@@ -23,8 +24,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -77,6 +81,7 @@ class StorageRecordingServiceTest {
         StorageRecord storageRecord = defaultStorageRecord();
         storageRecord.setStoredInTotal(null);
 
+        when(storageRecordRepository.existsByDate(any())).thenReturn(false);
         when(storageConverter.convert(any(StorageRecordLimitedDto.class))).thenReturn(storageRecord);
         when(currencyRateService.getValueInCurrency(any(), any()))
                 .thenReturn(new BigDecimal("50.00"))
@@ -88,5 +93,41 @@ class StorageRecordingServiceTest {
         assertEquals(new BigDecimal("100.00"), storageRecord.getStoredInTotal());
         verify(storageRecordRepository, times(1)).save(storageRecord);
         verify(storageItemRepository, times(2)).save(any(StorageItem.class));
+    }
+
+    @Test
+    void testTrySavingStorageRecordWithExistingDate() {
+        StorageRecordLimitedDto recordLimitedDto = defaultStorageRecordLimitedDto();
+
+        when(storageRecordRepository.existsByDate(any())).thenReturn(true);
+
+        try {
+            storageRecordingService.save(recordLimitedDto);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+            assertEquals("Record with provided date " + recordLimitedDto.getDate() + " already exists", e.getMessage());
+        }
+        verify(storageRecordRepository, never()).save(any(StorageRecord.class));
+        verify(storageItemRepository, never()).save(any(StorageItem.class));
+    }
+
+    @Test
+    void testDeleteStorageRecord() {
+        Long id = 1L;
+        storageRecordingService.delete(id);
+        verify(storageRecordRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void testTryDeleteStorageRecordWithNotExistingId() {
+        Long id = 1L;
+        doThrow(EmptyResultDataAccessException.class).when(storageRecordRepository).deleteById(id);
+        try {
+            storageRecordingService.delete(id);
+        } catch (Exception e) {
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            assertEquals("Storage with id " + id + " not found", e.getMessage());
+        }
     }
 }

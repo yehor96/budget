@@ -52,7 +52,7 @@ public class ActorController {
 
     @DeleteMapping
     @Operation(summary = "Delete actor by id")
-    public ResponseEntity<ActorLimitedDto> deleteTag(@RequestParam("id") Long id) {
+    public ResponseEntity<ActorLimitedDto> deleteActor(@RequestParam("id") Long id) {
         try {
             actorService.delete(id);
         } catch (ObjectNotFoundException exception) {
@@ -63,7 +63,7 @@ public class ActorController {
 
     @PutMapping
     @Operation(summary = "Update actor by id")
-    public ResponseEntity<ActorFullDto> updateTag(@RequestBody ActorFullDto actorDto) {
+    public ResponseEntity<ActorFullDto> updateActor(@RequestBody ActorFullDto actorDto) {
         try {
             actorService.update(actorDto);
         } catch (ObjectNotFoundException exception) {
