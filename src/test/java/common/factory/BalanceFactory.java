@@ -39,6 +39,14 @@ public class BalanceFactory {
                 .build();
     }
 
+    public static BalanceRecordFullDto secondBalanceRecordFullDto() {
+        return BalanceRecordFullDto.builder()
+                .id(2L)
+                .date(LocalDate.now().plusDays(5))
+                .balanceItems(secondBalanceItemFullDtoList())
+                .build();
+    }
+
     public static BalanceRecordFullDto balanceRecordFullDtoWithEstimates() {
         return BalanceRecordFullDto.builder()
                 .id(DEFAULT_BALANCE_RECORD_ID)
@@ -63,6 +71,19 @@ public class BalanceFactory {
                 .id(DEFAULT_BALANCE_RECORD_ID)
                 .date(LocalDate.now())
                 .balanceItems(defaultBalanceItemList())
+                .total1to7(estimatedExpenseFullDto.getTotal1to7())
+                .total8to14(estimatedExpenseFullDto.getTotal8to14())
+                .total15to21(estimatedExpenseFullDto.getTotal15to21())
+                .total22to31(estimatedExpenseFullDto.getTotal22to31())
+                .build();
+    }
+
+    public static BalanceRecord secondBalanceRecord() {
+        EstimatedExpenseFullDto estimatedExpenseFullDto = defaultEstimatedExpenseFullDto();
+        return BalanceRecord.builder()
+                .id(2L)
+                .date(LocalDate.now().plusDays(5))
+                .balanceItems(secondBalanceItemList())
                 .total1to7(estimatedExpenseFullDto.getTotal1to7())
                 .total8to14(estimatedExpenseFullDto.getTotal8to14())
                 .total15to21(estimatedExpenseFullDto.getTotal15to21())
@@ -106,8 +127,16 @@ public class BalanceFactory {
         return List.of(defaultBalanceItemFullDto(), secondBalanceItemFullDto());
     }
 
+    public static List<BalanceItemFullDto> secondBalanceItemFullDtoList() {
+        return List.of(thirdBalanceItemFullDto(), fourthBalanceItemFullDto());
+    }
+
     public static List<BalanceItem> defaultBalanceItemList() {
         return List.of(defaultBalanceItem(), secondBalanceItem());
+    }
+
+    public static List<BalanceItem> secondBalanceItemList() {
+        return List.of(thirdBalanceItem(), fourthBalanceItem());
     }
 
     public static List<BalanceItemLimitedDto> defaultBalanceItemLimitedDtoList() {
@@ -148,6 +177,24 @@ public class BalanceFactory {
                 .build();
     }
 
+    public static BalanceItemFullDto thirdBalanceItemFullDto() {
+        return BalanceItemFullDto.builder()
+                .id(3L)
+                .actor(defaultActorFullDto())
+                .card(new BigDecimal("50.00"))
+                .cash(new BigDecimal("30.00"))
+                .build();
+    }
+
+    public static BalanceItemFullDto fourthBalanceItemFullDto() {
+        return BalanceItemFullDto.builder()
+                .id(4L)
+                .actor(secondActorFullDto())
+                .card(new BigDecimal("10.00"))
+                .cash(new BigDecimal("20.00"))
+                .build();
+    }
+
     public static BalanceItem defaultBalanceItem() {
         return BalanceItem.builder()
                 .id(DEFAULT_BALANCE_ITEM_ID)
@@ -163,6 +210,24 @@ public class BalanceFactory {
                 .actor(secondActor())
                 .card(new BigDecimal("20.00"))
                 .cash(new BigDecimal("30.00"))
+                .build();
+    }
+
+    public static BalanceItem thirdBalanceItem() {
+        return BalanceItem.builder()
+                .id(3L)
+                .actor(defaultActor())
+                .card(BigDecimal.TEN)
+                .cash(new BigDecimal("30.00"))
+                .build();
+    }
+
+    public static BalanceItem fourthBalanceItem() {
+        return BalanceItem.builder()
+                .id(4L)
+                .actor(secondActor())
+                .card(new BigDecimal("10.00"))
+                .cash(new BigDecimal("20.00"))
                 .build();
     }
 

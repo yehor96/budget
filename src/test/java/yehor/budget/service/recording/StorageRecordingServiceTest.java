@@ -14,12 +14,16 @@ import yehor.budget.web.dto.full.StorageRecordFullDto;
 import yehor.budget.web.dto.limited.StorageRecordLimitedDto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static common.factory.StorageFactory.DEFAULT_STORED_IN_TOTAL;
 import static common.factory.StorageFactory.defaultStorageRecord;
 import static common.factory.StorageFactory.defaultStorageRecordFullDto;
 import static common.factory.StorageFactory.defaultStorageRecordLimitedDto;
+import static common.factory.StorageFactory.secondStorageRecord;
+import static common.factory.StorageFactory.secondStorageRecordFullDto;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -73,6 +77,28 @@ class StorageRecordingServiceTest {
         assertNotNull(actualRecordDto.getStoredInTotal());
         assertEquals(DEFAULT_STORED_IN_TOTAL, actualRecordDto.getStoredInTotal());
         assertFalse(actualRecordDto.getStorageItems().isEmpty());
+    }
+
+    @Test
+    void testFindAllInInterval() {
+        StorageRecordFullDto storageRecordFullDto = defaultStorageRecordFullDto();
+        StorageRecordFullDto storageRecordFullDto2 = secondStorageRecordFullDto();
+        StorageRecord storageRecord = defaultStorageRecord();
+        StorageRecord storageRecord2 = secondStorageRecord();
+
+        when(storageRecordRepository.findAllInInterval(any(), any())).thenReturn(List.of(storageRecord, storageRecord2));
+        when(storageConverter.convert(storageRecord)).thenReturn(storageRecordFullDto);
+        when(storageConverter.convert(storageRecord2)).thenReturn(storageRecordFullDto2);
+
+        List<StorageRecordFullDto> recordsInInterval = storageRecordingService.findAllInInterval(
+                LocalDate.of(2023, 3, 15), LocalDate.of(2023, 3, 25));
+
+        assertFalse(recordsInInterval.isEmpty());
+        recordsInInterval.forEach(actualRecordDto -> {
+            assertNotNull(actualRecordDto.getStoredInTotal());
+            assertEquals(DEFAULT_STORED_IN_TOTAL, actualRecordDto.getStoredInTotal());
+            assertFalse(actualRecordDto.getStorageItems().isEmpty());
+        });
     }
 
     @Test

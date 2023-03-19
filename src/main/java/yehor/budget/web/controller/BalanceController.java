@@ -21,6 +21,7 @@ import yehor.budget.web.dto.full.BalanceRecordFullDto;
 import yehor.budget.web.dto.limited.BalanceItemLimitedDto;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -67,6 +68,24 @@ public class BalanceController {
             throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/interval")
+    @Operation(summary = "Get list of balance records within dates interval")
+    public ResponseEntity<List<BalanceRecordFullDto>> getBalanceRecordsInInterval(@RequestParam("dateFrom") String dateFromParam,
+                                                                                  @RequestParam("dateTo") String dateToParam) {
+        try {
+            LocalDate dateFrom = dateManager.parse(dateFromParam);
+            LocalDate dateTo = dateManager.parse(dateToParam);
+
+            dateManager.validateDatesInSequentialOrder(dateFrom, dateTo);
+            dateManager.validateDatesWithinBudget(dateFrom, dateTo);
+
+            List<BalanceRecordFullDto> balanceRecords = balanceRecordingService.findAllInInterval(dateFrom, dateTo);
+            return new ResponseEntity<>(balanceRecords, HttpStatus.OK);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
+        }
     }
 
     private void validateBalanceItems(BalanceRecordLimitedDto balanceRecordDto) {

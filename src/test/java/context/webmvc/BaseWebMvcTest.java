@@ -22,13 +22,9 @@ abstract class BaseWebMvcTest {
     protected static final String BASE_URL = "http://localhost:8080/api/v1";
 
     protected static final String EXPENSES_URL = BASE_URL.concat("/expenses");
-    protected static final String EXPENSE_INTERVAL_URL = EXPENSES_URL + "/interval";
-    protected static final String EXPENSE_SUM_URL = EXPENSES_URL + "/sum";
     protected static final String CATEGORIES_URL = BASE_URL.concat("/categories");
     protected static final String SETTINGS_URL = BASE_URL.concat("/settings");
     protected static final String STATISTICS_URL = BASE_URL.concat("/statistics");
-    protected static final String MONTHLY_STATISTICS_URL = STATISTICS_URL.concat("/monthly");
-    protected static final String PERIODIC_STATISTICS_URL = STATISTICS_URL.concat("/periodic");
     protected static final String TAGS_URL = BASE_URL.concat("/tags");
     protected static final String ESTIMATED_EXPENSES_URL = BASE_URL.concat("/estimated-expenses");
     protected static final String INCOME_SOURCES_URL = BASE_URL.concat("/income-sources");

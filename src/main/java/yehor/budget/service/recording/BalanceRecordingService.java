@@ -47,16 +47,7 @@ public class BalanceRecordingService {
     @Transactional(readOnly = true)
     public Optional<BalanceRecordFullDto> getLatest() {
         Optional<BalanceRecord> latestOpt = pageableHelper.getLatestByDate(balanceRecordRepository);
-        if (latestOpt.isEmpty()) {
-            return Optional.empty();
-        }
-        BalanceRecord balanceRecord = latestOpt.get();
-        BalanceRecordFullDto balanceRecordDto = balanceConverter.convert(balanceRecord);
-        setTotalBalance(balanceRecordDto);
-        List<BalanceEstimateDto> estimates = balanceEstimationService.getBalanceEstimation(
-                balanceRecord, balanceRecordDto.getDate(), balanceRecordDto.getTotalBalance());
-        balanceRecordDto.setBalanceEstimates(estimates);
-        return Optional.of(balanceRecordDto);
+        return latestOpt.isEmpty() ? Optional.empty() : Optional.of(calculateFullBalanceRecord(latestOpt.get()));
     }
 
     @Transactional
@@ -73,6 +64,12 @@ public class BalanceRecordingService {
         log.info("List of saved balance items: {}", balanceRecord.getBalanceItems());
     }
 
+    @Transactional(readOnly = true)
+    public List<BalanceRecordFullDto> findAllInInterval(LocalDate dateFrom, LocalDate dateTo) {
+        List<BalanceRecord> balanceRecords = balanceRecordRepository.findAllInInterval(dateFrom, dateTo);
+        return balanceRecords.stream().map(this::calculateFullBalanceRecord).toList();
+    }
+
     @Transactional
     public void delete(Long id) {
         try {
@@ -81,6 +78,15 @@ public class BalanceRecordingService {
         } catch (EmptyResultDataAccessException e) {
             throw new ObjectNotFoundException("Balance with id " + id + " not found");
         }
+    }
+
+    private BalanceRecordFullDto calculateFullBalanceRecord(BalanceRecord balanceRecord) {
+        BalanceRecordFullDto balanceRecordDto = balanceConverter.convert(balanceRecord);
+        setTotalBalance(balanceRecordDto);
+        List<BalanceEstimateDto> estimates = balanceEstimationService.getBalanceEstimation(
+                balanceRecord, balanceRecordDto.getDate(), balanceRecordDto.getTotalBalance());
+        balanceRecordDto.setBalanceEstimates(estimates);
+        return balanceRecordDto;
     }
 
     private void validateRecordWithDateNotExists(LocalDate date) {

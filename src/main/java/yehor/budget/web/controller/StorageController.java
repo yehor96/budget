@@ -20,6 +20,9 @@ import yehor.budget.service.recording.StorageRecordingService;
 import yehor.budget.web.dto.full.StorageRecordFullDto;
 import yehor.budget.web.dto.limited.StorageRecordLimitedDto;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -61,6 +64,24 @@ public class StorageController {
             throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/interval")
+    @Operation(summary = "Get list of storage records within dates interval")
+    public ResponseEntity<List<StorageRecordFullDto>> getStorageRecordsInInterval(@RequestParam("dateFrom") String dateFromParam,
+                                                                                  @RequestParam("dateTo") String dateToParam) {
+        try {
+            LocalDate dateFrom = dateManager.parse(dateFromParam);
+            LocalDate dateTo = dateManager.parse(dateToParam);
+
+            dateManager.validateDatesInSequentialOrder(dateFrom, dateTo);
+            dateManager.validateDatesWithinBudget(dateFrom, dateTo);
+
+            List<StorageRecordFullDto> storageRecords = storageRecordingService.findAllInInterval(dateFrom, dateTo);
+            return new ResponseEntity<>(storageRecords, HttpStatus.OK);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
+        }
     }
 
     private void validateStorageItems(StorageRecordLimitedDto storageRecord) {
