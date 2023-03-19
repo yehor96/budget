@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface BalanceRecordRepository extends JpaRepository<BalanceRecord, Long> {
 
+    boolean existsByDate(LocalDate date);
+
     @Query("SELECT b FROM BalanceRecord b WHERE b.date BETWEEN :dateFrom AND :dateTo")
     List<BalanceRecord> findAllInInterval(@Param("dateFrom") LocalDate dateFrom,
                                           @Param("dateTo") LocalDate dateTo);

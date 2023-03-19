@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.common.date.DateManager;
+import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.service.recording.BalanceRecordingService;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
 import yehor.budget.web.dto.limited.BalanceItemLimitedDto;
@@ -44,7 +46,7 @@ public class BalanceController {
 
     @PostMapping
     @Operation(summary = "Save balance")
-    public void save(@RequestBody BalanceRecordLimitedDto balanceRecordDto) {
+    public ResponseEntity<BalanceRecordLimitedDto> save(@RequestBody BalanceRecordLimitedDto balanceRecordDto) {
         try {
             dateManager.validateDateAfterStart(balanceRecordDto.getDate());
             validateBalanceItems(balanceRecordDto);
@@ -54,6 +56,18 @@ public class BalanceController {
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
         }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    @Operation(summary = "Delete balance record")
+    public ResponseEntity<BalanceRecordLimitedDto> delete(@RequestParam("id") Long id) {
+        try {
+            balanceRecordingService.delete(id);
+        } catch (ObjectNotFoundException exception) {
+            throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/interval")

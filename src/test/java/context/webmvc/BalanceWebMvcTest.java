@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import yehor.budget.common.date.DateManager;
+import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.service.recording.BalanceRecordingService;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
@@ -14,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static common.factory.BalanceFactory.DEFAULT_BALANCE_RECORD_ID;
 import static common.factory.BalanceFactory.balanceRecordFullDtoWithEstimates;
 import static common.factory.BalanceFactory.defaultBalanceRecordFullDto;
 import static common.factory.BalanceFactory.defaultBalanceRecordLimitedDto;
@@ -26,6 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -241,5 +244,33 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
         verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
 
         verify(balanceRecordingService, never()).findAllInInterval(dateFrom, dateTo);
+    }
+
+    // Delete balance record
+
+    @Test
+    void testDeleteSuccessfully() throws Exception {
+        mockMvc.perform(delete(BALANCE_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
+                        .param("id", String.valueOf(DEFAULT_BALANCE_RECORD_ID)))
+                .andExpect(status().isOk());
+
+        verify(balanceRecordingService, times(1)).delete(DEFAULT_BALANCE_RECORD_ID);
+    }
+
+    @Test
+    void testTryDeletingNotExistingBalanceRecord() throws Exception {
+        String expectedErrorMessage = "expectedErrorMessage";
+
+        doThrow(new ObjectNotFoundException(expectedErrorMessage))
+                .when(balanceRecordingService).delete(DEFAULT_BALANCE_RECORD_ID);
+
+        String response = mockMvc.perform(delete(BALANCE_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
+                        .param("id", String.valueOf(DEFAULT_BALANCE_RECORD_ID)))
+                .andExpect(status().isNotFound())
+                .andReturn().getResponse().getContentAsString();
+
+        verifyResponseErrorObject(response, NOT_FOUND, expectedErrorMessage);
     }
 }

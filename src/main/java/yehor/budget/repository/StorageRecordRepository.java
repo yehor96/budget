@@ -12,6 +12,8 @@ import java.util.List;
 @Repository
 public interface StorageRecordRepository extends JpaRepository<StorageRecord, Long> {
 
+    boolean existsByDate(LocalDate date);
+
     @Query("SELECT s FROM StorageRecord s WHERE s.date BETWEEN :dateFrom AND :dateTo")
     List<StorageRecord> findAllInInterval(@Param("dateFrom") LocalDate dateFrom,
                                           @Param("dateTo") LocalDate dateTo);

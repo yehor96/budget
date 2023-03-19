@@ -2,9 +2,11 @@ package yehor.budget.service.recording;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import yehor.budget.common.Currency;
+import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.common.util.PageableHelper;
 import yehor.budget.entity.StorageRecord;
 import yehor.budget.repository.StorageItemRepository;
@@ -40,6 +42,7 @@ public class StorageRecordingService {
 
     @Transactional
     public void save(StorageRecordLimitedDto storageRecordDto) {
+        validateRecordWithDateNotExists(storageRecordDto.getDate());
         StorageRecord storageRecord = storageConverter.convert(storageRecordDto);
         setStoredInTotal(storageRecord);
         storageRecordRepository.save(storageRecord);
@@ -54,6 +57,22 @@ public class StorageRecordingService {
         return storageRecords.stream()
                 .map(storageConverter::convert)
                 .toList();
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        try {
+            storageRecordRepository.deleteById(id);
+            log.info("Storage record with id {} is deleted", id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ObjectNotFoundException("Storage with id " + id + " not found");
+        }
+    }
+
+    private void validateRecordWithDateNotExists(LocalDate date) {
+        if (storageRecordRepository.existsByDate(date)) {
+            throw new IllegalArgumentException("Record with provided date " + date + " already exists");
+        }
     }
 
     private void setStoredInTotal(StorageRecord storageRecord) {
