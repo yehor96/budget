@@ -15,6 +15,8 @@ import yehor.budget.web.dto.full.StorageRecordFullDto;
 import yehor.budget.web.dto.limited.StorageRecordLimitedDto;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -44,6 +46,14 @@ public class StorageRecordingService {
         log.info("Saved: {}", storageRecord);
         storageRecord.getStorageItems().forEach(storageItemRepository::save);
         log.info("List of saved storage items: {}", storageRecord.getStorageItems());
+    }
+
+    @Transactional(readOnly = true)
+    public List<StorageRecordFullDto> findAllInInterval(LocalDate dateFrom, LocalDate dateTo) {
+        List<StorageRecord> storageRecords = storageRecordRepository.findAllInInterval(dateFrom, dateTo);
+        return storageRecords.stream()
+                .map(storageConverter::convert)
+                .toList();
     }
 
     private void setStoredInTotal(StorageRecord storageRecord) {

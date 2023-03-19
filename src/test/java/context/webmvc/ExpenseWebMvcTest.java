@@ -41,6 +41,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class ExpenseWebMvcTest extends BaseWebMvcTest {
 
+    protected static final String EXPENSE_INTERVAL_URL = EXPENSES_URL + "/interval";
+    protected static final String EXPENSE_SUM_URL = EXPENSES_URL + "/sum";
+
     @MockBean
     private DateManager dateManager;
     @MockBean

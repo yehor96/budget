@@ -22,6 +22,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class StatisticsWebMvcTest extends BaseWebMvcTest {
 
+    protected static final String MONTHLY_STATISTICS_URL = STATISTICS_URL.concat("/monthly");
+    protected static final String PERIODIC_STATISTICS_URL = STATISTICS_URL.concat("/periodic");
+
     @MockBean
     private StatisticsService statisticsService;
     @MockBean

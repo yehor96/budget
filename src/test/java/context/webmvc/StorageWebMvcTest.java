@@ -1,5 +1,6 @@
 package context.webmvc;
 
+import com.fasterxml.jackson.databind.ObjectReader;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -8,7 +9,9 @@ import yehor.budget.service.recording.StorageRecordingService;
 import yehor.budget.web.dto.full.StorageRecordFullDto;
 import yehor.budget.web.dto.limited.StorageRecordLimitedDto;
 
+import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static common.factory.StorageFactory.defaultStorageRecordFullDto;
@@ -27,6 +30,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class StorageWebMvcTest extends BaseWebMvcTest {
+
+    protected static final String STORAGE_INTERVAL_URL = STORAGE_URL + "/interval";
 
     @MockBean
     private StorageRecordingService storageRecordingService;
@@ -115,5 +120,107 @@ class StorageWebMvcTest extends BaseWebMvcTest {
         verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
 
         verify(storageRecordingService, never()).save(storageRecordDto);
+    }
+
+    // Get storage records in interval
+
+    @Test
+    void testGetStorageRecordsInInterval() throws Exception {
+        List<StorageRecordFullDto> expectedRecordsInterval = List.of(defaultStorageRecordFullDto());
+
+        String from = "2022-06-06";
+        String to = "2022-07-07";
+        LocalDate dateFrom = LocalDate.of(2022, 6, 6);
+        LocalDate dateTo = LocalDate.of(2022, 7, 7);
+
+        when(dateManager.parse(from)).thenReturn(dateFrom);
+        when(dateManager.parse(to)).thenReturn(dateTo);
+        when(storageRecordingService.findAllInInterval(dateFrom, dateTo)).thenReturn(expectedRecordsInterval);
+
+        String response = mockMvc.perform(get(STORAGE_INTERVAL_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
+                        .param("dateFrom", from)
+                        .param("dateTo", to))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        ObjectReader listReader = objectMapper.readerForListOf(StorageRecordFullDto.class);
+        List<StorageRecordFullDto> actualRecordsInterval = listReader.readValue(response);
+
+        verify(storageRecordingService, times(1)).findAllInInterval(dateFrom, dateTo);
+        assertEquals(expectedRecordsInterval, actualRecordsInterval);
+    }
+
+    @Test
+    void testTryGettingStorageRecordsInIntervalFailingSequentialOrderCheck() throws Exception {
+        String expectedErrorMessage = "expectedErrorMessage";
+        String from = "2022-06-06";
+        String to = "2022-07-07";
+        LocalDate dateFrom = LocalDate.of(2022, 6, 6);
+        LocalDate dateTo = LocalDate.of(2022, 7, 7);
+
+        when(dateManager.parse(from)).thenReturn(dateFrom);
+        when(dateManager.parse(to)).thenReturn(dateTo);
+        doThrow(new IllegalArgumentException(expectedErrorMessage))
+                .when(dateManager).validateDatesInSequentialOrder(dateFrom, dateTo);
+
+        String response = mockMvc.perform(get(STORAGE_INTERVAL_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
+                        .param("dateFrom", from)
+                        .param("dateTo", to))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+        verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
+
+        verify(storageRecordingService, never()).findAllInInterval(dateFrom, dateTo);
+    }
+
+    @Test
+    void testTryGettingStorageRecordsInIntervalFailingDatesWithinBudgetCheck() throws Exception {
+        String expectedErrorMessage = "expectedErrorMessage";
+        String from = "2022-06-06";
+        String to = "2022-07-07";
+        LocalDate dateFrom = LocalDate.of(2022, 6, 6);
+        LocalDate dateTo = LocalDate.of(2022, 7, 7);
+
+        when(dateManager.parse(from)).thenReturn(dateFrom);
+        when(dateManager.parse(to)).thenReturn(dateTo);
+        doThrow(new IllegalArgumentException(expectedErrorMessage))
+                .when(dateManager).validateDatesWithinBudget(dateFrom, dateTo);
+
+        String response = mockMvc.perform(get(STORAGE_INTERVAL_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
+                        .param("dateFrom", from)
+                        .param("dateTo", to))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+        verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
+
+        verify(storageRecordingService, never()).findAllInInterval(dateFrom, dateTo);
+    }
+
+    @Test
+    void testTryGettingStorageRecordsInIntervalFailingParsingOfDateParameter() throws Exception {
+        String expectedErrorMessage = "expectedErrorMessage";
+        String from = "2022-06-06";
+        String to = "2022-07-07";
+        LocalDate dateFrom = LocalDate.of(2022, 6, 6);
+        LocalDate dateTo = LocalDate.of(2022, 7, 7);
+
+        doThrow(new IllegalArgumentException(expectedErrorMessage))
+                .when(dateManager).parse(from);
+
+        String response = mockMvc.perform(get(STORAGE_INTERVAL_URL)
+                        .header("Authorization", BASIC_AUTH_STRING)
+                        .param("dateFrom", from)
+                        .param("dateTo", to))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+        verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
+
+        verify(storageRecordingService, never()).findAllInInterval(dateFrom, dateTo);
     }
 }

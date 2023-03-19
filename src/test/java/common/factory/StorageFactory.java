@@ -29,6 +29,15 @@ public class StorageFactory {
                 .build();
     }
 
+    public static StorageRecord secondStorageRecord() {
+        return StorageRecord.builder()
+                .id(2L)
+                .date(LocalDate.now().plusDays(5))
+                .storedInTotal(DEFAULT_STORED_IN_TOTAL)
+                .storageItems(secondStorageItemList())
+                .build();
+    }
+
     public static List<StorageItem> defaultStorageItemList() {
         return List.of(defaultStorageItem(), secondStorageItem());
     }
@@ -51,12 +60,43 @@ public class StorageFactory {
                 .build();
     }
 
+    public static List<StorageItem> secondStorageItemList() {
+        return List.of(thirdStorageItem(), fourthStorageItem());
+    }
+
+    public static StorageItem thirdStorageItem() {
+        return StorageItem.builder()
+                .id(3L)
+                .name("item3")
+                .currency(Currency.UAH)
+                .value(new BigDecimal("60.00"))
+                .build();
+    }
+
+    public static StorageItem fourthStorageItem() {
+        return StorageItem.builder()
+                .id(4L)
+                .name("item4")
+                .currency(Currency.UAH)
+                .value(new BigDecimal("50.00"))
+                .build();
+    }
+
     public static StorageRecordFullDto defaultStorageRecordFullDto() {
         return StorageRecordFullDto.builder()
                 .id(DEFAULT_STORAGE_RECORD_ID)
                 .date(LocalDate.now())
                 .storedInTotal(DEFAULT_STORED_IN_TOTAL)
                 .storageItems(defaultStorageItemFullDtoList())
+                .build();
+    }
+
+    public static StorageRecordFullDto secondStorageRecordFullDto() {
+        return StorageRecordFullDto.builder()
+                .id(2L)
+                .date(LocalDate.now().plusDays(5))
+                .storedInTotal(DEFAULT_STORED_IN_TOTAL)
+                .storageItems(secondStorageItemFullDtoList())
                 .build();
     }
 
@@ -86,6 +126,28 @@ public class StorageFactory {
                 .name("item2")
                 .currency(Currency.UAH)
                 .value(new BigDecimal("100.00"))
+                .build();
+    }
+
+    public static List<StorageItemFullDto> secondStorageItemFullDtoList() {
+        return List.of(thirdStorageItemFullDto(), fourthStorageItemFullDto());
+    }
+
+    public static StorageItemFullDto thirdStorageItemFullDto() {
+        return StorageItemFullDto.builder()
+                .id(3L)
+                .name("item3")
+                .currency(Currency.UAH)
+                .value(new BigDecimal("60.00"))
+                .build();
+    }
+
+    public static StorageItemFullDto fourthStorageItemFullDto() {
+        return StorageItemFullDto.builder()
+                .id(4L)
+                .name("item4")
+                .currency(Currency.UAH)
+                .value(new BigDecimal("50.00"))
                 .build();
     }
 

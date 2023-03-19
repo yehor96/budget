@@ -3,11 +3,14 @@ package yehor.budget.web.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.common.date.DateManager;
@@ -16,6 +19,7 @@ import yehor.budget.web.dto.full.BalanceRecordFullDto;
 import yehor.budget.web.dto.limited.BalanceItemLimitedDto;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,6 +51,24 @@ public class BalanceController {
             validateActors(balanceRecordDto);
 
             balanceRecordingService.save(balanceRecordDto);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
+        }
+    }
+
+    @GetMapping("/interval")
+    @Operation(summary = "Get list of balance records within dates interval")
+    public ResponseEntity<List<BalanceRecordFullDto>> getBalanceRecordsInInterval(@RequestParam("dateFrom") String dateFromParam,
+                                                                                  @RequestParam("dateTo") String dateToParam) {
+        try {
+            LocalDate dateFrom = dateManager.parse(dateFromParam);
+            LocalDate dateTo = dateManager.parse(dateToParam);
+
+            dateManager.validateDatesInSequentialOrder(dateFrom, dateTo);
+            dateManager.validateDatesWithinBudget(dateFrom, dateTo);
+
+            List<BalanceRecordFullDto> balanceRecords = balanceRecordingService.findAllInInterval(dateFrom, dateTo);
+            return new ResponseEntity<>(balanceRecords, HttpStatus.OK);
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
         }

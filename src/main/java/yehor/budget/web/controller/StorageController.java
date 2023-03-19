@@ -3,17 +3,23 @@ package yehor.budget.web.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.service.recording.StorageRecordingService;
 import yehor.budget.web.dto.full.StorageRecordFullDto;
 import yehor.budget.web.dto.limited.StorageRecordLimitedDto;
+
+import java.time.LocalDate;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -41,6 +47,24 @@ public class StorageController {
             dateManager.validateDateAfterStart(storageRecord.getDate());
             validateStorageItems(storageRecord);
             storageRecordingService.save(storageRecord);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
+        }
+    }
+
+    @GetMapping("/interval")
+    @Operation(summary = "Get list of storage records within dates interval")
+    public ResponseEntity<List<StorageRecordFullDto>> getStorageRecordsInInterval(@RequestParam("dateFrom") String dateFromParam,
+                                                                                  @RequestParam("dateTo") String dateToParam) {
+        try {
+            LocalDate dateFrom = dateManager.parse(dateFromParam);
+            LocalDate dateTo = dateManager.parse(dateToParam);
+
+            dateManager.validateDatesInSequentialOrder(dateFrom, dateTo);
+            dateManager.validateDatesWithinBudget(dateFrom, dateTo);
+
+            List<StorageRecordFullDto> storageRecords = storageRecordingService.findAllInInterval(dateFrom, dateTo);
+            return new ResponseEntity<>(storageRecords, HttpStatus.OK);
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
         }

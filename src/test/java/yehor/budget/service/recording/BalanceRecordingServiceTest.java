@@ -26,10 +26,13 @@ import java.util.Optional;
 
 import static common.factory.BalanceFactory.DEFAULT_BALANCE_RECORD_TOTAL;
 import static common.factory.BalanceFactory.balanceRecordWithNotSetExpensesAndIncome;
+import static common.factory.BalanceFactory.balanceRecordWithSetIncomes;
 import static common.factory.BalanceFactory.defaultBalanceEstimationDto;
 import static common.factory.BalanceFactory.defaultBalanceRecord;
 import static common.factory.BalanceFactory.defaultBalanceRecordFullDto;
 import static common.factory.BalanceFactory.defaultBalanceRecordLimitedDto;
+import static common.factory.BalanceFactory.secondBalanceRecord;
+import static common.factory.BalanceFactory.secondBalanceRecordFullDto;
 import static common.factory.EstimatedExpenseFactory.defaultEstimatedExpenseFullDto;
 import static common.factory.IncomeSourceFactory.defaultIncomeSourceRecord;
 import static common.factory.IncomeSourceFactory.defaultTotalIncomeDto;
@@ -109,6 +112,41 @@ class BalanceRecordingServiceTest {
         assertEquals(profit, balanceEstimateDto.getProfitByEndOfMonth());
         assertEquals(expectedDateEOM, balanceEstimateDto.getEndOfMonthDate());
         assertFalse(CollectionUtils.isEmpty(actualRecordDto.getBalanceItems()));
+    }
+
+    @Test
+    void testFindAllInInterval() {
+        BalanceRecordFullDto balanceRecordFullDto = defaultBalanceRecordFullDto();
+        BalanceRecordFullDto balanceRecordFullDto2 = secondBalanceRecordFullDto();
+        BalanceRecord balanceRecord = secondBalanceRecord();
+        BalanceRecord balanceRecord2 = balanceRecordWithSetIncomes();
+        LocalDate expectedDateEOM = LocalDate.of(2023, 1, 31);
+
+        when(balanceRecordRepository.findAllInInterval(any(), any())).thenReturn(List.of(balanceRecord, balanceRecord2));
+        when(balanceConverter.convert(balanceRecord)).thenReturn(balanceRecordFullDto);
+        when(balanceConverter.convert(balanceRecord2)).thenReturn(balanceRecordFullDto2);
+        when(balanceEstimationService.getBalanceEstimation(any(), any(), any()))
+                .thenReturn(List.of(defaultBalanceEstimationDto()));
+
+        List<BalanceRecordFullDto> recordsInInterval = balanceRecordingService.findAllInInterval(
+                LocalDate.of(2023, 1, 10), LocalDate.of(2023, 1, 20));
+
+        assertFalse(recordsInInterval.isEmpty());
+        recordsInInterval.forEach(actualRecordDto -> {
+            assertNotNull(actualRecordDto.getTotalBalance());
+            assertEquals(DEFAULT_BALANCE_RECORD_TOTAL, actualRecordDto.getTotalBalance());
+
+            assertFalse(CollectionUtils.isEmpty(actualRecordDto.getBalanceEstimates()));
+            BalanceEstimateDto balanceEstimateDto = actualRecordDto.getBalanceEstimates().get(0);
+            assertNotNull(balanceEstimateDto);
+            assertNotNull(balanceEstimateDto.getExpenseByEndOfMonth());
+            BigDecimal profit = balanceEstimateDto.getIncomeByEndOfMonth()
+                    .add(balanceEstimateDto.getPreviousTotal())
+                    .subtract(balanceEstimateDto.getExpenseByEndOfMonth());
+            assertEquals(profit, balanceEstimateDto.getProfitByEndOfMonth());
+            assertEquals(expectedDateEOM, balanceEstimateDto.getEndOfMonthDate());
+            assertFalse(CollectionUtils.isEmpty(actualRecordDto.getBalanceItems()));
+        });
     }
 
     @Test
