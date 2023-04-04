@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.date.MonthWeek;
 import yehor.budget.entity.recording.BalanceRecord;
+import yehor.budget.repository.FutureExpenseRepository;
 import yehor.budget.service.client.currency.CurrencyRateService;
 import yehor.budget.web.dto.full.BalanceEstimateDto;
 
@@ -24,9 +25,10 @@ class BalanceEstimationServiceTest {
 
     private final DateManager dateManager = mock(DateManager.class);
     private final CurrencyRateService currencyRateService = mock(CurrencyRateService.class);
+    private final FutureExpenseRepository futureExpenseRepository = mock(FutureExpenseRepository.class);
 
     private final BalanceEstimationService balanceEstimationService =
-            new BalanceEstimationService(dateManager, currencyRateService);
+            new BalanceEstimationService(dateManager, currencyRateService, futureExpenseRepository);
 
     @Test
     void testGetBalanceEstimation() {
@@ -166,7 +168,7 @@ class BalanceEstimationServiceTest {
                 MonthWeek.DAYS_22_TO_31, new BigDecimal("10.00")
         );
 
-        when(dateManager.getLastDayOfMonthByDate(currentDate)).thenReturn(31);
+        when(dateManager.getLastDayOfMonth(currentDate)).thenReturn(31);
 
         BigDecimal actualResult = balanceEstimationService.getExpensesForDaysLeftInCurrentWeek(
                 currentMonthWeek, currentDate, estimatedExpensePerWeek);
@@ -183,7 +185,7 @@ class BalanceEstimationServiceTest {
                 MonthWeek.DAYS_22_TO_31, new BigDecimal("70.00")
         );
 
-        when(dateManager.getLastDayOfMonthByDate(currentDate)).thenReturn(28);
+        when(dateManager.getLastDayOfMonth(currentDate)).thenReturn(28);
 
         BigDecimal actualResult = balanceEstimationService.getExpensesForDaysLeftInCurrentWeek(
                 currentMonthWeek, currentDate, estimatedExpensePerWeek);

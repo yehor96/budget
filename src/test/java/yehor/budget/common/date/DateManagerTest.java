@@ -385,7 +385,7 @@ class DateManagerTest {
         setUp(defaultSettings());
         LocalDate date = paramPair.getKey();
         Integer expectedResult = paramPair.getValue();
-        int actualResult = dateManager.getLastDayOfMonthByDate(date);
+        int actualResult = dateManager.getLastDayOfMonth(date);
         assertEquals(expectedResult, actualResult);
     }
 

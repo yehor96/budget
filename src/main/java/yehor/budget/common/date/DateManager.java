@@ -165,7 +165,7 @@ public class DateManager implements SettingsListener {
         return LocalDate.of(
                 date.getYear(),
                 date.getMonth(),
-                getLastDayOfMonthByDate(date)
+                getLastDayOfMonth(date)
         );
     }
 
@@ -175,7 +175,7 @@ public class DateManager implements SettingsListener {
         }
     }
 
-    public int getLastDayOfMonthByDate(LocalDate date) {
+    public int getLastDayOfMonth(LocalDate date) {
         int lastDay;
         if (date.getMonth() == (Month.FEBRUARY)) {
             if (Year.isLeap(date.getYear())) {
@@ -187,5 +187,9 @@ public class DateManager implements SettingsListener {
             lastDay = date.getMonth().maxLength();
         }
         return lastDay;
+    }
+
+    public LocalDate getLastDateOfMonth(LocalDate date) {
+        return LocalDate.of(date.getYear(), date.getMonth(), getLastDayOfMonth(date));
     }
 }
