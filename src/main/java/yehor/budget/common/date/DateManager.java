@@ -161,14 +161,6 @@ public class DateManager implements SettingsListener {
         return "Date argument is out of budget. Start date is " + startDate + ". End date is " + endDate + ".";
     }
 
-    public LocalDate getMonthEndDate(LocalDate date) {
-        return LocalDate.of(
-                date.getYear(),
-                date.getMonth(),
-                getLastDayOfMonth(date)
-        );
-    }
-
     public void validateDayOfMonth(Integer day) {
         if (day < 1 || day > 31) {
             throw new IllegalArgumentException("Provided value is not a day of month - " + day);

@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 import static common.factory.BalanceFactory.balanceRecordWithSetIncomes;
+import static common.factory.FutureExpenseFactory.defaultFutureExpenseWithDate;
+import static common.factory.FutureExpenseFactory.secondFutureExpenseWithDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -39,17 +41,17 @@ class BalanceEstimationServiceTest {
         List<BalanceEstimateDto> expectedBalanceEstimation = List.of(
                 new BalanceEstimateDto( // first month estimate
                         expectedPreviousTotal,
-                        new BigDecimal("379.58"),
+                        new BigDecimal("1379.58"),
                         new BigDecimal("20.00"),
                         expectedLastDate1),
                 new BalanceEstimateDto( // second month estimate
-                        new BigDecimal("-159.58"),
-                        new BigDecimal("408.74"),
+                        new BigDecimal("-1159.58"),
+                        new BigDecimal("1408.74"),
                         new BigDecimal("20.00"),
                         expectedLastDate2),
                 new BalanceEstimateDto( // third month estimate
-                        new BigDecimal("-548.32"),
-                        new BigDecimal("408.74"),
+                        new BigDecimal("-2548.32"),
+                        new BigDecimal("1408.74"),
                         new BigDecimal("20.00"),
                         expectedLastDate3)
         );
@@ -57,10 +59,15 @@ class BalanceEstimationServiceTest {
         BalanceRecord balanceRecord = balanceRecordWithSetIncomes();
         LocalDate date = LocalDate.of(2023, 1, 5);
 
-        when(dateManager.getMonthEndDate(any()))
+        when(dateManager.getLastDateOfMonth(any()))
+                .thenReturn(expectedLastDate1)
                 .thenReturn(expectedLastDate1)
                 .thenReturn(expectedLastDate2)
+                .thenReturn(expectedLastDate2)
+                .thenReturn(expectedLastDate3)
                 .thenReturn(expectedLastDate3);
+        when(futureExpenseRepository.getFutureExpensesInInterval(any(), any()))
+                .thenReturn(List.of(defaultFutureExpenseWithDate()));
         when(currencyRateService.getValueInCurrency(any(), any()))
                 .thenReturn(new BigDecimal("10.00"));
 
@@ -76,7 +83,7 @@ class BalanceEstimationServiceTest {
         LocalDate expectedLastDate = LocalDate.of(2023, 1, 31);
         BalanceEstimateDto expectedEstimatedDto = new BalanceEstimateDto(
                 expectedPreviousTotal,
-                new BigDecimal("34.00"),
+                new BigDecimal("1034.00"),
                 new BigDecimal("20.00"),
                 expectedLastDate);
 
@@ -89,7 +96,11 @@ class BalanceEstimationServiceTest {
                 MonthWeek.DAYS_22_TO_31, new BigDecimal("10.00")
         );
 
-        when(dateManager.getMonthEndDate(any())).thenReturn(expectedLastDate);
+        when(dateManager.getLastDateOfMonth(any()))
+                .thenReturn(expectedLastDate)
+                .thenReturn(expectedLastDate);
+        when(futureExpenseRepository.getFutureExpensesInInterval(any(), any()))
+                .thenReturn(List.of(defaultFutureExpenseWithDate()));
         when(currencyRateService.getValueInCurrency(any(), any()))
                 .thenReturn(new BigDecimal("10.00"));
 
@@ -101,8 +112,9 @@ class BalanceEstimationServiceTest {
 
     @Test
     void testGetExpensesTilEndOfMonth() {
-        BigDecimal expectedResult = new BigDecimal("34.00");
+        BigDecimal expectedResult = new BigDecimal("1034.00");
         LocalDate date = LocalDate.of(2023, 1, 5);
+        LocalDate expectedLastDate = LocalDate.of(2023, 1, 31);
         Map<MonthWeek, BigDecimal> estimatedExpensePerWeek = Map.of(
                 MonthWeek.DAYS_1_TO_7, new BigDecimal("14.00"),
                 MonthWeek.DAYS_8_TO_14, new BigDecimal("10.00"),
@@ -110,7 +122,28 @@ class BalanceEstimationServiceTest {
                 MonthWeek.DAYS_22_TO_31, new BigDecimal("10.00")
         );
 
+        when(dateManager.getLastDateOfMonth(date))
+                .thenReturn(expectedLastDate);
+        when(futureExpenseRepository.getFutureExpensesInInterval(date, expectedLastDate))
+                .thenReturn(List.of(defaultFutureExpenseWithDate()));
+
         BigDecimal actualResult = balanceEstimationService.getExpensesTilEndOfMonth(date, estimatedExpensePerWeek);
+
+        assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    void testGetFutureExpensesTilEndOfMonth() {
+        BigDecimal expectedResult = new BigDecimal("1550.00");
+        LocalDate date = LocalDate.of(2023, 1, 5);
+        LocalDate expectedLastDate = LocalDate.of(2023, 1, 31);
+
+        when(dateManager.getLastDateOfMonth(date))
+                .thenReturn(expectedLastDate);
+        when(futureExpenseRepository.getFutureExpensesInInterval(date, expectedLastDate))
+                .thenReturn(List.of(defaultFutureExpenseWithDate(), secondFutureExpenseWithDate()));
+
+        BigDecimal actualResult = balanceEstimationService.getFutureExpensesTilEndOfMonth(date);
 
         assertEquals(expectedResult, actualResult);
     }

@@ -28,6 +28,9 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RequestMapping("/api/v1/future-expenses")
 @RequiredArgsConstructor
 @Tag(name = "Future Expense Controller")
+/*
+    Class not covered with unit tests
+ */
 public class FutureExpenseController {
 
     private final FutureExpenseService futureExpenseService;

@@ -25,7 +25,6 @@ import static org.mockito.Mockito.mockStatic;
 class DateManagerTest {
 
     private DateManager dateManager;
-
     private Settings settings;
 
     @Test
@@ -342,14 +341,6 @@ class DateManagerTest {
         assertFalse(result);
     }
 
-    @Test
-    void testGetMonthEndDate() {
-        setUp(defaultSettings());
-        LocalDate expectedDate = LocalDate.of(2022, 12, 31);
-        LocalDate actualDate = dateManager.getMonthEndDate(LocalDate.of(2022, 12, 10));
-        assertEquals(expectedDate, actualDate);
-    }
-
     @ParameterizedTest
     @MethodSource("dayProvider")
     void testValidateDayOfMonth(int day) {
@@ -380,8 +371,8 @@ class DateManagerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("dateProvider")
-    void testGetLastDayOfMonthByDate(Pair<LocalDate, Integer> paramPair) {
+    @MethodSource("dateToDayProvider")
+    void testGetLastDayOfMonth(Pair<LocalDate, Integer> paramPair) {
         setUp(defaultSettings());
         LocalDate date = paramPair.getKey();
         Integer expectedResult = paramPair.getValue();
@@ -389,11 +380,29 @@ class DateManagerTest {
         assertEquals(expectedResult, actualResult);
     }
 
-    static Stream<Pair<LocalDate, Integer>> dateProvider() {
+    static Stream<Pair<LocalDate, Integer>> dateToDayProvider() {
         return Stream.of(
                 Pair.of(LocalDate.of(2020, 2, 1), 29),
                 Pair.of(LocalDate.of(2021, 2, 1), 28),
                 Pair.of(LocalDate.of(2022, 12, 1), 31)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("dateToDateProvider")
+    void testGetLastDateOfMonth(Pair<LocalDate, LocalDate> paramPair) {
+        setUp(defaultSettings());
+        LocalDate date = paramPair.getKey();
+        LocalDate expectedResult = paramPair.getValue();
+        LocalDate actualResult = dateManager.getLastDateOfMonth(date);
+        assertEquals(expectedResult, actualResult);
+    }
+
+    static Stream<Pair<LocalDate, LocalDate>> dateToDateProvider() {
+        return Stream.of(
+                Pair.of(LocalDate.of(2020, 2, 1), LocalDate.of(2020, 2, 29)),
+                Pair.of(LocalDate.of(2021, 2, 1), LocalDate.of(2021, 2, 28)),
+                Pair.of(LocalDate.of(2022, 12, 1), LocalDate.of(2022, 12, 31))
         );
     }
 

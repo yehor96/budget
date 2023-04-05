@@ -16,6 +16,9 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+/*
+    Class not covered with unit tests
+ */
 public class FutureExpenseService {
 
     private final FutureExpenseRepository futureExpenseRepository;

@@ -64,7 +64,7 @@ public class BalanceEstimationService {
                 previousTotal,
                 totalExpensesLeftInMonth,
                 totalIncomesLeftInMonth,
-                dateManager.getMonthEndDate(currentDate));
+                dateManager.getLastDateOfMonth(currentDate));
     }
 
     BigDecimal getIncomesTilEndOfMonth(LocalDate currentDate, BalanceRecord balanceRecord) {
