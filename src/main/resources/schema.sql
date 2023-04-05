@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS balance_records;
 DROP TABLE IF EXISTS actors;
 DROP TABLE IF EXISTS storage_items;
 DROP TABLE IF EXISTS storage_records;
+DROP TABLE IF EXISTS future_expenses;;
 
 CREATE TABLE categories (
                        category_id BIGSERIAL NOT NULL,
@@ -41,6 +42,14 @@ CREATE TABLE tags (
                        CONSTRAINT tags_pk PRIMARY KEY (tag_id),
                        CONSTRAINT tags_name_uq UNIQUE (name)
                        );
+
+CREATE TABLE future_expenses (
+                        future_expense_id BIGSERIAL NOT NULL,
+                        date DATE NOT NULL,
+                        value NUMERIC(11,2) NOT NULL,
+
+                        CONSTRAINT future_expenses_pk PRIMARY KEY (future_expense_id)
+                        );
 
 CREATE TABLE expenses (
     				   expense_id BIGSERIAL NOT NULL,

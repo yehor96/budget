@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import yehor.budget.common.Currency;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.date.MonthWeek;
+import yehor.budget.entity.FutureExpense;
 import yehor.budget.entity.recording.BalanceRecord;
+import yehor.budget.repository.FutureExpenseRepository;
 import yehor.budget.service.client.currency.CurrencyRateService;
 import yehor.budget.web.dto.full.BalanceEstimateDto;
 
@@ -25,6 +27,7 @@ public class BalanceEstimationService {
 
     private final DateManager dateManager;
     private final CurrencyRateService currencyRateService;
+    private final FutureExpenseRepository futureExpenseRepository;
 
     public List<BalanceEstimateDto> getBalanceEstimation(BalanceRecord balanceRecord,
                                                          LocalDate currentDate,
@@ -61,7 +64,7 @@ public class BalanceEstimationService {
                 previousTotal,
                 totalExpensesLeftInMonth,
                 totalIncomesLeftInMonth,
-                dateManager.getMonthEndDate(currentDate));
+                dateManager.getLastDateOfMonth(currentDate));
     }
 
     BigDecimal getIncomesTilEndOfMonth(LocalDate currentDate, BalanceRecord balanceRecord) {
@@ -73,11 +76,21 @@ public class BalanceEstimationService {
 
     BigDecimal getExpensesTilEndOfMonth(LocalDate currentDate, Map<MonthWeek, BigDecimal> estimatedExpensePerWeek) {
         MonthWeek currentMonthWeek = MonthWeek.of(currentDate);
-        BigDecimal expensesForFullWeekLeft = getExpensesForFullWeeksLeftTilEndOfMonth(
+        BigDecimal expensesForFullWeeksLeftInMonth = getExpensesForFullWeeksLeftTilEndOfMonth(
                 currentMonthWeek, estimatedExpensePerWeek);
-        BigDecimal expensesForDaysLeftInWeek = getExpensesForDaysLeftInCurrentWeek(
+        BigDecimal expensesForDaysLeftInCurrentWeek = getExpensesForDaysLeftInCurrentWeek(
                 currentMonthWeek, currentDate, estimatedExpensePerWeek);
-        return expensesForFullWeekLeft.add(expensesForDaysLeftInWeek);
+        BigDecimal plannedFutureExpenses = getFutureExpensesTilEndOfMonth(currentDate);
+        return expensesForFullWeeksLeftInMonth
+                .add(expensesForDaysLeftInCurrentWeek)
+                .add(plannedFutureExpenses);
+    }
+
+    BigDecimal getFutureExpensesTilEndOfMonth(LocalDate dateFrom) {
+        LocalDate dateTo = dateManager.getLastDateOfMonth(dateFrom);
+        return futureExpenseRepository.getFutureExpensesInInterval(dateFrom, dateTo).stream()
+                .map(FutureExpense::getValue)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     BigDecimal getExpensesForFullWeeksLeftTilEndOfMonth(MonthWeek currentMonthWeek,
@@ -93,7 +106,7 @@ public class BalanceEstimationService {
                                                    Map<MonthWeek, BigDecimal> estimatedExpensePerWeek) {
         int lastDayOfCurrentWeek;
         if (currentMonthWeek == MonthWeek.DAYS_22_TO_31) {
-            lastDayOfCurrentWeek = dateManager.getLastDayOfMonthByDate(currentDate);
+            lastDayOfCurrentWeek = dateManager.getLastDayOfMonth(currentDate);
         } else {
             lastDayOfCurrentWeek = currentMonthWeek.getRange().get(currentMonthWeek.getRange().size() - 1);
         }

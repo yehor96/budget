@@ -161,21 +161,13 @@ public class DateManager implements SettingsListener {
         return "Date argument is out of budget. Start date is " + startDate + ". End date is " + endDate + ".";
     }
 
-    public LocalDate getMonthEndDate(LocalDate date) {
-        return LocalDate.of(
-                date.getYear(),
-                date.getMonth(),
-                getLastDayOfMonthByDate(date)
-        );
-    }
-
     public void validateDayOfMonth(Integer day) {
         if (day < 1 || day > 31) {
             throw new IllegalArgumentException("Provided value is not a day of month - " + day);
         }
     }
 
-    public int getLastDayOfMonthByDate(LocalDate date) {
+    public int getLastDayOfMonth(LocalDate date) {
         int lastDay;
         if (date.getMonth() == (Month.FEBRUARY)) {
             if (Year.isLeap(date.getYear())) {
@@ -187,5 +179,9 @@ public class DateManager implements SettingsListener {
             lastDay = date.getMonth().maxLength();
         }
         return lastDay;
+    }
+
+    public LocalDate getLastDateOfMonth(LocalDate date) {
+        return LocalDate.of(date.getYear(), date.getMonth(), getLastDayOfMonth(date));
     }
 }
