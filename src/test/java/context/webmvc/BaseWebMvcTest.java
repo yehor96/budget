@@ -19,7 +19,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 @SpringBootTest(classes = BudgetApplication.class)
 abstract class BaseWebMvcTest {
 
-    protected static final String BASE_URL = "http://localhost:8080/api/v1";
+    protected static final String HOST = "localhost";
+    protected static final String PORT = "8080";
+
+    protected static final String BASE_URL = "http://".concat(HOST).concat(PORT).concat("/api/v1");
 
     protected static final String EXPENSES_URL = BASE_URL.concat("/expenses");
     protected static final String CATEGORIES_URL = BASE_URL.concat("/categories");
@@ -32,7 +35,7 @@ abstract class BaseWebMvcTest {
     protected static final String BALANCE_URL = BASE_URL.concat("/balance");
     protected static final String STORAGE_URL = BASE_URL.concat("/storage");
 
-    protected static final String BASIC_AUTH_STRING = "Basic YWRtaW46cGFzc3dvcmQ="; //todo remove
+    protected static final String BASIC_AUTH_STRING = "Basic YWRtaW46cGFzc3dvcmQ=";
 
     @Autowired
     protected MockMvc mockMvc;
