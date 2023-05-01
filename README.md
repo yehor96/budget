@@ -8,11 +8,8 @@ Application that provides functionality for counting one's budget and financial 
 Stack: Java 17, Spring Boot, Spring Data, Hibernate, PostgreSQL, Maven, Swagger, Docker, Lombok, Mockito
 
 Setup:
-- Make sure Java, Maven and Docker are installed. Docker should be up and running
+- Make sure Docker is up and running
 - Clone repository 
  `git clone git@github.com:yehor96/budget.git budget-app`
-- Enter project root folder and build a jar file:
- `mvn clean package -Dmaven.test.skip`
-- Run docker compose to start the application:
- `docker-compose up --build`
+- Enter project root folder and install the application `bash install_app`
 - Access application at http://localhost:18080/swagger-ui/index.html (currently only API via Swagger)

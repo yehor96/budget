@@ -1,0 +1,2 @@
+docker pull yehor96/budget:latest
+docker-compose up --build
