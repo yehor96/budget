@@ -1,4 +1,5 @@
 IMAGE_VERSION=""; #version format 'v0.0'
+echo "Pushing image with version ${IMAGE_VERSION}"
 
 mvn clean package -D'maven.test.skip'
 
