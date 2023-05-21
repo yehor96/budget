@@ -9,7 +9,7 @@ services:
       - budget-db
     ports:
       - target: 8080
-        published: 18080
+        published: 8080
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://budget-db:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
