@@ -1,13 +1,11 @@
 import './App.css';
 import React from 'react';
-import Header from './components/Header/Header';
-import PageTitle from './components/PageTitle/PageTitle';
+import Expenses from './pages/Expenses/Expenses';
 
 function App() {
   return (
     <div>
-        <Header/>
-        <PageTitle/>
+        <Expenses/>
     </div>
   );
 }

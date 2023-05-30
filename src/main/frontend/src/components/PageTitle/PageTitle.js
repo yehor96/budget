@@ -1,10 +1,10 @@
 import React from 'react';
 import './PageTitle.css';
 
-const PageTitle = () => {
+const PageTitle = (props) => {
   return (
         <div className='title'>
-            Welcome to Budget App!
+            {props.pageName}
         </div>
   );
 };
