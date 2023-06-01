@@ -4,6 +4,25 @@
     align-items: center;
     background-color: #E6E6FA;
     padding: 15px;
+    height: 70px;
+}
+
+.logo-container {
+    margin-right: 10px;
+    margin-left: 30px;
+}
+
+.logo-container img {
+    width: 80px;
+    height: auto;
+}
+
+.title {
+    margin-left: 10px;
+    margin-right: auto;
+    font-size: 18px; 
+    font-weight: bold;
+    color: #333;
 }
 
 .btn-container {
@@ -13,7 +32,7 @@
 
 .btn {
     margin-left: 30px;
-    padding: 5px 20px;
+    padding: 10px 25px;
     border-radius: 10px;
 }
 

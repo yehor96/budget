@@ -1,5 +1,4 @@
 import React from "react";
-import BASE_URL from "../../config";
 import "./Header.css";
 
 const Header = (props) => {
@@ -11,10 +10,14 @@ const Header = (props) => {
 
   return (
     <div className="header">
+      <div className="logo-container">
+        <img src="/favicon.png" alt="Logo" />
+      </div>
+      <div className="title">Budget App</div>
       <div className="btn-container">
         <Button>Expenses</Button>
         <Button disabled>Planning</Button>
-        <a href={BASE_URL + "/swagger"}>
+        <a href="/swagger">
           <Button>API</Button>
         </a>
         <Button disabled>Logout</Button>
