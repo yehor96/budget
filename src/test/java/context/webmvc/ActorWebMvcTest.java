@@ -42,8 +42,7 @@ class ActorWebMvcTest extends BaseWebMvcTest {
 
         when(actorService.getAll()).thenReturn(expectedActors);
 
-        String response = mockMvc.perform(get(ACTORS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING))
+        String response = mockMvc.perform(get(ACTORS_URL))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
@@ -60,7 +59,6 @@ class ActorWebMvcTest extends BaseWebMvcTest {
         ActorLimitedDto actorLimitedDto = defaultActorLimitedDto();
 
         mockMvc.perform(post(ACTORS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(actorLimitedDto)))
                 .andExpect(status().isOk());
@@ -77,7 +75,6 @@ class ActorWebMvcTest extends BaseWebMvcTest {
                 .when(actorService).save(actorLimitedDto);
 
         String response = mockMvc.perform(post(ACTORS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(actorLimitedDto)))
                 .andExpect(status().isBadRequest())
@@ -91,7 +88,6 @@ class ActorWebMvcTest extends BaseWebMvcTest {
     @Test
     void testDeleteActor() throws Exception {
         mockMvc.perform(delete(ACTORS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_ACTOR_ID)))
                 .andExpect(status().isOk());
 
@@ -106,7 +102,6 @@ class ActorWebMvcTest extends BaseWebMvcTest {
                 .when(actorService).delete(DEFAULT_ACTOR_ID);
 
         String response = mockMvc.perform(delete(ACTORS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_ACTOR_ID)))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
@@ -121,7 +116,6 @@ class ActorWebMvcTest extends BaseWebMvcTest {
         ActorFullDto actorDto = defaultActorFullDto();
 
         mockMvc.perform(put(ACTORS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(actorDto)))
                 .andExpect(status().isOk());
@@ -138,7 +132,6 @@ class ActorWebMvcTest extends BaseWebMvcTest {
                 .when(actorService).update(actorDto);
 
         String response = mockMvc.perform(put(ACTORS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(actorDto)))
                 .andExpect(status().isNotFound())

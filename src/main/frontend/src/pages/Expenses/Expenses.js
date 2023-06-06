@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { getCategories, getMonthlyExpenses } from "../../api";
 import Header from "../../components/Header/Header";
 import PageTitle from "../../components/PageTitle/PageTitle";
-import { getCategories, getMonthlyExpenses } from "../../api";
 import "./Expenses.css";
 
 const PAGE_NAME = "Expenses";
@@ -31,10 +31,11 @@ function Expenses() {
       month: currentMonthName,
       year: currentYear,
     });
-    setExpenses(response.data);
+    console.log(response);
+    setExpenses(response);
   };
 
-  const setupColumns = async () => {
+  const setupColumns = () => {
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
@@ -44,7 +45,7 @@ function Expenses() {
 
   const setupRows = async () => {
     const response = await getCategories();
-    setRows(response.data);
+    setRows(response);
   };
 
   return (
@@ -61,7 +62,6 @@ function Expenses() {
             ))}
           </tr>
         </thead>
-
         <tbody>
           {rows.map((row) => (
             <tr key={row.id}>
@@ -75,7 +75,7 @@ function Expenses() {
                         column == parseInt(expense.date.split("-")[2])
                     )
                     .map((expense) => expense.value)
-                    .reduce((val, newVal) => (val + newVal), 0)}
+                    .reduce((val, newVal) => val + newVal, 0)}
                 </td>
               ))}
             </tr>

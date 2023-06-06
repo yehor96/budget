@@ -35,8 +35,6 @@ abstract class BaseWebMvcTest {
     protected static final String BALANCE_URL = BASE_URL.concat("/balance");
     protected static final String STORAGE_URL = BASE_URL.concat("/storage");
 
-    protected static final String BASIC_AUTH_STRING = "Basic YWRtaW46cGFzc3dvcmQ=";
-
     @Autowired
     protected MockMvc mockMvc;
     @Autowired

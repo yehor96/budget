@@ -111,6 +111,7 @@ public class ExpenseController {
 
     @GetMapping("/monthly")
     @Operation(summary = "Get list of expenses for one month")
+    //todo add tests
     public ResponseEntity<List<ExpenseFullDto>> getMonthlyExpenses(@RequestParam("month") Month month,
                                                                    @RequestParam("year") Integer year) {
         try {

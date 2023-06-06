@@ -21,7 +21,6 @@ class GeneralExceptionWebMvcTest extends BaseWebMvcTest {
         when(expenseService.getById(any())).thenThrow(new RuntimeException());
 
         String response = mockMvc.perform(get(EXPENSES_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_EXPENSE_ID)))
                 .andExpect(status().isInternalServerError())
                 .andReturn().getResponse().getContentAsString();

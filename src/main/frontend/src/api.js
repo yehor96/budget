@@ -1,24 +1,26 @@
 import axios from "axios";
 
-const baseUrl = "http://localhost:8080"; // for development
-
-export const getMonthlyExpenses = (date) => {
+export const getMonthlyExpenses = async (date) => {
   try {
-    return axios.get(baseUrl + "/api/v1/expenses/monthly", {
+    const response = await axios.get("/api/v1/expenses/monthly", {
       params: {
         month: date.month,
         year: date.year,
       },
     });
+    return response.data;
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error("Error fetching data from server:", error);
+    throw error;
   }
 };
 
-export const getCategories = () => {
+export const getCategories = async () => {
   try {
-    return axios.get(baseUrl + "/api/v1/categories");
+    const response = await axios.get("/api/v1/categories");
+    return response.data;
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error("Error fetching data from server:", error);
+    throw error;
   }
 };

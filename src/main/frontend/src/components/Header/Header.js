@@ -3,7 +3,11 @@ import "./Header.css";
 
 const Header = (props) => {
   const Button = ({ children, disabled }) => (
-    <button className={`btn ${props.selected === children ? "selected" : ""} ${disabled ? "disabled" : ""}`}>
+    <button
+      className={`btn ${props.selected === children ? "selected" : ""} ${
+        disabled ? "disabled" : ""
+      }`}
+    >
       {children}
     </button>
   );

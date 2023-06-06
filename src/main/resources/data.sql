@@ -1,5 +1,3 @@
-INSERT INTO users (username, password) VALUES ('admin', '$2a$12$W2FfaT3M9CNfdnpjWxMELeFwytxm0.IXWP.VE6UeNH2qvC3lqogvW');
-
 -- testing values --
 --INSERT INTO actors (name) VALUES ('Samwise');
 --INSERT INTO actors (name) VALUES ('Sarah');

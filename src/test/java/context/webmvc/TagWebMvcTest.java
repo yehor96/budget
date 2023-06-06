@@ -42,8 +42,7 @@ class TagWebMvcTest extends BaseWebMvcTest {
 
         when(tagService.getAll()).thenReturn(expectedTags);
 
-        String response = mockMvc.perform(get(TAGS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING))
+        String response = mockMvc.perform(get(TAGS_URL))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
@@ -60,7 +59,6 @@ class TagWebMvcTest extends BaseWebMvcTest {
         TagLimitedDto tagLimitedDto = defaultTagLimitedDto();
 
         mockMvc.perform(post(TAGS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tagLimitedDto)))
                 .andExpect(status().isOk());
@@ -77,7 +75,6 @@ class TagWebMvcTest extends BaseWebMvcTest {
                 .when(tagService).save(tagLimitedDto);
 
         String response = mockMvc.perform(post(TAGS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tagLimitedDto)))
                 .andExpect(status().isBadRequest())
@@ -91,7 +88,6 @@ class TagWebMvcTest extends BaseWebMvcTest {
     @Test
     void testDeleteTag() throws Exception {
         mockMvc.perform(delete(TAGS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_TAG_ID)))
                 .andExpect(status().isOk());
 
@@ -106,7 +102,6 @@ class TagWebMvcTest extends BaseWebMvcTest {
                 .when(tagService).delete(DEFAULT_TAG_ID);
 
         String response = mockMvc.perform(delete(TAGS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_TAG_ID)))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
@@ -122,7 +117,6 @@ class TagWebMvcTest extends BaseWebMvcTest {
                 .when(tagService).delete(DEFAULT_TAG_ID);
 
         String response = mockMvc.perform(delete(TAGS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_TAG_ID)))
                 .andExpect(status().isBadRequest())
                 .andReturn().getResponse().getContentAsString();
@@ -137,7 +131,6 @@ class TagWebMvcTest extends BaseWebMvcTest {
         TagFullDto tag = defaultTagFullDto();
 
         mockMvc.perform(put(TAGS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tag)))
                 .andExpect(status().isOk());
@@ -154,7 +147,6 @@ class TagWebMvcTest extends BaseWebMvcTest {
                 .when(tagService).update(tag);
 
         String response = mockMvc.perform(put(TAGS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tag)))
                 .andExpect(status().isNotFound())
