@@ -12,14 +12,10 @@ function Expenses() {
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
-    initialDataFetch();
-  }, []);
-
-  const initialDataFetch = async () => {
     setupExpenses();
     setupColumns();
     setupRows();
-  };
+  }, []);
 
   const setupExpenses = async () => {
     const currentDate = new Date();
@@ -72,7 +68,8 @@ function Expenses() {
                     .filter((expense) => expense.category.id === row.id)
                     .filter(
                       (expense) =>
-                        column == parseInt(expense.date.split("-")[2])
+                        parseInt(column) ===
+                        parseInt(expense.date.split("-")[2])
                     )
                     .map((expense) => expense.value)
                     .reduce((val, newVal) => val + newVal, 0)}

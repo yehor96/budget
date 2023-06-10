@@ -16,6 +16,7 @@ import yehor.budget.web.dto.limited.ExpenseLimitedDto;
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,6 +44,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
 
     protected static final String EXPENSE_INTERVAL_URL = EXPENSES_URL + "/interval";
     protected static final String EXPENSE_SUM_URL = EXPENSES_URL + "/sum";
+    protected static final String EXPENSE_MONTHLY_URL = EXPENSES_URL + "/monthly";
 
     @MockBean
     private DateManager dateManager;
@@ -464,6 +466,56 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
         verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
 
         verify(expenseService, never()).findSumInInterval(dateFrom, dateTo);
+    }
+
+    // Get monthly expenses
+
+    @Test
+    void testGetMonthlyExpenses() throws Exception {
+        List<ExpenseFullDto> expectedExpenseInterval = defaultExpenseFullDtoList();
+
+        Month month = Month.JUNE;
+        Integer year = 2023;
+        LocalDate dateFrom = LocalDate.of(2023, 6, 1);
+        LocalDate dateTo = LocalDate.of(2023, 6, 30);
+
+        when(dateManager.getLastDateOfMonth(dateFrom)).thenReturn(dateTo);
+        when(expenseService.findAllInInterval(dateFrom, dateTo)).thenReturn(expectedExpenseInterval);
+
+        String response = mockMvc.perform(get(EXPENSE_MONTHLY_URL)
+                        .param("month", String.valueOf(month))
+                        .param("year", String.valueOf(year)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        ObjectReader listReader = objectMapper.readerForListOf(ExpenseFullDto.class);
+        List<ExpenseFullDto> actualExpenseInterval = listReader.readValue(response);
+
+        verify(expenseService, times(1)).findAllInInterval(dateFrom, dateTo);
+        assertEquals(expectedExpenseInterval, actualExpenseInterval);
+    }
+
+    @Test
+    void testTryGettingMonthlyExpensesIFailingDatesWithinBudgetCheck() throws Exception {
+        String expectedErrorMessage = "expectedErrorMessage";
+        Month month = Month.JUNE;
+        Integer year = 2023;
+        LocalDate dateFrom = LocalDate.of(2023, 6, 1);
+        LocalDate dateTo = LocalDate.of(2023, 6, 30);
+
+        when(dateManager.getLastDateOfMonth(dateFrom)).thenReturn(dateTo);
+        doThrow(new IllegalArgumentException(expectedErrorMessage))
+                .when(dateManager).validateDatesWithinBudget(dateFrom, dateTo);
+
+        String response = mockMvc.perform(get(EXPENSE_MONTHLY_URL)
+                        .param("month", String.valueOf(month))
+                        .param("year", String.valueOf(year)))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+        verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
+
+        verify(expenseService, never()).findAllInInterval(dateFrom, dateTo);
     }
 
     // Delete expense

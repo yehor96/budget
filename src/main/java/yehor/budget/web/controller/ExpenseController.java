@@ -111,14 +111,12 @@ public class ExpenseController {
 
     @GetMapping("/monthly")
     @Operation(summary = "Get list of expenses for one month")
-    //todo add tests
     public ResponseEntity<List<ExpenseFullDto>> getMonthlyExpenses(@RequestParam("month") Month month,
                                                                    @RequestParam("year") Integer year) {
         try {
             LocalDate dateFrom = LocalDate.of(year, month, 1);
             LocalDate dateTo = dateManager.getLastDateOfMonth(dateFrom);
 
-            dateManager.validateDatesInSequentialOrder(dateFrom, dateTo);
             dateManager.validateDatesWithinBudget(dateFrom, dateTo);
 
             List<ExpenseFullDto> expenseDtoList = expenseService.findAllInInterval(dateFrom, dateTo);
