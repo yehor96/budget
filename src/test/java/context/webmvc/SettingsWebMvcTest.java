@@ -44,8 +44,7 @@ class SettingsWebMvcTest extends BaseWebMvcTest {
         when(settingsService.getSettings()).thenReturn(expectedSettings);
         when(settingsService.getSettingsEntity()).thenReturn(defaultSettings());
 
-        String response = mockMvc.perform(get(SETTINGS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING))
+        String response = mockMvc.perform(get(SETTINGS_URL))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
@@ -62,8 +61,7 @@ class SettingsWebMvcTest extends BaseWebMvcTest {
         doThrow(new EntityNotFoundException(expectedErrorMessage))
                 .when(settingsService).getSettings();
 
-        String response = mockMvc.perform(get(SETTINGS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING))
+        String response = mockMvc.perform(get(SETTINGS_URL))
                 .andExpect(status().isInternalServerError())
                 .andReturn().getResponse().getContentAsString();
 
@@ -77,7 +75,6 @@ class SettingsWebMvcTest extends BaseWebMvcTest {
         SettingsLimitedDto settings = defaultSettingsLimitedDto();
 
         mockMvc.perform(put(SETTINGS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(settings)))
                 .andExpect(status().isOk());
@@ -92,7 +89,6 @@ class SettingsWebMvcTest extends BaseWebMvcTest {
         settings.setEstimatedExpenseWorkerEndDateScopePattern(pattern);
 
         String response = mockMvc.perform(put(SETTINGS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(settings)))
                 .andExpect(status().isBadRequest())

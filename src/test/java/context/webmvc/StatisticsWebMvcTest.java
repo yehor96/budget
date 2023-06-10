@@ -39,7 +39,6 @@ class StatisticsWebMvcTest extends BaseWebMvcTest {
         when(statisticsService.getMonthlyStatistics(any())).thenReturn(expectedMonthlyStatistics);
 
         String response = mockMvc.perform(get(MONTHLY_STATISTICS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("month", "JANUARY")
                         .param("year", "2022"))
                 .andExpect(status().isOk())
@@ -59,7 +58,6 @@ class StatisticsWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).validateMonthWithinBudget(any());
 
         String response = mockMvc.perform(get(MONTHLY_STATISTICS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("month", "JUNE")
                         .param("year", "2022"))
                 .andExpect(status().isBadRequest())
@@ -78,7 +76,6 @@ class StatisticsWebMvcTest extends BaseWebMvcTest {
         when(statisticsService.getPeriodicStatistics(any(), any())).thenReturn(expectedPeriodicStatistics);
 
         String response = mockMvc.perform(get(PERIODIC_STATISTICS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("startMonth", "JUNE")
                         .param("startYear", "2022")
                         .param("endMonth", "JULY")
@@ -100,7 +97,6 @@ class StatisticsWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).validateMonthsInSequentialOrder(any(), any());
 
         String response = mockMvc.perform(get(PERIODIC_STATISTICS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("startMonth", "JUNE")
                         .param("startYear", "2022")
                         .param("endMonth", "JULY")
@@ -120,7 +116,6 @@ class StatisticsWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).validateMonthWithinBudget(any());
 
         String response = mockMvc.perform(get(PERIODIC_STATISTICS_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("startMonth", "JUNE")
                         .param("startYear", "2022")
                         .param("endMonth", "JULY")

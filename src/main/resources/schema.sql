@@ -4,7 +4,6 @@ DROP TABLE IF EXISTS row_estimated_expenses;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS settings;
 DROP TABLE IF EXISTS tags;
-DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS income_sources;
 DROP TABLE IF EXISTS income_source_records;
 DROP TABLE IF EXISTS balance_items;
@@ -82,15 +81,6 @@ CREATE TABLE settings  (
                         estimated_expense_worker_end_date_scope_pattern VARCHAR(50) NOT NULL,
 
                         CONSTRAINT settings_pk PRIMARY KEY (settings_id)
-                        );
-
-CREATE TABLE users      (
-                        user_id SERIAL NOT NULL,
-                        username VARCHAR(50) NOT NULL,
-                        password VARCHAR(500) NOT NULL,
-
-                        CONSTRAINT users_pk PRIMARY KEY (user_id),
-                        CONSTRAINT users_username_uq UNIQUE (username)
                         );
 
 CREATE TABLE income_sources (

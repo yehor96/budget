@@ -3,7 +3,11 @@ import "./Header.css";
 
 const Header = (props) => {
   const Button = ({ children, disabled }) => (
-    <button className={`btn ${props.selected === children ? "selected" : ""} ${disabled ? "disabled" : ""}`}>
+    <button
+      className={`btn ${props.selected === children ? "selected" : ""} ${
+        disabled ? "disabled" : ""
+      }`}
+    >
       {children}
     </button>
   );
@@ -17,7 +21,7 @@ const Header = (props) => {
       <div className="btn-container">
         <Button>Expenses</Button>
         <Button disabled>Planning</Button>
-        <a href="/swagger">
+        <a href="http://localhost:8080/swagger">
           <Button>API</Button>
         </a>
         <Button disabled>Logout</Button>

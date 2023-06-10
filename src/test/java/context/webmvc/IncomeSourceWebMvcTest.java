@@ -40,8 +40,7 @@ class IncomeSourceWebMvcTest extends BaseWebMvcTest {
 
         when(incomeSourceService.getTotalIncome()).thenReturn(expectedTotalIncomeDto);
 
-        String response = mockMvc.perform(get(INCOME_SOURCES_URL)
-                        .header("Authorization", BASIC_AUTH_STRING))
+        String response = mockMvc.perform(get(INCOME_SOURCES_URL))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
@@ -57,7 +56,6 @@ class IncomeSourceWebMvcTest extends BaseWebMvcTest {
         IncomeSourceLimitedDto incomeSourceLimitedDto = defaultIncomeSourceLimitedDto();
 
         mockMvc.perform(post(INCOME_SOURCES_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(incomeSourceLimitedDto)))
                 .andExpect(status().isOk());
@@ -74,7 +72,6 @@ class IncomeSourceWebMvcTest extends BaseWebMvcTest {
                 .when(incomeSourceService).save(incomeSourceLimitedDto);
 
         String response = mockMvc.perform(post(INCOME_SOURCES_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(incomeSourceLimitedDto)))
                 .andExpect(status().isBadRequest())
@@ -88,7 +85,6 @@ class IncomeSourceWebMvcTest extends BaseWebMvcTest {
     @Test
     void testDeleteIncomeSource() throws Exception {
         mockMvc.perform(delete(INCOME_SOURCES_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_INCOME_SOURCE_ID)))
                 .andExpect(status().isOk());
 
@@ -103,7 +99,6 @@ class IncomeSourceWebMvcTest extends BaseWebMvcTest {
                 .when(incomeSourceService).delete(DEFAULT_INCOME_SOURCE_ID);
 
         String response = mockMvc.perform(delete(INCOME_SOURCES_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_INCOME_SOURCE_ID)))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
@@ -118,7 +113,6 @@ class IncomeSourceWebMvcTest extends BaseWebMvcTest {
         IncomeSourceFullDto incomeSourceDto = defaultIncomeSourceFullDto();
 
         mockMvc.perform(put(INCOME_SOURCES_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(incomeSourceDto)))
                 .andExpect(status().isOk());
@@ -135,7 +129,6 @@ class IncomeSourceWebMvcTest extends BaseWebMvcTest {
                 .when(incomeSourceService).update(incomeSourceDto);
 
         String response = mockMvc.perform(put(INCOME_SOURCES_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(incomeSourceDto)))
                 .andExpect(status().isNotFound())

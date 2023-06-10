@@ -50,8 +50,7 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
 
         when(balanceRecordingService.getLatest()).thenReturn(Optional.of(expectedBalanceRecordDto));
 
-        String response = mockMvc.perform(get(BALANCE_URL)
-                        .header("Authorization", BASIC_AUTH_STRING))
+        String response = mockMvc.perform(get(BALANCE_URL))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
@@ -66,8 +65,7 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
 
         when(balanceRecordingService.getLatest()).thenReturn(Optional.empty());
 
-        String response = mockMvc.perform(get(BALANCE_URL)
-                        .header("Authorization", BASIC_AUTH_STRING))
+        String response = mockMvc.perform(get(BALANCE_URL))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
 
@@ -81,7 +79,6 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
         BalanceRecordLimitedDto balanceRecordDto = defaultBalanceRecordLimitedDto();
 
         mockMvc.perform(post(BALANCE_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(balanceRecordDto)))
                 .andExpect(status().isOk());
@@ -97,7 +94,6 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
         doThrow(new IllegalArgumentException(expectedErrorMessage)).when(dateManager).validateDateAfterStart(any());
 
         String response = mockMvc.perform(post(BALANCE_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(balanceRecordDto)))
                 .andExpect(status().isBadRequest())
@@ -115,7 +111,6 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
         balanceRecordDto.setBalanceItems(Collections.emptyList());
 
         String response = mockMvc.perform(post(BALANCE_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(balanceRecordDto)))
                 .andExpect(status().isBadRequest())
@@ -133,7 +128,6 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
         balanceRecordDto.getBalanceItems().forEach(balanceItem -> balanceItem.setActorId(-1L));
 
         String response = mockMvc.perform(post(BALANCE_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(balanceRecordDto)))
                 .andExpect(status().isBadRequest())
@@ -160,7 +154,6 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
         when(balanceRecordingService.findAllInInterval(dateFrom, dateTo)).thenReturn(expectedRecordsInterval);
 
         String response = mockMvc.perform(get(BALANCE_INTERVAL_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isOk())
@@ -187,7 +180,6 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).validateDatesInSequentialOrder(dateFrom, dateTo);
 
         String response = mockMvc.perform(get(BALANCE_INTERVAL_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isBadRequest())
@@ -212,7 +204,6 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).validateDatesWithinBudget(dateFrom, dateTo);
 
         String response = mockMvc.perform(get(BALANCE_INTERVAL_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isBadRequest())
@@ -235,7 +226,6 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).parse(from);
 
         String response = mockMvc.perform(get(BALANCE_INTERVAL_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isBadRequest())
@@ -251,7 +241,6 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
     @Test
     void testDeleteSuccessfully() throws Exception {
         mockMvc.perform(delete(BALANCE_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_BALANCE_RECORD_ID)))
                 .andExpect(status().isOk());
 
@@ -266,7 +255,6 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
                 .when(balanceRecordingService).delete(DEFAULT_BALANCE_RECORD_ID);
 
         String response = mockMvc.perform(delete(BALANCE_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_BALANCE_RECORD_ID)))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();

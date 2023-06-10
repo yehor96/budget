@@ -26,6 +26,7 @@ import yehor.budget.web.dto.limited.ExpenseLimitedDto;
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -105,6 +106,23 @@ public class ExpenseController {
             return new ResponseEntity<>(expenseDtoList, HttpStatus.OK);
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
+        }
+    }
+
+    @GetMapping("/monthly")
+    @Operation(summary = "Get list of expenses for one month")
+    public ResponseEntity<List<ExpenseFullDto>> getMonthlyExpenses(@RequestParam("month") Month month,
+                                                                   @RequestParam("year") Integer year) {
+        try {
+            LocalDate dateFrom = LocalDate.of(year, month, 1);
+            LocalDate dateTo = dateManager.getLastDateOfMonth(dateFrom);
+
+            dateManager.validateDatesWithinBudget(dateFrom, dateTo);
+
+            List<ExpenseFullDto> expenseDtoList = expenseService.findAllInInterval(dateFrom, dateTo);
+            return new ResponseEntity<>(expenseDtoList, HttpStatus.OK);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
         }
     }
 

@@ -26,8 +26,7 @@ class EstimatedExpenseWebMvcTest extends BaseWebMvcTest {
 
         when(estimatedExpenseService.getOne()).thenReturn(expenseFullDto);
 
-        String response = mockMvc.perform(get(ESTIMATED_EXPENSES_URL)
-                        .header("Authorization", BASIC_AUTH_STRING))
+        String response = mockMvc.perform(get(ESTIMATED_EXPENSES_URL))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 

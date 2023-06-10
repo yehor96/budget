@@ -49,8 +49,7 @@ class StorageWebMvcTest extends BaseWebMvcTest {
 
         when(storageRecordingService.getLatest()).thenReturn(Optional.of(expectedStorageRecordDto));
 
-        String response = mockMvc.perform(get(STORAGE_URL)
-                        .header("Authorization", BASIC_AUTH_STRING))
+        String response = mockMvc.perform(get(STORAGE_URL))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
@@ -65,8 +64,7 @@ class StorageWebMvcTest extends BaseWebMvcTest {
 
         when(storageRecordingService.getLatest()).thenReturn(Optional.empty());
 
-        String response = mockMvc.perform(get(STORAGE_URL)
-                        .header("Authorization", BASIC_AUTH_STRING))
+        String response = mockMvc.perform(get(STORAGE_URL))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
 
@@ -80,7 +78,6 @@ class StorageWebMvcTest extends BaseWebMvcTest {
         StorageRecordLimitedDto storageRecordDto = defaultStorageRecordLimitedDto();
 
         mockMvc.perform(post(STORAGE_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(storageRecordDto)))
                 .andExpect(status().isOk());
@@ -96,7 +93,6 @@ class StorageWebMvcTest extends BaseWebMvcTest {
         doThrow(new IllegalArgumentException(expectedErrorMessage)).when(dateManager).validateDateAfterStart(any());
 
         String response = mockMvc.perform(post(STORAGE_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(storageRecordDto)))
                 .andExpect(status().isBadRequest())
@@ -114,7 +110,6 @@ class StorageWebMvcTest extends BaseWebMvcTest {
         storageRecordDto.setStorageItems(Collections.emptyList());
 
         String response = mockMvc.perform(post(STORAGE_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(storageRecordDto)))
                 .andExpect(status().isBadRequest())
@@ -141,7 +136,6 @@ class StorageWebMvcTest extends BaseWebMvcTest {
         when(storageRecordingService.findAllInInterval(dateFrom, dateTo)).thenReturn(expectedRecordsInterval);
 
         String response = mockMvc.perform(get(STORAGE_INTERVAL_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isOk())
@@ -168,7 +162,6 @@ class StorageWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).validateDatesInSequentialOrder(dateFrom, dateTo);
 
         String response = mockMvc.perform(get(STORAGE_INTERVAL_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isBadRequest())
@@ -193,7 +186,6 @@ class StorageWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).validateDatesWithinBudget(dateFrom, dateTo);
 
         String response = mockMvc.perform(get(STORAGE_INTERVAL_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isBadRequest())
@@ -216,7 +208,6 @@ class StorageWebMvcTest extends BaseWebMvcTest {
                 .when(dateManager).parse(from);
 
         String response = mockMvc.perform(get(STORAGE_INTERVAL_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("dateFrom", from)
                         .param("dateTo", to))
                 .andExpect(status().isBadRequest())
@@ -232,7 +223,6 @@ class StorageWebMvcTest extends BaseWebMvcTest {
     @Test
     void testDeleteSuccessfully() throws Exception {
         mockMvc.perform(delete(STORAGE_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_STORAGE_RECORD_ID)))
                 .andExpect(status().isOk());
 
@@ -247,7 +237,6 @@ class StorageWebMvcTest extends BaseWebMvcTest {
                 .when(storageRecordingService).delete(DEFAULT_STORAGE_RECORD_ID);
 
         String response = mockMvc.perform(delete(STORAGE_URL)
-                        .header("Authorization", BASIC_AUTH_STRING)
                         .param("id", String.valueOf(DEFAULT_STORAGE_RECORD_ID)))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
