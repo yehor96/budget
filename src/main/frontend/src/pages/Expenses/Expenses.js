@@ -4,6 +4,7 @@ import Header from "../../components/Header/Header";
 import PageTitle from "../../components/PageTitle/PageTitle";
 import "./Expenses.css";
 import NavigationBar from "../../components/NavigationBar/NavigationBar";
+import HandlerSection from "../../components/HandlerSection/HandlerSection";
 
 const PAGE_NAME = "Expenses";
 
@@ -34,7 +35,7 @@ function Expenses() {
       month: currentMonthName,
       year: currentYear,
     });
-    setExpenses(response);
+    setExpenses(response.data);
   };
 
   const setupColumns = async () => {
@@ -49,7 +50,7 @@ function Expenses() {
 
   const setupRows = async () => {
     const response = await getCategories();
-    setRows(response);
+    setRows(response.data);
   };
 
   const goToPreviousMonth = () => {
@@ -75,7 +76,7 @@ function Expenses() {
   };
 
   return (
-    <div>
+    <div className="expenses-page">
       <Header selected={PAGE_NAME} />
       <PageTitle pageName={PAGE_NAME} />
 
@@ -118,6 +119,7 @@ function Expenses() {
             ))}
           </tbody>
         </table>
+        <HandlerSection/>
       </div>
     </div>
   );

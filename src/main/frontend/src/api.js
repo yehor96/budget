@@ -8,17 +8,27 @@ export const getMonthlyExpenses = async (date) => {
         year: date.year,
       },
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.error("Error fetching data from server:", error);
     throw error;
   }
 };
 
+export const addExpense = async (expense) => {
+  try {
+    const response = await axios.post("/api/v1/expenses", expense);
+    return response;
+  } catch (error) {
+    console.error("Error posting data to server:", error);
+    return error.response;
+  }
+};
+
 export const getCategories = async () => {
   try {
     const response = await axios.get("/api/v1/categories");
-    return response.data;
+    return response;
   } catch (error) {
     console.error("Error fetching data from server:", error);
     throw error;
