@@ -65,3 +65,15 @@ code {
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
 }
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.success-message {
+  color: green;
+  font-size: 14px;
+  margin-top: 8px;
+}

@@ -1,7 +1,25 @@
-import React from "react";
-import { addExpense } from "../../api";
+import React, { useState } from "react";
+import { addExpense, GENERAL_API_ERROR_POST } from "../../api";
+import "./AddModal.css";
 
 const AddModal = (props) => {
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const displayResponse = (response, e) => {
+    setErrorMessage("");
+    if (response.status !== 200) {
+      let errMsg = response.message ? response.message : GENERAL_API_ERROR_POST;
+      setErrorMessage(errMsg);
+    } else {
+      setSuccessMessage("Expense added successfully!");
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 4000);
+      e.target.reset();
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const response = await addExpense({
@@ -9,21 +27,12 @@ const AddModal = (props) => {
       date: e.target.date.value,
       categoryId: e.target.category.value,
     });
-    if (response.status !== 200) {
-        // todo display error message
-        console.log("error: " + response.message);
-    } else {
-        // todo display success message
-        console.log("success: " + response.message);
-        e.target.reset();
-        // todo close modal
-        // todo refresh expense table
-    }
+    displayResponse(response, e);
   };
 
   if (!props.show) return null;
   // todo use drop down with category names
-  // todo beautify form with css
+  // todo refresh expense table after closing the modal
   return (
     <div className="modal">
       <div className="modal-content">
@@ -32,17 +41,19 @@ const AddModal = (props) => {
         </div>
         <div className="modal-body">
           <form onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="value">Value:</label>
-              <input type="number" id="value" name="value" required />
-            </div>
-            <div>
-              <label htmlFor="date">Date:</label>
-              <input type="date" id="date" name="date" required />
-            </div>
-            <div>
-              <label htmlFor="category">Category:</label>
-              <input type="number" id="category" name="category" required />
+            <div className="input-container">
+              <div>
+                <label htmlFor="value">Value:</label>
+                <input type="string" id="value" name="value" required />
+              </div>
+              <div>
+                <label htmlFor="date">Date:</label>
+                <input type="date" id="date" name="date" required />
+              </div>
+              <div>
+                <label htmlFor="category">Category:</label>
+                <input type="string" id="category" name="category" required />
+              </div>
             </div>
             <button type="submit" className="btn">
               Add
@@ -52,6 +63,10 @@ const AddModal = (props) => {
             </button>
           </form>
         </div>
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
+        {successMessage && (
+          <div className="success-message">{successMessage}</div>
+        )}
       </div>
     </div>
   );
