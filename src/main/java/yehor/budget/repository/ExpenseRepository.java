@@ -17,6 +17,11 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     BigDecimal findSumInInterval(@Param("dateFrom") LocalDate dateFrom,
                                  @Param("dateTo") LocalDate dateTo);
 
+    @Query("SELECT SUM(e.value) FROM Expense e WHERE e.category.id = :categoryId AND e.date BETWEEN :dateFrom AND :dateTo")
+    BigDecimal findSumInIntervalByCategory(@Param("dateFrom") LocalDate dateFrom,
+                                           @Param("dateTo") LocalDate dateTo,
+                                           @Param("categoryId") Long categoryId);
+
     @Query("SELECT e FROM Expense e WHERE e.date BETWEEN :dateFrom AND :dateTo")
     List<Expense> findAllInInterval(@Param("dateFrom") LocalDate dateFrom,
                                     @Param("dateTo") LocalDate dateTo);
