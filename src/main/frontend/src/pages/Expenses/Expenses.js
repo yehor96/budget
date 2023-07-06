@@ -11,7 +11,7 @@ const PAGE_NAME = "Expenses";
 function Expenses() {
   const [expenses, setExpenses] = useState([]);
   const [columns, setColumns] = useState([]);
-  const [rows, setRows] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
@@ -50,7 +50,7 @@ function Expenses() {
 
   const setupRows = async () => {
     const response = await getCategories();
-    setRows(response.data);
+    setCategories(response.data);
   };
 
   const goToPreviousMonth = () => {
@@ -99,13 +99,13 @@ function Expenses() {
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
-              <tr key={row.id}>
-                <td>{row.name}</td>
+            {categories.map((category) => (
+              <tr key={category.id}>
+                <td>{category.name}</td>
                 {columns.map((column) => (
                   <td key={column}>
                     {expenses
-                      .filter((expense) => expense.category.id === row.id)
+                      .filter((expense) => expense.category.id === category.id)
                       .filter(
                         (expense) =>
                           parseInt(column) ===
@@ -119,7 +119,7 @@ function Expenses() {
             ))}
           </tbody>
         </table>
-        <HandlerSection/>
+        <HandlerSection categories={categories} />
       </div>
     </div>
   );

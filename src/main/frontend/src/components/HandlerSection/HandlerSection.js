@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import AddModal from "../AddModal/AddModal";
 
-const HandlerSection = () => {
+const HandlerSection = (props) => {
   const [showAddModal, setShowAddModal] = useState(false);
 
   return (
@@ -13,7 +13,11 @@ const HandlerSection = () => {
           </button>
           <AddModal
             show={showAddModal}
-            onClose={() => setShowAddModal(false)}
+            categories={props.categories}
+            onClose={() => {
+              setShowAddModal(false);
+              window.location.reload();
+            }}
           />
         </div>
       </div>

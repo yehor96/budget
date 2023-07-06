@@ -31,8 +31,7 @@ const AddModal = (props) => {
   };
 
   if (!props.show) return null;
-  // todo use drop down with category names
-  // todo refresh expense table after closing the modal
+
   return (
     <div className="modal">
       <div className="modal-content">
@@ -52,7 +51,13 @@ const AddModal = (props) => {
               </div>
               <div>
                 <label htmlFor="category">Category:</label>
-                <input type="string" id="category" name="category" required />
+                <select id="category" name="category" required>
+                  {props.categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <button type="submit" className="btn">
