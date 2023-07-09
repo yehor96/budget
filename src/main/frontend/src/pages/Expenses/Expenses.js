@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { getCategories, getMonthlyExpenses } from "../../api";
+import {
+  getCategories,
+  getMonthlyExpenses,
+  getMonthlyTotalPerCategory,
+} from "../../api";
 import Header from "../../components/Header/Header";
 import PageTitle from "../../components/PageTitle/PageTitle";
 import "./Expenses.css";
@@ -7,6 +11,20 @@ import NavigationBar from "../../components/NavigationBar/NavigationBar";
 import HandlerSection from "../../components/HandlerSection/HandlerSection";
 
 const PAGE_NAME = "Expenses";
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 function Expenses() {
   const [expenses, setExpenses] = useState([]);
@@ -27,30 +45,38 @@ function Expenses() {
   }, [currentMonth, currentYear]);
 
   const setupExpenses = async () => {
-    const currentDate = new Date(currentYear, currentMonth);
-    const currentMonthName = currentDate.toLocaleString("default", {
-      month: "long",
-    });
     const response = await getMonthlyExpenses({
-      month: currentMonthName,
+      month: MONTH_NAMES[currentMonth],
       year: currentYear,
     });
     setExpenses(response.data);
   };
 
   const setupColumns = async () => {
-    const currentDate = new Date(currentYear, currentMonth);
-    const days = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth() + 1,
-      0
-    ).getDate();
+    const days = new Date(currentYear, currentMonth + 1, 0).getDate();
     setColumns(Array.from({ length: days }, (_, index) => index + 1));
   };
 
   const setupRows = async () => {
-    const response = await getCategories();
-    setCategories(response.data);
+    try {
+      const categories = await getCategories();
+      const updatedCategories = [];
+      for (const category of categories.data) {
+        let total = await getMonthlyTotalPerCategory({
+          categoryId: category.id,
+          month: MONTH_NAMES[currentMonth],
+          year: currentYear,
+        });
+        if (!total) {
+          total = 0;
+        }
+        updatedCategories.push({ ...category, total });
+      }
+      setCategories(updatedCategories);
+    } catch (error) {
+      console.error(error);
+      setCategories([]);
+    }
   };
 
   const goToPreviousMonth = () => {
@@ -84,14 +110,13 @@ function Expenses() {
         <NavigationBar
           onPreviousMonth={goToPreviousMonth}
           onNextMonth={goToNextMonth}
-          currentMonth={new Date(0, currentMonth).toLocaleString("default", {
-            month: "long",
-          })}
+          currentMonth={MONTH_NAMES[currentMonth]}
           currentYear={currentYear}
         />
         <table>
           <thead>
             <tr>
+              <th>Total</th>
               <th>Category</th>
               {columns.map((column) => (
                 <th key={column}>{column}</th>
@@ -101,6 +126,7 @@ function Expenses() {
           <tbody>
             {categories.map((category) => (
               <tr key={category.id}>
+                <td>{category.total}</td>
                 <td>{category.name}</td>
                 {columns.map((column) => (
                   <td key={column}>
