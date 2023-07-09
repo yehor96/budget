@@ -161,6 +161,8 @@ public class ExpenseController {
             return new ResponseEntity<>(sum, HttpStatus.OK);
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
+        } catch (ObjectNotFoundException exception) {
+            throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
         }
     }
 

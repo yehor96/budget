@@ -41,7 +41,7 @@ public class ExpenseService {
     }
 
     public BigDecimal findSumInIntervalByCategory(LocalDate dateFrom, LocalDate dateTo, Long categoryId) {
-        //todo validate category exists
+        validateCategoryWithIdExists(categoryId);
         return expenseRepository.findSumInIntervalByCategory(dateFrom, dateTo, categoryId);
     }
 
