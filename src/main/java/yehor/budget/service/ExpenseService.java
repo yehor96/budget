@@ -40,6 +40,11 @@ public class ExpenseService {
         return expenseRepository.findSumInInterval(dateFrom, dateTo);
     }
 
+    public BigDecimal findSumInIntervalByCategory(LocalDate dateFrom, LocalDate dateTo, Long categoryId) {
+        validateCategoryWithIdExists(categoryId);
+        return expenseRepository.findSumInIntervalByCategory(dateFrom, dateTo, categoryId);
+    }
+
     public List<ExpenseFullDto> findAllInInterval(LocalDate dateFrom, LocalDate dateTo) {
         List<Expense> expenses = expenseRepository.findAllInInterval(dateFrom, dateTo);
         return expenses.stream()

@@ -97,6 +97,41 @@ class ExpenseServiceTest {
     }
 
     @Test
+    void testFindSumInIntervalByCategory() {
+        Long categoryId = 1L;
+        BigDecimal expectedSum = BigDecimal.valueOf(100);
+        LocalDate date1 = LocalDate.now();
+        LocalDate date2 = date1.plusDays(1);
+
+        when(expenseRepositoryMock.findSumInIntervalByCategory(date1, date2, categoryId)).thenReturn(expectedSum);
+        when(categoryRepositoryMock.existsById(categoryId)).thenReturn(true);
+
+        BigDecimal actualSum = expenseService.findSumInIntervalByCategory(date1, date2, categoryId);
+
+        assertEquals(expectedSum, actualSum);
+    }
+
+    @Test
+    void testFindSumInIntervalByCategoryFailing() {
+        Long categoryId = 1L;
+        LocalDate date1 = LocalDate.now();
+        LocalDate date2 = date1.plusDays(1);
+
+        when(categoryRepositoryMock.existsById(categoryId)).thenReturn(false);
+
+        try {
+            expenseService.findSumInIntervalByCategory(date1, date2, categoryId);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            ObjectNotFoundException exception = (ObjectNotFoundException) e;
+            assertEquals("Category with id " + categoryId + " does not exist", exception.getMessage());
+        }
+
+        verify(expenseRepositoryMock, never()).findSumInIntervalByCategory(any(), any(), any());
+    }
+
+    @Test
     void testFindAllInInterval() {
         LocalDate date1 = LocalDate.now();
         LocalDate date2 = date1.plusDays(1);

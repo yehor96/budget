@@ -45,6 +45,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
     protected static final String EXPENSE_INTERVAL_URL = EXPENSES_URL + "/interval";
     protected static final String EXPENSE_SUM_URL = EXPENSES_URL + "/sum";
     protected static final String EXPENSE_MONTHLY_URL = EXPENSES_URL + "/monthly";
+    protected static final String EXPENSE_MONTHLY_SUM_BY_CATEGORY_URL = EXPENSE_MONTHLY_URL + "/category/{categoryId}";
 
     @MockBean
     private DateManager dateManager;
@@ -496,7 +497,7 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
     }
 
     @Test
-    void testTryGettingMonthlyExpensesIFailingDatesWithinBudgetCheck() throws Exception {
+    void testTryGettingMonthlyExpensesFailingDatesWithinBudgetCheck() throws Exception {
         String expectedErrorMessage = "expectedErrorMessage";
         Month month = Month.JUNE;
         Integer year = 2023;
@@ -516,6 +517,79 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
         verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
 
         verify(expenseService, never()).findAllInInterval(dateFrom, dateTo);
+    }
+
+    // Get monthly expenses sum by category
+
+    @Test
+    void testGetMonthlyExpensesSumByCategory() throws Exception {
+        Long categoryId = 1L;
+        BigDecimal expectedSum = new BigDecimal("500.00");
+
+        Month month = Month.JUNE;
+        Integer year = 2023;
+        LocalDate dateFrom = LocalDate.of(2023, 6, 1);
+        LocalDate dateTo = LocalDate.of(2023, 6, 30);
+
+        when(dateManager.getLastDateOfMonth(dateFrom)).thenReturn(dateTo);
+        when(expenseService.findSumInIntervalByCategory(dateFrom, dateTo, categoryId)).thenReturn(expectedSum);
+
+        String response = mockMvc.perform(get(EXPENSE_MONTHLY_SUM_BY_CATEGORY_URL, categoryId)
+                        .param("month", String.valueOf(month))
+                        .param("year", String.valueOf(year)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        BigDecimal actualSum = objectMapper.readValue(response, BigDecimal.class);
+
+        verify(expenseService, times(1)).findSumInIntervalByCategory(dateFrom, dateTo, categoryId);
+        assertEquals(expectedSum, actualSum);
+    }
+
+    @Test
+    void testGetMonthlyExpensesSumByCategoryFailingDatesWithinBudgetCheck() throws Exception {
+        Long categoryId = 1L;
+        String expectedErrorMessage = "expectedErrorMessage";
+        Month month = Month.JUNE;
+        Integer year = 2023;
+        LocalDate dateFrom = LocalDate.of(2023, 6, 1);
+        LocalDate dateTo = LocalDate.of(2023, 6, 30);
+
+        when(dateManager.getLastDateOfMonth(dateFrom)).thenReturn(dateTo);
+        doThrow(new IllegalArgumentException(expectedErrorMessage))
+                .when(dateManager).validateDatesWithinBudget(dateFrom, dateTo);
+
+        String response = mockMvc.perform(get(EXPENSE_MONTHLY_SUM_BY_CATEGORY_URL, categoryId)
+                        .param("month", String.valueOf(month))
+                        .param("year", String.valueOf(year)))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+        verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
+
+        verify(expenseService, never()).findSumInIntervalByCategory(dateFrom, dateTo, categoryId);
+    }
+
+    @Test
+    void testGetMonthlyExpensesSumByCategoryFailingOnNonExistentCategoryId() throws Exception {
+        Long categoryId = 1L;
+        String expectedErrorMessage = "expectedErrorMessage";
+        Month month = Month.JUNE;
+        Integer year = 2023;
+        LocalDate dateFrom = LocalDate.of(2023, 6, 1);
+        LocalDate dateTo = LocalDate.of(2023, 6, 30);
+
+        when(dateManager.getLastDateOfMonth(dateFrom)).thenReturn(dateTo);
+        doThrow(new ObjectNotFoundException(expectedErrorMessage))
+                .when(expenseService).findSumInIntervalByCategory(dateFrom, dateTo, categoryId);
+
+        String response = mockMvc.perform(get(EXPENSE_MONTHLY_SUM_BY_CATEGORY_URL, categoryId)
+                        .param("month", String.valueOf(month))
+                        .param("year", String.valueOf(year)))
+                .andExpect(status().isNotFound())
+                .andReturn().getResponse().getContentAsString();
+
+        verifyResponseErrorObject(response, NOT_FOUND, expectedErrorMessage);
     }
 
     // Delete expense

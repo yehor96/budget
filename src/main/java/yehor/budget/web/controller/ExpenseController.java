@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -142,6 +143,26 @@ public class ExpenseController {
 
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
+        }
+    }
+
+    @GetMapping("/monthly/category/{categoryId}")
+    @Operation(summary = "Get sum of expenses for one month by category")
+    public ResponseEntity<BigDecimal> getMonthlyExpensesSumByCategory(@RequestParam("month") Month month,
+                                                                      @RequestParam("year") Integer year,
+                                                                      @PathVariable Long categoryId) {
+        try {
+            LocalDate dateFrom = LocalDate.of(year, month, 1);
+            LocalDate dateTo = dateManager.getLastDateOfMonth(dateFrom);
+
+            dateManager.validateDatesWithinBudget(dateFrom, dateTo);
+
+            BigDecimal sum = expenseService.findSumInIntervalByCategory(dateFrom, dateTo, categoryId);
+            return new ResponseEntity<>(sum, HttpStatus.OK);
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
+        } catch (ObjectNotFoundException exception) {
+            throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
         }
     }
 
