@@ -24,3 +24,7 @@ table th:first-child {
   flex-direction: column;
   align-items: center;
 }
+
+td.multiple {
+  background-color: aqua;
+}
