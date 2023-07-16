@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { getDailyExpenses } from "../../api";
+// import DetailedCellModal from "../../modals/DetailedCellModal/DetailedCellModal";
 
 const ExpenseCell = (props) => {
+  const [dailyExpenses, setDailyExpenses] = useState([]);
+  // const [showDetailCellModal, setShowDetailCellModal] = useState(false);
+
   const { expenses, column, category, currentMonth, currentYear } = props;
 
   const handleCellClick = async () => {
@@ -11,6 +15,8 @@ const ExpenseCell = (props) => {
       date: `${currentYear}-${month}-${day}`,
       categoryId: category.id,
     });
+    setDailyExpenses(result.data);
+    props.onCellClick();
     console.log(result.data);
   };
 
@@ -29,7 +35,13 @@ const ExpenseCell = (props) => {
     <td
       key={column}
       className={classNames}
-      onClick={isFilledCell ? () => handleCellClick() : null}
+      onClick={
+        isFilledCell
+          ? () => {
+              handleCellClick();
+            }
+          : null
+      }
     >
       {cellValue === 0 ? null : cellValue}
     </td>

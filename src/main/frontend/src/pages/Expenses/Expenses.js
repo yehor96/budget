@@ -10,6 +10,7 @@ import "./Expenses.css";
 import NavigationBar from "../../components/NavigationBar/NavigationBar";
 import HandlerSection from "../../components/HandlerSection/HandlerSection";
 import ExpenseCell from "../../components/ExpenseCell/ExpenseCell";
+import DetailedCellModal from"../../modals/DetailedCellModal/DetailedCellModal";
 
 const PAGE_NAME = "Expenses";
 const MONTH_NAMES = [
@@ -33,6 +34,7 @@ function Expenses() {
   const [categories, setCategories] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [showDetailCellModal, setShowDetailCellModal] = useState(false);
 
   useEffect(() => {
     const setupData = async () => {
@@ -136,12 +138,21 @@ function Expenses() {
                     category={category}
                     currentMonth={currentMonth + 1}
                     currentYear={currentYear}
+                    onCellClick={() => {
+                      setShowDetailCellModal(true);
+                    }}
                   />
                 ))}
               </tr>
             ))}
           </tbody>
         </table>
+        <DetailedCellModal
+        show={showDetailCellModal}
+        onClose={() => {
+          setShowDetailCellModal(false);
+        }}
+        />
         <HandlerSection categories={categories} />
       </div>
     </div>
