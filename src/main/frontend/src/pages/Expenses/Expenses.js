@@ -9,6 +9,7 @@ import PageTitle from "../../components/PageTitle/PageTitle";
 import "./Expenses.css";
 import NavigationBar from "../../components/NavigationBar/NavigationBar";
 import HandlerSection from "../../components/HandlerSection/HandlerSection";
+import ExpenseCell from "../../components/ExpenseCell/ExpenseCell";
 
 const PAGE_NAME = "Expenses";
 const MONTH_NAMES = [
@@ -101,20 +102,6 @@ function Expenses() {
     });
   };
 
-  const createCell = (expenses, column, category) => {
-    let expenseValues = expenses
-      .filter((expense) => expense.category.id === category.id)
-      .filter(
-        (expense) => parseInt(column) === parseInt(expense.date.split("-")[2])
-      )
-      .map((expense) => expense.value);
-    return (
-      <td key={column} class={expenseValues.length > 1 ? "multiple" : "single"}>
-        {expenseValues.reduce((val, newVal) => val + newVal, 0)}
-      </td>
-    );
-  };
-
   return (
     <div className="expenses-page">
       <Header selected={PAGE_NAME} />
@@ -142,9 +129,15 @@ function Expenses() {
               <tr key={category.id}>
                 <td>{category.total}</td>
                 <td>{category.name}</td>
-                {columns.map((column) =>
-                  createCell(expenses, column, category)
-                )}
+                {columns.map((column) => (
+                  <ExpenseCell
+                    expenses={expenses}
+                    column={column}
+                    category={category}
+                    currentMonth={currentMonth + 1}
+                    currentYear={currentYear}
+                  />
+                ))}
               </tr>
             ))}
           </tbody>

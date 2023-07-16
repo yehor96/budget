@@ -45,6 +45,14 @@ public class ExpenseService {
         return expenseRepository.findSumInIntervalByCategory(dateFrom, dateTo, categoryId);
     }
 
+    public List<ExpenseFullDto> findAllInDateByCategory(LocalDate date, Long categoryId) {
+        validateCategoryWithIdExists(categoryId);
+        List<Expense> expenses =  expenseRepository.findAllInDateByCategory(date, categoryId);
+        return expenses.stream()
+                .map(expenseConverter::convert)
+                .toList();
+    }
+
     public List<ExpenseFullDto> findAllInInterval(LocalDate dateFrom, LocalDate dateTo) {
         List<Expense> expenses = expenseRepository.findAllInInterval(dateFrom, dateTo);
         return expenses.stream()

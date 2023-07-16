@@ -53,6 +53,16 @@ public class DateManager implements SettingsListener {
         }
     }
 
+    public void validateDateWithinBudget(LocalDate date) {
+        if (Boolean.FALSE.equals(isBudgetDateValidation)) {
+            return;
+        }
+        if (!isWithinBudget(date)) {
+            throw new IllegalArgumentException(
+                    incorrectDateArgumentMessage() + String.format(" Provided date is %s", date));
+        }
+    }
+
     public boolean isWithinBudget(LocalDate date) {
         if (Boolean.FALSE.equals(isBudgetDateValidation)) {
             return true;

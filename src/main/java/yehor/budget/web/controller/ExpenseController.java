@@ -166,6 +166,23 @@ public class ExpenseController {
         }
     }
 
+    @GetMapping("/daily/category/{categoryId}")
+    @Operation(summary = "Get expenses for one day by category")
+    public ResponseEntity<List<ExpenseFullDto>> getDailyExpensesByCategory(@RequestParam("date") String dateParam,
+                                                                           @PathVariable Long categoryId) {
+        try {
+            LocalDate date = dateManager.parse(dateParam);
+
+            dateManager.validateDateWithinBudget(date);
+
+            List<ExpenseFullDto> expenses = expenseService.findAllInDateByCategory(date, categoryId);
+            return new ResponseEntity<>(expenses, HttpStatus.OK);
+
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
+        }
+    }
+
     @DeleteMapping
     @Operation(summary = "Delete expense by id")
     public ResponseEntity<ExpenseFullDto> deleteExpense(@RequestParam("id") Long id) {

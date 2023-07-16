@@ -22,20 +22,40 @@ export const getMonthlyExpenses = async (props) => {
   }
 };
 
+export const getDailyExpenses = async (props) => {
+  try {
+    const response = await axios.get(
+      `${EXPENSES}/daily/category/${props.categoryId}`,
+      {
+        params: {
+          date: props.date,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error(GENERAL_API_ERROR_GET + ": ", error);
+    throw error;
+  }
+};
+
 export const getMonthlyTotalPerCategory = async (props) => {
   try {
-    const response = await axios.get(`${EXPENSES}/monthly/category/${props.categoryId}`, {
-      params: {
-        month: props.month,
-        year: props.year,
-      },
-    });
+    const response = await axios.get(
+      `${EXPENSES}/monthly/category/${props.categoryId}`,
+      {
+        params: {
+          month: props.month,
+          year: props.year,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error(GENERAL_API_ERROR_GET + ": ", error);
     throw error;
   }
-}
+};
 
 export const addExpense = async (expense) => {
   try {
