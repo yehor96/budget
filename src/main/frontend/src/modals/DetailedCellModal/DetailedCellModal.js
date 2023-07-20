@@ -10,9 +10,15 @@ const DetailedCellModal = (props) => {
           <h4 className="modal-title">Detailed Cell Modal</h4>
         </div>
         <div className="modal-body">
-            <div>
-                hello
-            </div>
+          <div>
+            {props.expenses.map((expense, index) => {
+              return (
+                <div>
+                  Expense #{index + 1} value: {expense.value}
+                </div>
+              );
+            })}
+          </div>
         </div>
         <button className="btn" onClick={props.onClose}>
           Close

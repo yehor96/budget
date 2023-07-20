@@ -45,7 +45,9 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
     protected static final String EXPENSE_INTERVAL_URL = EXPENSES_URL + "/interval";
     protected static final String EXPENSE_SUM_URL = EXPENSES_URL + "/sum";
     protected static final String EXPENSE_MONTHLY_URL = EXPENSES_URL + "/monthly";
+    protected static final String EXPENSE_DAILY_URL = EXPENSES_URL + "/daily";
     protected static final String EXPENSE_MONTHLY_SUM_BY_CATEGORY_URL = EXPENSE_MONTHLY_URL + "/category/{categoryId}";
+    protected static final String EXPENSE_DAILY_BY_CATEGORY_URL = EXPENSE_DAILY_URL + "/category/{categoryId}";
 
     @MockBean
     private DateManager dateManager;
@@ -586,6 +588,71 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
         String response = mockMvc.perform(get(EXPENSE_MONTHLY_SUM_BY_CATEGORY_URL, categoryId)
                         .param("month", String.valueOf(month))
                         .param("year", String.valueOf(year)))
+                .andExpect(status().isNotFound())
+                .andReturn().getResponse().getContentAsString();
+
+        verifyResponseErrorObject(response, NOT_FOUND, expectedErrorMessage);
+    }
+
+    // Get daily expenses by category
+
+    @Test
+    void testGetDailyExpensesByCategory() throws Exception {
+        Long categoryId = 1L;
+        List<ExpenseFullDto> expected = defaultExpenseFullDtoList();
+
+        String format = "2023-06-01";
+        LocalDate date = LocalDate.of(2023, 6, 1);
+
+        when(dateManager.parse(format)).thenReturn(date);
+        when(expenseService.findAllInDateByCategory(date, categoryId)).thenReturn(expected);
+
+        String response = mockMvc.perform(get(EXPENSE_DAILY_BY_CATEGORY_URL, categoryId)
+                        .param("date", String.valueOf(date)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        ObjectReader reader = objectMapper.readerForListOf(ExpenseFullDto.class);
+        List<ExpenseFullDto> actual = reader.readValue(response);
+
+        verify(expenseService, times(1)).findAllInDateByCategory(date, categoryId);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testGetDailyExpensesByCategoryFailingDateWithinBudgetCheck() throws Exception {
+        Long categoryId = 1L;
+        String expectedErrorMessage = "expectedErrorMessage";
+        String format = "2023-06-01";
+        LocalDate date = LocalDate.of(2023, 6, 1);
+
+        when(dateManager.parse(format)).thenReturn(date);
+        doThrow(new IllegalArgumentException(expectedErrorMessage))
+                .when(dateManager).validateDateWithinBudget(date);
+
+        String response = mockMvc.perform(get(EXPENSE_DAILY_BY_CATEGORY_URL, categoryId)
+                        .param("date", String.valueOf(date)))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+        verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
+
+        verify(expenseService, never()).findAllInDateByCategory(date, categoryId);
+    }
+
+    @Test
+    void testGetDailyExpensesByCategoryFailingOnNonExistentCategoryId() throws Exception {
+        Long categoryId = 1L;
+        String expectedErrorMessage = "expectedErrorMessage";
+        String format = "2023-06-01";
+        LocalDate date = LocalDate.of(2023, 6, 1);
+
+        when(dateManager.parse(format)).thenReturn(date);
+        doThrow(new ObjectNotFoundException(expectedErrorMessage))
+                .when(expenseService).findAllInDateByCategory(date, categoryId);
+
+        String response = mockMvc.perform(get(EXPENSE_DAILY_BY_CATEGORY_URL, categoryId)
+                        .param("date", String.valueOf(date)))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
 

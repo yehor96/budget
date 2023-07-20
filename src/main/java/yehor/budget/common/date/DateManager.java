@@ -53,16 +53,6 @@ public class DateManager implements SettingsListener {
         }
     }
 
-    public void validateDateWithinBudget(LocalDate date) {
-        if (Boolean.FALSE.equals(isBudgetDateValidation)) {
-            return;
-        }
-        if (!isWithinBudget(date)) {
-            throw new IllegalArgumentException(
-                    incorrectDateArgumentMessage() + String.format(" Provided date is %s", date));
-        }
-    }
-
     public boolean isWithinBudget(LocalDate date) {
         if (Boolean.FALSE.equals(isBudgetDateValidation)) {
             return true;
@@ -104,6 +94,16 @@ public class DateManager implements SettingsListener {
         if (!areWithinBudget(date1, date2)) {
             throw new IllegalArgumentException(
                     incorrectDateArgumentMessage() + String.format(" Provided dates are %s and %s", date1, date2));
+        }
+    }
+
+    public void validateDateWithinBudget(LocalDate date) {
+        if (Boolean.FALSE.equals(isBudgetDateValidation)) {
+            return;
+        }
+        if (!isWithinBudget(date)) {
+            throw new IllegalArgumentException(
+                    incorrectDateArgumentMessage() + String.format(" Provided date is %s", date));
         }
     }
 

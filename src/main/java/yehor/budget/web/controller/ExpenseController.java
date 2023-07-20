@@ -154,7 +154,6 @@ public class ExpenseController {
         try {
             LocalDate dateFrom = LocalDate.of(year, month, 1);
             LocalDate dateTo = dateManager.getLastDateOfMonth(dateFrom);
-
             dateManager.validateDatesWithinBudget(dateFrom, dateTo);
 
             BigDecimal sum = expenseService.findSumInIntervalByCategory(dateFrom, dateTo, categoryId);
@@ -172,7 +171,6 @@ public class ExpenseController {
                                                                            @PathVariable Long categoryId) {
         try {
             LocalDate date = dateManager.parse(dateParam);
-
             dateManager.validateDateWithinBudget(date);
 
             List<ExpenseFullDto> expenses = expenseService.findAllInDateByCategory(date, categoryId);
@@ -180,6 +178,8 @@ public class ExpenseController {
 
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
+        } catch (ObjectNotFoundException exception) {
+            throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
         }
     }
 

@@ -35,6 +35,7 @@ function Expenses() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [showDetailCellModal, setShowDetailCellModal] = useState(false);
+  const [detailedCellExpenses, setDetailedCellExpenses] = useState([]);
 
   useEffect(() => {
     const setupData = async () => {
@@ -141,6 +142,7 @@ function Expenses() {
                     onCellClick={() => {
                       setShowDetailCellModal(true);
                     }}
+                    setDetailedCellExpenses={setDetailedCellExpenses}
                   />
                 ))}
               </tr>
@@ -152,6 +154,7 @@ function Expenses() {
         onClose={() => {
           setShowDetailCellModal(false);
         }}
+        expenses={detailedCellExpenses}
         />
         <HandlerSection categories={categories} />
       </div>

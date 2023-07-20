@@ -123,6 +123,13 @@ public class ExpenseFactory {
         return List.of(expenseFullDto1, expenseFullDto2, expenseFullDto3);
     }
 
+    public static List<Expense> defaultExpenseList() {
+        Expense expense1 = defaultExpense();
+        Expense expense2 = secondExpense();
+        Expense expense3 = thirdExpense();
+        return List.of(expense1, expense2, expense3);
+    }
+
     public static List<Expense> multipleCategoriesExpenseList() {
         Expense expense1 = defaultExpense();
         Expense expense2 = secondExpense();
