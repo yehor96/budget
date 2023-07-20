@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AddModal from "../AddModal/AddModal";
+import AddModal from "../../modals/AddModal/AddModal";
 
 const HandlerSection = (props) => {
   const [showAddModal, setShowAddModal] = useState(false);

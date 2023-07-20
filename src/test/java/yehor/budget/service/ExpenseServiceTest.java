@@ -25,7 +25,9 @@ import static common.factory.ExpenseFactory.DEFAULT_EXPENSE_ID;
 import static common.factory.ExpenseFactory.defaultExpense;
 import static common.factory.ExpenseFactory.defaultExpenseByTagDto;
 import static common.factory.ExpenseFactory.defaultExpenseFullDto;
+import static common.factory.ExpenseFactory.defaultExpenseFullDtoList;
 import static common.factory.ExpenseFactory.defaultExpenseLimitedDto;
+import static common.factory.ExpenseFactory.defaultExpenseList;
 import static common.factory.ExpenseFactory.emptyExpenseByTagDto;
 import static common.factory.ExpenseFactory.secondExpense;
 import static common.factory.ExpenseFactory.secondExpenseFullDto;
@@ -129,6 +131,44 @@ class ExpenseServiceTest {
         }
 
         verify(expenseRepositoryMock, never()).findSumInIntervalByCategory(any(), any(), any());
+    }
+
+    @Test
+    void testFindAllInDateByCategory() {
+        Long categoryId = 1L;
+        LocalDate date = LocalDate.now();
+        List<Expense> expenses = defaultExpenseList();
+        List<ExpenseFullDto> expected = defaultExpenseFullDtoList();
+
+        when(expenseRepositoryMock.findAllInDateByCategory(date, categoryId)).thenReturn(expenses);
+        when(categoryRepositoryMock.existsById(categoryId)).thenReturn(true);
+        when(expenseConverterMock.convert(any(Expense.class)))
+                .thenReturn(defaultExpenseFullDto())
+                .thenReturn(secondExpenseFullDto())
+                .thenReturn(thirdExpenseFullDto());
+
+        List<ExpenseFullDto> actual = expenseService.findAllInDateByCategory(date, categoryId);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testFindAllInDateByCategoryFailing() {
+        Long categoryId = 1L;
+        LocalDate date = LocalDate.now();
+
+        when(categoryRepositoryMock.existsById(categoryId)).thenReturn(false);
+
+        try {
+            expenseService.findAllInDateByCategory(date, categoryId);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(ObjectNotFoundException.class, e.getClass());
+            ObjectNotFoundException exception = (ObjectNotFoundException) e;
+            assertEquals("Category with id " + categoryId + " does not exist", exception.getMessage());
+        }
+
+        verify(expenseRepositoryMock, never()).findAllInDateByCategory(any(), any());
     }
 
     @Test

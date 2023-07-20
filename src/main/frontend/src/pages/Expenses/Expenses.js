@@ -9,6 +9,8 @@ import PageTitle from "../../components/PageTitle/PageTitle";
 import "./Expenses.css";
 import NavigationBar from "../../components/NavigationBar/NavigationBar";
 import HandlerSection from "../../components/HandlerSection/HandlerSection";
+import ExpenseCell from "../../components/ExpenseCell/ExpenseCell";
+import DetailedCellModal from"../../modals/DetailedCellModal/DetailedCellModal";
 
 const PAGE_NAME = "Expenses";
 const MONTH_NAMES = [
@@ -32,6 +34,8 @@ function Expenses() {
   const [categories, setCategories] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [showDetailCellModal, setShowDetailCellModal] = useState(false);
+  const [detailedCellExpenses, setDetailedCellExpenses] = useState([]);
 
   useEffect(() => {
     const setupData = async () => {
@@ -129,22 +133,29 @@ function Expenses() {
                 <td>{category.total}</td>
                 <td>{category.name}</td>
                 {columns.map((column) => (
-                  <td key={column}>
-                    {expenses
-                      .filter((expense) => expense.category.id === category.id)
-                      .filter(
-                        (expense) =>
-                          parseInt(column) ===
-                          parseInt(expense.date.split("-")[2])
-                      )
-                      .map((expense) => expense.value)
-                      .reduce((val, newVal) => val + newVal, 0)}
-                  </td>
+                  <ExpenseCell
+                    expenses={expenses}
+                    column={column}
+                    category={category}
+                    currentMonth={currentMonth + 1}
+                    currentYear={currentYear}
+                    onCellClick={() => {
+                      setShowDetailCellModal(true);
+                    }}
+                    setDetailedCellExpenses={setDetailedCellExpenses}
+                  />
                 ))}
               </tr>
             ))}
           </tbody>
         </table>
+        <DetailedCellModal
+        show={showDetailCellModal}
+        onClose={() => {
+          setShowDetailCellModal(false);
+        }}
+        expenses={detailedCellExpenses}
+        />
         <HandlerSection categories={categories} />
       </div>
     </div>

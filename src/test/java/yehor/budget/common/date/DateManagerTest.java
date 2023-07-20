@@ -228,6 +228,37 @@ class DateManagerTest {
     }
 
     @Test
+    void testValidateDateWithinBudgetSuccess() {
+        setUp(defaultSettings());
+        LocalDate date = LocalDate.now().minusDays(5);
+
+        dateManager.validateDateWithinBudget(date);
+    }
+
+    @Test
+    void testValidateDateWithinBudgetFailed() {
+        setUp(defaultSettings());
+        LocalDate date = LocalDate.now().plusDays(10);
+
+        try {
+            dateManager.validateDateWithinBudget(date);
+            fail("Exception was not thrown");
+        } catch (Exception e) {
+            assertEquals(IllegalArgumentException.class, e.getClass());
+            IllegalArgumentException exception = (IllegalArgumentException) e;
+            assertTrue(exception.getMessage().contains("Date argument is out of budget"));
+        }
+    }
+
+    @Test
+    void testValidateDateWithinBudgetDoesNotThrowExceptionIfBudgetValidationIsOff() {
+        setUp(settingsWithBudgetDateValidationOff());
+        LocalDate date = LocalDate.now().plusDays(5);
+
+        dateManager.validateDateWithinBudget(date);
+    }
+
+    @Test
     void testValidateDatesInSequentialOrderSuccess() {
         setUp(defaultSettings());
         LocalDate date1 = dateManager.getStartDate().minusDays(5);

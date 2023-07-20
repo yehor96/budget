@@ -97,6 +97,16 @@ public class DateManager implements SettingsListener {
         }
     }
 
+    public void validateDateWithinBudget(LocalDate date) {
+        if (Boolean.FALSE.equals(isBudgetDateValidation)) {
+            return;
+        }
+        if (!isWithinBudget(date)) {
+            throw new IllegalArgumentException(
+                    incorrectDateArgumentMessage() + String.format(" Provided date is %s", date));
+        }
+    }
+
     public void validateDatesInSequentialOrder(LocalDate date1, LocalDate date2) {
         if (date1.isAfter(date2)) {
             throw new IllegalArgumentException(String.format("Reversed order of dates: %s and %s", date1, date2));
