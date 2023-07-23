@@ -10,7 +10,7 @@ import "./Expenses.css";
 import NavigationBar from "../../components/NavigationBar/NavigationBar";
 import HandlerSection from "../../components/HandlerSection/HandlerSection";
 import ExpenseCell from "../../components/ExpenseCell/ExpenseCell";
-import DetailedCellModal from"../../modals/DetailedCellModal/DetailedCellModal";
+import DetailedCellModal from "../../modals/DetailedCellModal/DetailedCellModal";
 
 const PAGE_NAME = "Expenses";
 const MONTH_NAMES = [
@@ -105,6 +105,15 @@ function Expenses() {
     });
   };
 
+  const isToday = (dayValue) => {
+    let now = new Date();
+    return (
+      now.getFullYear() === parseInt(currentYear) &&
+      now.getMonth() === parseInt(currentMonth) &&
+      now.getDate() === parseInt(dayValue)
+    );
+  };
+
   return (
     <div className="expenses-page">
       <Header selected={PAGE_NAME} />
@@ -123,7 +132,12 @@ function Expenses() {
               <th>Total</th>
               <th>Category</th>
               {columns.map((column) => (
-                <th key={column}>{column}</th>
+                <th
+                  key={column}
+                  className={isToday(column) ? "current-selected" : ""}
+                >
+                  {column}
+                </th>
               ))}
             </tr>
           </thead>
@@ -150,11 +164,11 @@ function Expenses() {
           </tbody>
         </table>
         <DetailedCellModal
-        show={showDetailCellModal}
-        onClose={() => {
-          setShowDetailCellModal(false);
-        }}
-        expenses={detailedCellExpenses}
+          show={showDetailCellModal}
+          onClose={() => {
+            setShowDetailCellModal(false);
+          }}
+          expenses={detailedCellExpenses}
         />
         <HandlerSection categories={categories} />
       </div>
