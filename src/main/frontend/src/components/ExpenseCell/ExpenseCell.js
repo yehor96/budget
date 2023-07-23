@@ -13,7 +13,6 @@ const ExpenseCell = (props) => {
     });
     props.onCellClick();
     props.setDetailedCellExpenses(result.data);
-    console.log(result.data);
   };
 
   let expenseValues = expenses
@@ -24,8 +23,8 @@ const ExpenseCell = (props) => {
     .map((expense) => expense.value);
   let isFilledCell = expenseValues.length > 0;
   let cellValue = expenseValues.reduce((val, newVal) => val + newVal, 0);
-  let classNames = `${isFilledCell ? "filled" : "empty"} ${
-    expenseValues.length > 1 ? "multiple" : ""
+  let classNames = `${isFilledCell ? "filled" : "empty"}${
+    expenseValues.length > 1 ? " multiple" : ""
   }`;
   return (
     <td

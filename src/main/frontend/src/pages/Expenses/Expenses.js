@@ -148,6 +148,7 @@ function Expenses() {
                 <td>{category.name}</td>
                 {columns.map((column) => (
                   <ExpenseCell
+                    key={column}
                     expenses={expenses}
                     column={column}
                     category={category}
