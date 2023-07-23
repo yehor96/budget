@@ -26,6 +26,7 @@ const AddModal = (props) => {
       value: e.target.value.value,
       date: e.target.date.value,
       categoryId: e.target.category.value,
+      isRegular: e.target.is_regular.checked,
     });
     displayResponse(response, e);
   };
@@ -58,6 +59,10 @@ const AddModal = (props) => {
                     </option>
                   ))}
                 </select>
+              </div>
+              <div>
+                <label htmlFor="is_regular">Is regular:</label>
+                <input type="checkbox" id="is_regular" name="is_regular" />
               </div>
             </div>
             <button type="submit" className="btn">
