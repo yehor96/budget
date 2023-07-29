@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   getCategories,
   getMonthlyExpenses,
-  getMonthlyTotalPerCategory,
+  getMonthyStatistics,
 } from "../../api";
 import Header from "../../components/Header/Header";
 import PageTitle from "../../components/PageTitle/PageTitle";
@@ -30,6 +30,7 @@ const MONTH_NAMES = [
 
 function Expenses() {
   const [expenses, setExpenses] = useState([]);
+  const [statistics, setStatistics] = useState({});
   const [columns, setColumns] = useState([]);
   const [categories, setCategories] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -39,14 +40,21 @@ function Expenses() {
 
   useEffect(() => {
     const setupData = async () => {
+      await setupStatistics();
       await setupExpenses();
       await setupColumns();
-      await setupRows();
     };
 
     setupData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentMonth, currentYear]);
+
+  useEffect(() => {
+    if (statistics && Object.keys(statistics).length > 0) {
+      setupRows();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statistics]);
 
   const setupExpenses = async () => {
     const response = await getMonthlyExpenses({
@@ -54,6 +62,14 @@ function Expenses() {
       year: currentYear,
     });
     setExpenses(response.data);
+  };
+
+  const setupStatistics = async () => {
+    const response = await getMonthyStatistics({
+      month: MONTH_NAMES[currentMonth],
+      year: currentYear,
+    });
+    setStatistics(response);
   };
 
   const setupColumns = async () => {
@@ -66,11 +82,7 @@ function Expenses() {
       const categories = await getCategories();
       const updatedCategories = [];
       for (const category of categories.data) {
-        let total = await getMonthlyTotalPerCategory({
-          categoryId: category.id,
-          month: MONTH_NAMES[currentMonth],
-          year: currentYear,
-        });
+        let total = statistics.totalsPerCategory[category.name];
         if (!total) {
           total = 0;
         }
@@ -171,7 +183,7 @@ function Expenses() {
           }}
           expenses={detailedCellExpenses}
         />
-        <HandlerSection categories={categories} />
+        <HandlerSection categories={categories} statistics={statistics}/>
       </div>
     </div>
   );

@@ -38,7 +38,7 @@ public class StatisticsService {
             calculateTotalExpense(statistics, expense);
             calculateRegulars(statistics, expense);
         }
-        calculateCategoryTotals(statistics, expenses);
+        calculateTotalsPerCategory(statistics, expenses);
         return statistics;
     }
 
@@ -85,10 +85,10 @@ public class StatisticsService {
         }
     }
 
-    private void calculateCategoryTotals(MonthlyStatistics statistics, List<Expense> expenses) {
-        Map<String, BigDecimal> categoryToValueMap = expenses.stream().collect(
+    private void calculateTotalsPerCategory(MonthlyStatistics statistics, List<Expense> expenses) {
+        Map<String, BigDecimal> totalsPerCategory = expenses.stream().collect(
                 toMap(e -> e.getCategory().getName(), Expense::getValue, BigDecimal::add));
-        statistics.setCategoryToValueMap(categoryToValueMap);
+        statistics.setTotalsPerCategory(totalsPerCategory);
     }
 
 }

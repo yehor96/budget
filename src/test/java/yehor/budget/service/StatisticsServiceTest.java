@@ -97,19 +97,19 @@ class StatisticsServiceTest {
                 .totalExpense(BigDecimal.valueOf(30))
                 .totalRegular(BigDecimal.valueOf(20))
                 .totalNonRegular(BigDecimal.TEN)
-                .categoryToValueMap(Map.of("Food", BigDecimal.valueOf(20), "Meds", BigDecimal.TEN))
+                .totalsPerCategory(Map.of("Food", BigDecimal.valueOf(20), "Meds", BigDecimal.TEN))
                 .build();
         MonthlyStatistics monthlyStatistics2 = MonthlyStatistics.builder()
                 .totalExpense(BigDecimal.TEN)
                 .totalRegular(BigDecimal.TEN)
                 .totalNonRegular(BigDecimal.ZERO)
-                .categoryToValueMap(Map.of("Food", BigDecimal.TEN))
+                .totalsPerCategory(Map.of("Food", BigDecimal.TEN))
                 .build();
         MonthlyStatistics monthlyStatistics3 = MonthlyStatistics.builder()
                 .totalExpense(BigDecimal.TEN)
                 .totalRegular(BigDecimal.ZERO)
                 .totalNonRegular(BigDecimal.TEN)
-                .categoryToValueMap(Map.of("Meds", BigDecimal.TEN))
+                .totalsPerCategory(Map.of("Meds", BigDecimal.TEN))
                 .build();
 
         PeriodicStatistics expectedPeriodicStatistics = PeriodicStatistics.builder()

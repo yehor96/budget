@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const API_PATH = "/api/v1";
+const STATISTICS = API_PATH + "/statistics";
 const EXPENSES = API_PATH + "/expenses";
 const CATEGORIES = API_PATH + "/categories";
 
@@ -39,10 +40,10 @@ export const getDailyExpenses = async (props) => {
   }
 };
 
-export const getMonthlyTotalPerCategory = async (props) => {
+export const getMonthyStatistics = async (props) => {
   try {
     const response = await axios.get(
-      `${EXPENSES}/monthly/category/${props.categoryId}`,
+      `${STATISTICS}/monthly`,
       {
         params: {
           month: props.month,
