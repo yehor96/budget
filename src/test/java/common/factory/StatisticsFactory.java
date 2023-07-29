@@ -20,7 +20,7 @@ public class StatisticsFactory {
                 .totalExpense(new BigDecimal("136.50"))
                 .totalRegular(new BigDecimal("21.00"))
                 .totalNonRegular(new BigDecimal("115.50"))
-                .categoryToValueMap(Map.of(
+                .totalsPerCategory(Map.of(
                         "Food", new BigDecimal("125.50"),
                         "Meds", new BigDecimal("11.00"))
                 )
@@ -32,7 +32,7 @@ public class StatisticsFactory {
                 .totalExpense(new BigDecimal("273.00"))
                 .totalRegular(new BigDecimal("42.00"))
                 .totalNonRegular(new BigDecimal("230.00"))
-                .categoryToValueMap(Map.of(
+                .totalsPerCategory(Map.of(
                         "Food", new BigDecimal("156.00"),
                         "Medication", new BigDecimal("22.00"))
                 )
@@ -44,7 +44,7 @@ public class StatisticsFactory {
                 .totalExpense(BigDecimal.ZERO)
                 .totalRegular(BigDecimal.ZERO)
                 .totalNonRegular(BigDecimal.ZERO)
-                .categoryToValueMap(Collections.emptyMap())
+                .totalsPerCategory(Collections.emptyMap())
                 .build();
     }
 

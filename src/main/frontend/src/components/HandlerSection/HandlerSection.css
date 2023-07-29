@@ -1,0 +1,30 @@
+.additional-info-container span {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.additional-info-container {
+  border: 1px solid #ddd;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.row span {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.row span:first-child {
+  font-weight: bold;
+}
+
+.handler-container {
+  display: flex;
+  align-items: center;
+}

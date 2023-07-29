@@ -9,7 +9,7 @@
 
 .logo-container {
   margin-right: 10px;
-  margin-left: 30px;
+  margin-left: 40px;
 }
 
 .logo-container img {
@@ -25,9 +25,10 @@
   color: #333;
 }
 
-.btn-container {
+.btn-container-header {
   display: flex;
   align-items: center;
+  margin-right: 40px;
 }
 
 .btn {

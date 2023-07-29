@@ -17,5 +17,5 @@ public class MonthlyStatistics {
     private BigDecimal totalExpense = BigDecimal.ZERO;
     private BigDecimal totalRegular = BigDecimal.ZERO;
     private BigDecimal totalNonRegular = BigDecimal.ZERO;
-    private Map<String, BigDecimal> categoryToValueMap;
+    private Map<String, BigDecimal> totalsPerCategory;
 }
