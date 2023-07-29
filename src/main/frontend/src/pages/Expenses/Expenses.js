@@ -180,6 +180,7 @@ function Expenses() {
           show={showDetailCellModal}
           onClose={() => {
             setShowDetailCellModal(false);
+            window.location.reload();
           }}
           expenses={detailedCellExpenses}
         />

@@ -1,8 +1,16 @@
 import React from "react";
 import "./DetailedCellModal.css";
 import { formatDate } from "../../utils.js";
+import { deleteExpense } from "../../api";
 
 const DetailedCellModal = (props) => {
+  const executeDeleteExpense = async (id) => {
+    const response = await deleteExpense(id);
+    if (response.status === 200) {
+      document.getElementById(id).remove();
+    }
+  };
+
   if (!props.show) return null;
   return (
     <div className="modal">
@@ -14,24 +22,31 @@ const DetailedCellModal = (props) => {
           </h4>
         </div>
         <div className="modal-body">
-          <div>
-            {props.expenses.map((expense, index) => {
-              return (
-                <div
-                  key={index}
-                  className={`expense-container ${
-                    expense.isRegular ? "regular" : "non-regular"
-                  }`}
-                >
-                  <div className="expense-item">
-                    <span>Expense #{index + 1}</span>
-                    <div>value: {expense.value}</div>
-                    <div>regular: {expense.isRegular.toString()}</div>
-                  </div>
+          {props.expenses.map((expense, index) => {
+            return (
+              <div
+                key={index}
+                className={`expense-container ${
+                  expense.isRegular ? "regular" : "non-regular"
+                }`}
+                id={expense.id}
+              >
+                <div className="expense-item">
+                  <span>Expense #{index + 1}</span>
+                  <div>value: {expense.value}</div>
+                  <div>regular: {expense.isRegular.toString()}</div>
                 </div>
-              );
-            })}
-          </div>
+                <button
+                  className="btn-delete"
+                  onClick={(event) =>
+                    executeDeleteExpense(expense.id, event.target)
+                  }
+                >
+                  Delete
+                </button>
+              </div>
+            );
+          })}
         </div>
         <button className="btn" onClick={props.onClose}>
           Close
