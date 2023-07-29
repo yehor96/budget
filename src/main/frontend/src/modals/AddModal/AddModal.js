@@ -1,18 +1,21 @@
 import React, { useState } from "react";
 import { addExpense, GENERAL_API_ERROR_POST } from "../../api";
 import "./AddModal.css";
+import { formatDate } from "../../utils.js";
 
 const AddModal = (props) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const displayResponse = (response, e) => {
+  const displayResponse = (response, newExpense, e) => {
     setErrorMessage("");
     if (response.status !== 200) {
       let errMsg = response.message ? response.message : GENERAL_API_ERROR_POST;
       setErrorMessage(errMsg);
     } else {
       setSuccessMessage("Expense added successfully!");
+      newExpense.id = response.data.id;
+      props.addNewExpense(newExpense);
       setTimeout(() => {
         setSuccessMessage("");
       }, 4000);
@@ -22,13 +25,14 @@ const AddModal = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await addExpense({
+    const newExpense = {
       value: e.target.value.value,
-      date: e.target.date.value,
-      categoryId: e.target.category.value,
+      date: props.date,
+      categoryId: props.category.id,
       isRegular: e.target.is_regular.checked,
-    });
-    displayResponse(response, e);
+    };
+    const response = await addExpense(newExpense);
+    displayResponse(response, newExpense, e);
   };
 
   if (!props.show) return null;
@@ -48,17 +52,11 @@ const AddModal = (props) => {
               </div>
               <div>
                 <label htmlFor="date">Date:</label>
-                <input type="date" id="date" name="date" required />
+                <span>{formatDate(props.date)}</span>
               </div>
               <div>
                 <label htmlFor="category">Category:</label>
-                <select id="category" name="category" required>
-                  {props.categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
+                <span>{props.category.name}</span>
               </div>
               <div>
                 <label htmlFor="is_regular">Is regular:</label>

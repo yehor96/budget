@@ -58,20 +58,20 @@ public class ExpenseController {
 
     @PostMapping
     @Operation(summary = "Save expense")
-    public ResponseEntity<ExpenseLimitedDto> saveExpense(@RequestBody ExpenseLimitedDto expenseDto) {
+    public ResponseEntity<ExpenseFullDto> saveExpense(@RequestBody ExpenseLimitedDto expenseDto) {
         try {
             dateManager.validateDateAfterStart(expenseDto.getDate());
             validateCategoryId(expenseDto.getCategoryId());
             validateTagIds(expenseDto);
             validateNote(expenseDto.getNote());
 
-            expenseService.save(expenseDto);
+            ExpenseFullDto saved = expenseService.save(expenseDto);
+            return new ResponseEntity<>(saved, HttpStatus.OK);
         } catch (ObjectNotFoundException exception) {
             throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping
@@ -83,13 +83,13 @@ public class ExpenseController {
             validateTagIds(expenseDto);
             validateNote(expenseDto.getNote());
 
-            expenseService.update(expenseDto);
+            ExpenseFullDto updated = expenseService.update(expenseDto);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
         } catch (ObjectNotFoundException exception) {
             throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/interval")

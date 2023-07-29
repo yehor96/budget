@@ -202,6 +202,7 @@ class ExpenseServiceTest {
         when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
         when(categoryRepositoryMock.existsById(DEFAULT_CATEGORY_ID)).thenReturn(true);
         when(tagRepositoryMock.existsById(DEFAULT_TAG_ID)).thenReturn(true);
+        when(expenseRepositoryMock.save(expense)).thenReturn(expense);
 
         expenseService.save(expenseDto);
 
@@ -258,6 +259,7 @@ class ExpenseServiceTest {
         when(expenseRepositoryMock.existsById(DEFAULT_EXPENSE_ID)).thenReturn(true);
         when(categoryRepositoryMock.existsById(DEFAULT_CATEGORY_ID)).thenReturn(true);
         when(tagRepositoryMock.existsById(DEFAULT_TAG_ID)).thenReturn(true);
+        when(expenseRepositoryMock.save(expense)).thenReturn(expense);
 
         expenseService.update(expenseDto);
 

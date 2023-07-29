@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
+import AddModal from "../../modals/AddModal/AddModal";
 import "./DetailedCellModal.css";
 import { formatDate } from "../../utils.js";
 import { deleteExpense } from "../../api";
 
 const DetailedCellModal = (props) => {
+  const { category, date } = props.detailedCellInfo;
+  const [showAddModal, setShowAddModal] = useState(false);
+
   const executeDeleteExpense = async (id) => {
     const response = await deleteExpense(id);
     if (response.status === 200) {
@@ -17,22 +21,21 @@ const DetailedCellModal = (props) => {
       <div className="modal-content">
         <div className="modal-header">
           <h4 className="modal-title">
-            {props.expenses[0].category.name} expenses for{" "}
-            {formatDate(props.expenses[0].date)}
+            {category.name} expenses for {formatDate(date)}
           </h4>
         </div>
         <div className="modal-body">
-          {props.expenses.map((expense, index) => {
+          {props.detailedCellInfo.expenses.map((expense) => {
             return (
               <div
-                key={index}
+                key={expense.id}
                 className={`expense-container ${
                   expense.isRegular ? "regular" : "non-regular"
                 }`}
                 id={expense.id}
               >
                 <div className="expense-item">
-                  <span>Expense #{index + 1}</span>
+                  <span>Expense #{expense.id}</span>
                   <div>value: {expense.value}</div>
                   <div>regular: {expense.isRegular.toString()}</div>
                 </div>
@@ -48,10 +51,26 @@ const DetailedCellModal = (props) => {
             );
           })}
         </div>
-        <button className="btn" onClick={props.onClose}>
-          Close
-        </button>
+        <div className="modal-btns-container">
+          <button className="btn" onClick={props.onClose}>
+            Close
+          </button>
+          <button className="btn" onClick={() => setShowAddModal(true)}>
+            Add
+          </button>
+        </div>
       </div>
+      <AddModal
+        show={showAddModal}
+        category={category}
+        date={date}
+        addNewExpense={(newExpense) => {
+          props.detailedCellInfo.expenses = [...props.detailedCellInfo.expenses, newExpense];
+        }}
+        onClose={() => {
+          setShowAddModal(false);
+        }}
+      />
     </div>
   );
 };

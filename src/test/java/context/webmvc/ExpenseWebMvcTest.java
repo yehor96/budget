@@ -91,13 +91,20 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
     @Test
     void testSaveExpense() throws Exception {
         ExpenseLimitedDto expenseLimitedDto = defaultExpenseLimitedDto();
+        ExpenseFullDto expectedExpense = defaultExpenseFullDto();
 
-        mockMvc.perform(post(EXPENSES_URL)
+        when(expenseService.save(expenseLimitedDto)).thenReturn(expectedExpense);
+
+        String response = mockMvc.perform(post(EXPENSES_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseLimitedDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        ExpenseFullDto returnedExpense = objectMapper.readValue(response, ExpenseFullDto.class);
 
         verify(expenseService, times(1)).save(expenseLimitedDto);
+        assertEquals(expectedExpense, returnedExpense);
     }
 
     @Test
@@ -187,12 +194,18 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
     void testUpdateExpense() throws Exception {
         ExpenseFullDto expenseFullDto = defaultExpenseFullDto();
 
-        mockMvc.perform(put(EXPENSES_URL)
+        when(expenseService.update(expenseFullDto)).thenReturn(expenseFullDto);
+
+        String response = mockMvc.perform(put(EXPENSES_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseFullDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        ExpenseFullDto returnedExpense = objectMapper.readValue(response, ExpenseFullDto.class);
 
         verify(expenseService, times(1)).update(expenseFullDto);
+        assertEquals(expenseFullDto, returnedExpense);
     }
 
     @Test

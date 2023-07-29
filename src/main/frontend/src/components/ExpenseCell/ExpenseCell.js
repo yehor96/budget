@@ -7,12 +7,17 @@ const ExpenseCell = (props) => {
   const handleCellClick = async () => {
     let month = currentMonth < 10 ? `0${currentMonth}` : currentMonth;
     let day = column < 10 ? `0${column}` : column;
+    let date = `${currentYear}-${month}-${day}`;
     const result = await getDailyExpenses({
-      date: `${currentYear}-${month}-${day}`,
+      date: date,
       categoryId: category.id,
     });
     props.onCellClick();
-    props.setDetailedCellExpenses(result.data);
+    props.setDetailedCellInfo({
+      expenses: result.data,
+      category: category,
+      date: date,
+    });
   };
 
   let expenseValues = expenses
@@ -21,23 +26,10 @@ const ExpenseCell = (props) => {
       (expense) => parseInt(column) === parseInt(expense.date.split("-")[2])
     )
     .map((expense) => expense.value);
-  let isFilledCell = expenseValues.length > 0;
   let cellValue = expenseValues.reduce((val, newVal) => val + newVal, 0);
-  let classNames = `${isFilledCell ? "filled" : "empty"}${
-    expenseValues.length > 1 ? " multiple" : ""
-  }`;
+  let classNames = expenseValues.length > 1 ? "multiple" : null;
   return (
-    <td
-      key={column}
-      className={classNames}
-      onClick={
-        isFilledCell
-          ? () => {
-              handleCellClick();
-            }
-          : null
-      }
-    >
+    <td key={column} className={classNames} onClick={() => handleCellClick()}>
       {cellValue === 0 ? null : cellValue}
     </td>
   );
