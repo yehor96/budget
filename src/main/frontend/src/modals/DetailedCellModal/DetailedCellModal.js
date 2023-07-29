@@ -8,6 +8,9 @@ const DetailedCellModal = (props) => {
   const { category, date } = props.detailedCellInfo;
   const [showAddModal, setShowAddModal] = useState(false);
 
+  // If user opens empty DetailedCellModal -> go straight to AddModal
+  const [passthroughToAddExpense, setPassthroughToAddExpense] = useState(false);
+
   const executeDeleteExpense = async (id) => {
     const response = await deleteExpense(id);
     if (response.status === 200) {
@@ -16,6 +19,13 @@ const DetailedCellModal = (props) => {
   };
 
   if (!props.show) return null;
+  if (
+    props.detailedCellInfo.expenses.length === 0 &&
+    !passthroughToAddExpense
+  ) {
+    setShowAddModal(true);
+    setPassthroughToAddExpense(true);
+  }
   return (
     <div className="modal">
       <div className="modal-content">
@@ -52,11 +62,11 @@ const DetailedCellModal = (props) => {
           })}
         </div>
         <div className="modal-btns-container">
-          <button className="btn" onClick={props.onClose}>
-            Close
-          </button>
           <button className="btn" onClick={() => setShowAddModal(true)}>
             Add
+          </button>
+          <button className="btn" onClick={props.onClose}>
+            Close
           </button>
         </div>
       </div>
@@ -65,10 +75,17 @@ const DetailedCellModal = (props) => {
         category={category}
         date={date}
         addNewExpense={(newExpense) => {
-          props.detailedCellInfo.expenses = [...props.detailedCellInfo.expenses, newExpense];
+          props.detailedCellInfo.expenses = [
+            ...props.detailedCellInfo.expenses,
+            newExpense,
+          ];
+          setPassthroughToAddExpense(false);
         }}
         onClose={() => {
           setShowAddModal(false);
+          if (passthroughToAddExpense) {
+            props.onClose();
+          }
         }}
       />
     </div>
