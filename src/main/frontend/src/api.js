@@ -7,6 +7,7 @@ const CATEGORIES = API_PATH + "/categories";
 
 export const GENERAL_API_ERROR_POST = "Error posting data to server";
 export const GENERAL_API_ERROR_GET = "Error fetching data from server";
+export const GENERAL_API_ERROR_DELETE = "Error deleting data from server";
 
 export const getMonthlyExpenses = async (props) => {
   try {
@@ -42,15 +43,12 @@ export const getDailyExpenses = async (props) => {
 
 export const getMonthyStatistics = async (props) => {
   try {
-    const response = await axios.get(
-      `${STATISTICS}/monthly`,
-      {
-        params: {
-          month: props.month,
-          year: props.year,
-        },
-      }
-    );
+    const response = await axios.get(`${STATISTICS}/monthly`, {
+      params: {
+        month: props.month,
+        year: props.year,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error(GENERAL_API_ERROR_GET + ": ", error);
@@ -64,6 +62,20 @@ export const addExpense = async (expense) => {
     return response;
   } catch (error) {
     console.error(GENERAL_API_ERROR_POST + ": ", error);
+    return error.response.data;
+  }
+};
+
+export const deleteExpense = async (expenseId) => {
+  try {
+    const response = await axios.delete(EXPENSES, {
+      params: {
+        id: expenseId,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error(GENERAL_API_ERROR_DELETE + ": ", error);
     return error.response.data;
   }
 };

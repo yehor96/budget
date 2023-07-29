@@ -4,10 +4,13 @@
 
 .expense-container {
   margin-bottom: 25px;
+  display: flex;
+  align-items: center;
 }
 
 .expense-item {
   margin-left: 10px;
+  margin-right: auto;
 }
 
 .expense-container.regular {
@@ -16,4 +19,11 @@
 
 .expense-container.non-regular {
   background-color: hsl(0, 70%, 85%);
+}
+
+.btn-delete {
+  margin-right: 10px;
+  background-color: #e6e6fa;
+  border: 1px solid #000;
+  cursor: pointer;
 }
