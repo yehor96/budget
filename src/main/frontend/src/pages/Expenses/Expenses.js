@@ -8,7 +8,7 @@ import Header from "../../components/Header/Header";
 import PageTitle from "../../components/PageTitle/PageTitle";
 import "./Expenses.css";
 import NavigationBar from "../../components/NavigationBar/NavigationBar";
-import HandlerSection from "../../components/HandlerSection/HandlerSection";
+import BottomSection from "../../components/BottomSection/BottomSection";
 import ExpenseCell from "../../components/ExpenseCell/ExpenseCell";
 import DetailedCellModal from "../../modals/DetailedCellModal/DetailedCellModal";
 
@@ -36,7 +36,9 @@ function Expenses() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [showDetailCellModal, setShowDetailCellModal] = useState(false);
-  const [detailedCellExpenses, setDetailedCellExpenses] = useState([]);
+  const [detailedCellInfo, setDetailedCellInfo] = useState({});
+
+  // USE EFFECT
 
   useEffect(() => {
     const setupData = async () => {
@@ -55,6 +57,8 @@ function Expenses() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statistics]);
+
+  // SETUP
 
   const setupExpenses = async () => {
     const response = await getMonthlyExpenses({
@@ -94,6 +98,8 @@ function Expenses() {
       setCategories([]);
     }
   };
+
+  // NAVIGATION
 
   const goToPreviousMonth = () => {
     setCurrentMonth((prevMonth) => {
@@ -169,7 +175,7 @@ function Expenses() {
                     onCellClick={() => {
                       setShowDetailCellModal(true);
                     }}
-                    setDetailedCellExpenses={setDetailedCellExpenses}
+                    setDetailedCellInfo={setDetailedCellInfo}
                   />
                 ))}
               </tr>
@@ -182,9 +188,9 @@ function Expenses() {
             setShowDetailCellModal(false);
             window.location.reload();
           }}
-          expenses={detailedCellExpenses}
+          detailedCellInfo={detailedCellInfo}
         />
-        <HandlerSection categories={categories} statistics={statistics}/>
+        <BottomSection categories={categories} statistics={statistics}/>
       </div>
     </div>
   );

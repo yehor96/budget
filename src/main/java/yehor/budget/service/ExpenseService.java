@@ -60,14 +60,16 @@ public class ExpenseService {
                 .toList();
     }
 
-    public void save(ExpenseLimitedDto expenseDto) {
+    @Transactional
+    public ExpenseFullDto save(ExpenseLimitedDto expenseDto) {
         validateCategoryWithIdExists(expenseDto.getCategoryId());
         validateTagsWithIdsExist(expenseDto.getTagIds());
 
         Expense expense = expenseConverter.convert(expenseDto);
-        expenseRepository.save(expense);
-        log.info("Saved: {}", expense);
-        dateManager.updateBudgetDatesIfNecessary(expense.getDate());
+        Expense savedExpense = expenseRepository.save(expense);
+        log.info("Saved: {}", savedExpense);
+        dateManager.updateBudgetDatesIfNecessary(savedExpense.getDate());
+        return expenseConverter.convert(savedExpense);
     }
 
     @Transactional(readOnly = true)
@@ -77,15 +79,16 @@ public class ExpenseService {
     }
 
     @Transactional
-    public void update(ExpenseFullDto expenseDto) {
+    public ExpenseFullDto update(ExpenseFullDto expenseDto) {
         validateExists(expenseDto.getId());
         validateCategoryWithIdExists(expenseDto.getCategory().getId());
         validateTagsExist(expenseDto.getTags());
 
         Expense expense = expenseConverter.convert(expenseDto);
-        expenseRepository.save(expense);
-        log.info("Updated: {}", expense);
-        dateManager.updateBudgetDatesIfNecessary(expense.getDate());
+        Expense savedExpense = expenseRepository.save(expense);
+        log.info("Updated: {}", savedExpense);
+        dateManager.updateBudgetDatesIfNecessary(savedExpense.getDate());
+        return expenseConverter.convert(savedExpense);
     }
 
     public void deleteById(Long id) {

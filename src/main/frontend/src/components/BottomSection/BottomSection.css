@@ -1,3 +1,8 @@
+.bottom-section-container {
+  display: flex;
+  align-items: center;
+}
+
 .additional-info-container span {
   display: block;
   margin-bottom: 5px;
@@ -22,9 +27,4 @@
 
 .row span:first-child {
   font-weight: bold;
-}
-
-.handler-container {
-  display: flex;
-  align-items: center;
 }
