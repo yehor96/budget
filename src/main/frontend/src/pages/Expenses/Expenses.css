@@ -52,3 +52,7 @@ td.multiple::after {
   font-size: 0.75em;
   color: #4e0774;
 }
+
+.planning-container {
+  margin-top: 60px;
+}

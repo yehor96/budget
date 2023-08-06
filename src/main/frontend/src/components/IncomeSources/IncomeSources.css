@@ -1,0 +1,43 @@
+.income-sources-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.income-table span {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.income-table {
+  border: 1px solid #ddd;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.income-item,
+.income-total {
+  display: flex;
+  justify-content: space-between;
+}
+
+.income-item span,
+.income-total span {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.income-item span:first-child,
+.income-total span:first-child {
+  font-weight: bold;
+}
+
+.income-total {
+  border: 1px solid #ddd;
+  background-color: #e6e6fa;
+}
+
+.plus {
+  font-size: larger;
+}

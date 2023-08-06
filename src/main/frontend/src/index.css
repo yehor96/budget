@@ -16,6 +16,9 @@ code {
   background-color: #20bf9f;
   border: 1px solid #17917a;
   cursor: pointer;
+  margin-left: 30px;
+  padding: 10px 20px;
+  border-radius: 10px;
 }
 
 .btn:hover {

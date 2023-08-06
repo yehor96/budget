@@ -60,6 +60,7 @@ public class ExpenseController {
     @Operation(summary = "Save expense")
     public ResponseEntity<ExpenseFullDto> saveExpense(@RequestBody ExpenseLimitedDto expenseDto) {
         try {
+            // todo validate value limits + negative values
             dateManager.validateDateAfterStart(expenseDto.getDate());
             validateCategoryId(expenseDto.getCategoryId());
             validateTagIds(expenseDto);
