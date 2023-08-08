@@ -22,6 +22,7 @@ import yehor.budget.web.dto.TotalIncomeDto;
 import yehor.budget.web.dto.full.IncomeSourceFullDto;
 import yehor.budget.web.dto.limited.IncomeSourceLimitedDto;
 
+import static java.util.Objects.isNull;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -45,6 +46,9 @@ public class IncomeSourceController {
     @Operation(summary = "Save income source")
     public ResponseEntity<IncomeSourceLimitedDto> saveIncomeSource(@RequestBody IncomeSourceLimitedDto incomeSourceDto) {
         try {
+            if (isNull(incomeSourceDto.getAccrualDayOfMonth())) {
+                incomeSourceDto.setAccrualDayOfMonth(1);
+            }
             dateManager.validateDayOfMonth(incomeSourceDto.getAccrualDayOfMonth());
             incomeSourceService.save(incomeSourceDto);
         } catch (ObjectAlreadyExistsException | IllegalArgumentException exception) {

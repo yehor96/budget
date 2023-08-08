@@ -8,15 +8,15 @@ const BottomSection = (props) => {
     <div className="botton-section-container">
       <div className="additional-info-container">
         <div className="row">
-          <span>Total:</span>
+          <span>Total</span>
           <span>{totalExpense}</span>
         </div>
         <div className="row">
-          <span>Total Regular:</span>
+          <span>Total Regular</span>
           <span>{totalRegular}</span>
         </div>
         <div className="row">
-          <span>Total Non-regular:</span>
+          <span>Total Non-regular</span>
           <span>{totalNonRegular}</span>
         </div>
       </div>
