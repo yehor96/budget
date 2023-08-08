@@ -9,23 +9,17 @@
   margin-bottom: 5px;
 }
 
-.income-table {
-  border: 1px solid #ddd;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-}
-
 .income-item,
 .income-total {
+  width: 100%;
   display: flex;
   justify-content: space-between;
 }
 
 .income-item span,
 .income-total span {
-  margin-right: 10px;
-  margin-left: 10px;
+  flex: 1;
+  text-align: center;
 }
 
 .income-item span:first-child,
@@ -36,6 +30,32 @@
 .income-total {
   border: 1px solid #ddd;
   background-color: #e6e6fa;
+  display: flex;
+  justify-content: space-between;
+}
+
+.income-table {
+  border: 1px solid #ddd;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+}
+
+.title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e6e6fa;
+  padding: 10px 20px;
+  width: 30%;
+  border: 1px solid #ddd;
+}
+
+.income-title {
+  flex: 1;
+  text-align: left;
+  font-weight: bold;
 }
 
 .plus {

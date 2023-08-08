@@ -60,8 +60,8 @@ public class ExpenseController {
     @Operation(summary = "Save expense")
     public ResponseEntity<ExpenseFullDto> saveExpense(@RequestBody ExpenseLimitedDto expenseDto) {
         try {
-            // todo validate value limits + negative values
             dateManager.validateDateAfterStart(expenseDto.getDate());
+            validateValue(expenseDto.getValue());
             validateCategoryId(expenseDto.getCategoryId());
             validateTagIds(expenseDto);
             validateNote(expenseDto.getNote());
@@ -80,6 +80,7 @@ public class ExpenseController {
     public ResponseEntity<ExpenseFullDto> updateExpense(@RequestBody ExpenseFullDto expenseDto) {
         try {
             dateManager.validateDateAfterStart(expenseDto.getDate());
+            validateValue(expenseDto.getValue());
             validateCategory(expenseDto.getCategory());
             validateTagIds(expenseDto);
             validateNote(expenseDto.getNote());
@@ -203,6 +204,13 @@ public class ExpenseController {
             return expenseService.getExpensesByTagId(tagId);
         } catch (ObjectNotFoundException exception) {
             throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
+        }
+    }
+
+    // todo add tests
+    private void validateValue(BigDecimal value) {
+        if (value.compareTo(BigDecimal.ONE) < 0) {
+            throw new IllegalArgumentException("Value cannot be negative or zero!");
         }
     }
 

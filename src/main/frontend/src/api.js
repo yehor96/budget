@@ -100,3 +100,13 @@ export const getIncomeSources = async () => {
     throw error;
   }
 };
+
+export const addIncomeSource = async (income) => {
+  try {
+    const response = await axios.post(INCOME_SOURCES, income);
+    return response;
+  } catch (error) {
+    console.error(GENERAL_API_ERROR_POST + ": ", error);
+    return error.response.data;
+  }
+};
