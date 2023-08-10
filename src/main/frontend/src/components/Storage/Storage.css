@@ -1,41 +1,41 @@
-.income-sources-container {
+.storage-container {
   display: flex;
   align-items: center;
   flex-direction: column;
   padding: 20px;
 }
 
-.income-table span {
+.storage-table span {
   display: block;
   margin-bottom: 5px;
 }
 
-.income-item,
-.income-total {
+.storage-item,
+.storage-total {
   width: 100%;
   display: flex;
   justify-content: space-between;
 }
 
-.income-item span,
-.income-total span {
+.storage-item span,
+.storage-total span {
   flex: 1;
   text-align: center;
 }
 
-.income-item span:first-child,
-.income-total span:first-child {
+.storage-item span:first-child,
+.storage-total span:first-child {
   font-weight: bold;
 }
 
-.income-total {
+.storage-total {
   border: 1px solid #ddd;
   background-color: #e6e6fa;
   display: flex;
   justify-content: space-between;
 }
 
-.income-table {
+.storage-table {
   border: 1px solid #ddd;
   padding: 10px 20px;
   display: flex;
@@ -53,7 +53,7 @@
   border: 1px solid #ddd;
 }
 
-.income-title {
+.storage-title {
   flex: 1;
   text-align: left;
   font-weight: bold;
@@ -62,4 +62,11 @@
 
 .plus {
   font-size: larger;
+}
+
+.storage-date {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
 }
