@@ -121,3 +121,13 @@ export const getLatestStorageRecord = async () => {
     throw error;
   }
 };
+
+export const addStroageRecord = async (storage) => {
+  try {
+    const response = await axios.post(STORAGE, storage);
+    return response;
+  } catch (error) {
+    console.error(GENERAL_API_ERROR_POST + ": ", error);
+    return error.response.data;
+  }
+};

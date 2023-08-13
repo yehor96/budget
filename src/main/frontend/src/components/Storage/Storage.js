@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { getLatestStorageRecord } from "../../api";
 import "./Storage.css";
 import { formatDate } from "../../utils.js";
+import AddStorageRecordModal from "../../modals/AddStorageRecordModal/AddStorageRecordModal";
 
 const Storage = () => {
+  const [showAddStorageRecord, setShowAddStorageRecord] = useState(false);
   const [storageRecord, setStorageRecord] = useState({
     storageItems: [],
     date: "",
@@ -23,8 +25,22 @@ const Storage = () => {
       <div className="title-container">
         <div className="storage-title">Storage</div>
         <div>
-          <button className="btn plus">+</button>
+          <button
+            className="btn plus"
+            onClick={() => {
+              setShowAddStorageRecord(true);
+            }}
+          >
+            +
+          </button>
         </div>
+        <AddStorageRecordModal
+          show={showAddStorageRecord}
+          onClose={() => {
+            setShowAddStorageRecord(false);
+            window.location.reload();
+          }}
+        />
       </div>
       <div className="storage-table">
         {storageRecord.storageItems.map((item) => (
@@ -40,7 +56,7 @@ const Storage = () => {
           <span>USD</span>
         </div>
         <div className="storage-date">
-          <span>{formatDate(storageRecord.date)}</span>
+          <span>Record for {formatDate(storageRecord.date)}</span>
         </div>
       </div>
     </div>
