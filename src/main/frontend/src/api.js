@@ -5,6 +5,7 @@ const STATISTICS = API_PATH + "/statistics";
 const EXPENSES = API_PATH + "/expenses";
 const CATEGORIES = API_PATH + "/categories";
 const INCOME_SOURCES = API_PATH + "/income-sources";
+const STORAGE = API_PATH + "/storage";
 
 export const GENERAL_API_ERROR_POST = "Error posting data to server";
 export const GENERAL_API_ERROR_GET = "Error fetching data from server";
@@ -104,6 +105,26 @@ export const getIncomeSources = async () => {
 export const addIncomeSource = async (income) => {
   try {
     const response = await axios.post(INCOME_SOURCES, income);
+    return response;
+  } catch (error) {
+    console.error(GENERAL_API_ERROR_POST + ": ", error);
+    return error.response.data;
+  }
+};
+
+export const getLatestStorageRecord = async () => {
+  try {
+    const response = await axios.get(STORAGE);
+    return response.data;
+  } catch (error) {
+    console.error(GENERAL_API_ERROR_GET + ": ", error);
+    throw error;
+  }
+};
+
+export const addStroageRecord = async (storage) => {
+  try {
+    const response = await axios.post(STORAGE, storage);
     return response;
   } catch (error) {
     console.error(GENERAL_API_ERROR_POST + ": ", error);

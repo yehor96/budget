@@ -12,6 +12,7 @@ import BottomSection from "../../components/BottomSection/BottomSection";
 import ExpenseCell from "../../components/ExpenseCell/ExpenseCell";
 import DetailedCellModal from "../../modals/DetailedCellModal/DetailedCellModal";
 import IncomeSources from "../../components/IncomeSources/IncomeSources";
+import Storage from "../../components/Storage/Storage";
 
 const PAGE_NAME = "Expenses";
 const MONTH_NAMES = [
@@ -196,6 +197,7 @@ function Expenses() {
       <div className="planning-container">
         <PageTitle pageName={"Planning"} />
         <IncomeSources />
+        <Storage />
       </div>
     </div>
   );

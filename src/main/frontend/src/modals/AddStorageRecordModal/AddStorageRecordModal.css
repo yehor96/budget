@@ -1,0 +1,10 @@
+.btn-delete {
+  background-color: #e6e6fa;
+  border: 1px solid #000;
+  cursor: pointer;
+  margin-top: 25px;
+}
+
+.storage-item div{
+    margin-right: 10px;
+}
