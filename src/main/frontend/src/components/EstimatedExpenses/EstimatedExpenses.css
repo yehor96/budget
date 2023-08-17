@@ -1,0 +1,35 @@
+.estimated-expenses-container {
+  align-items: center;
+  flex-direction: column;
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.estimated-expense-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e6e6fa;
+  padding: 10px 20px;
+  border: 1px solid #ddd;
+  font-weight: bold;
+  font-size: 20px;
+  width: 50%;
+}
+
+table.estimated-expenses-table {
+  border-collapse: collapse;
+  width: 52.25%;
+}
+
+table.estimated-expenses-table th,
+table.estimated-expenses-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+table.estimated-expenses-table th {
+  background-color: #f2f2f2;
+}
