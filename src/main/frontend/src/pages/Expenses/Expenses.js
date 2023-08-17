@@ -13,6 +13,7 @@ import ExpenseCell from "../../components/ExpenseCell/ExpenseCell";
 import DetailedCellModal from "../../modals/DetailedCellModal/DetailedCellModal";
 import IncomeSources from "../../components/IncomeSources/IncomeSources";
 import Storage from "../../components/Storage/Storage";
+import EstimatedExpenses from "../../components/EstimatedExpenses/EstimatedExpenses";
 
 const PAGE_NAME = "Expenses";
 const MONTH_NAMES = [
@@ -146,7 +147,7 @@ function Expenses() {
           currentMonth={MONTH_NAMES[currentMonth]}
           currentYear={currentYear}
         />
-        <table>
+        <table className="expenses">
           <thead>
             <tr>
               <th>Total</th>
@@ -198,6 +199,7 @@ function Expenses() {
         <PageTitle pageName={"Planning"} />
         <IncomeSources />
         <Storage />
+        <EstimatedExpenses/>
       </div>
     </div>
   );
