@@ -5,11 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.common.util.PageableHelper;
 import yehor.budget.entity.recording.BalanceRecord;
-import yehor.budget.repository.ActorRepository;
 import yehor.budget.repository.recording.BalanceItemRepository;
 import yehor.budget.repository.recording.BalanceRecordRepository;
 import yehor.budget.repository.recording.IncomeSourceRecordRepository;
@@ -20,7 +18,6 @@ import yehor.budget.web.converter.IncomeSourceConverter;
 import yehor.budget.web.dto.full.BalanceEstimateDto;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
 import yehor.budget.web.dto.full.EstimatedExpenseFullDto;
-import yehor.budget.web.dto.limited.BalanceItemLimitedDto;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 
 import java.math.BigDecimal;
@@ -36,7 +33,6 @@ public class BalanceRecordingService {
     private final BalanceItemRepository balanceItemRepository;
     private final BalanceRecordRepository balanceRecordRepository;
     private final BalanceConverter balanceConverter;
-    private final ActorRepository actorRepository;
     private final IncomeSourceService incomeSourceService;
     private final EstimatedExpenseService estimatedExpenseService;
     private final PageableHelper pageableHelper;
@@ -47,13 +43,12 @@ public class BalanceRecordingService {
     @Transactional(readOnly = true)
     public Optional<BalanceRecordFullDto> getLatest() {
         Optional<BalanceRecord> latestOpt = pageableHelper.getLatestByDate(balanceRecordRepository);
-        return latestOpt.isEmpty() ? Optional.empty() : Optional.of(calculateFullBalanceRecord(latestOpt.get()));
+        return latestOpt.map(this::calculateFullBalanceRecord);
     }
 
     @Transactional
     public void save(BalanceRecordLimitedDto balanceRecordDto) {
         validateRecordWithDateNotExists(balanceRecordDto.getDate());
-        validateActorsExist(balanceRecordDto);
         BalanceRecord balanceRecord = balanceConverter.convert(balanceRecordDto);
 
         saveEstimatedExpenses(balanceRecord);
@@ -117,15 +112,5 @@ public class BalanceRecordingService {
                 .map(item -> item.getCard().add(item.getCash()))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         balanceRecordDto.setTotalBalance(total);
-    }
-
-    private void validateActorsExist(BalanceRecordLimitedDto balanceRecordDto) {
-        List<Long> notExistingIds = balanceRecordDto.getBalanceItems().stream()
-                .map(BalanceItemLimitedDto::getActorId)
-                .filter(id -> !actorRepository.existsById(id))
-                .toList();
-        if (!CollectionUtils.isEmpty(notExistingIds)) {
-            throw new IllegalArgumentException("Provided actor ids do not exist: " + notExistingIds);
-        }
     }
 }

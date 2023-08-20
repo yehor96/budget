@@ -5,7 +5,8 @@ import { formatDate } from "../../utils.js";
 import AddStorageRecordModal from "../../modals/AddStorageRecordModal/AddStorageRecordModal";
 
 const Storage = () => {
-  const [showAddStorageRecord, setShowAddStorageRecord] = useState(false);
+  const [showAddStorageRecordModal, setShowAddStorageRecordModal] =
+    useState(false);
   const [storageRecord, setStorageRecord] = useState({
     storageItems: [],
     date: "",
@@ -28,16 +29,16 @@ const Storage = () => {
           <button
             className="btn plus"
             onClick={() => {
-              setShowAddStorageRecord(true);
+              setShowAddStorageRecordModal(true);
             }}
           >
             +
           </button>
         </div>
         <AddStorageRecordModal
-          show={showAddStorageRecord}
+          show={showAddStorageRecordModal}
           onClose={() => {
-            setShowAddStorageRecord(false);
+            setShowAddStorageRecordModal(false);
             window.location.reload();
           }}
         />

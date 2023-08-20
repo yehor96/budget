@@ -121,23 +121,6 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
         verify(balanceRecordingService, never()).save(balanceRecordDto);
     }
 
-    @Test
-    void testSaveThrowsExceptionWhenInvalidActorIds() throws Exception {
-        String expectedErrorMessage = "Provided actor ids are not valid: [-1, -1]";
-        BalanceRecordLimitedDto balanceRecordDto = defaultBalanceRecordLimitedDto();
-        balanceRecordDto.getBalanceItems().forEach(balanceItem -> balanceItem.setActorId(-1L));
-
-        String response = mockMvc.perform(post(BALANCE_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(balanceRecordDto)))
-                .andExpect(status().isBadRequest())
-                .andReturn().getResponse().getContentAsString();
-
-        verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
-
-        verify(balanceRecordingService, never()).save(balanceRecordDto);
-    }
-
     // Get balance records in interval
 
     @Test

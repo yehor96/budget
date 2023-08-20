@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { addStroageRecord, GENERAL_API_ERROR_POST } from "../../api";
+import { addBalanceRecord, GENERAL_API_ERROR_POST } from "../../api";
 import { formatDate } from "../../utils.js";
-import "./AddStorageRecordModal.css";
+import "./AddBalanceRecordModal.css";
 
-const AddStorageRecordModal = (props) => {
+const AddBalanceRecordModal = (props) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [storageItems, setStorageItems] = useState([
-    { name: "", value: "", currency: "" },
+  const [balanceItems, setBalanceItems] = useState([
+    { itemName: "", card: "", cash: "" },
   ]);
 
   const displayResponse = (response) => {
@@ -16,7 +16,7 @@ const AddStorageRecordModal = (props) => {
       let errMsg = response.message ? response.message : GENERAL_API_ERROR_POST;
       setErrorMessage(errMsg);
     } else {
-      setSuccessMessage("Storage record added successfully!");
+      setSuccessMessage("Balance record added successfully!");
       setTimeout(() => {
         setSuccessMessage("");
         props.onClose();
@@ -27,29 +27,29 @@ const AddStorageRecordModal = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (e.nativeEvent.submitter.name === "submit") {
-      if (!areStorageItemsValid()) {
+      if (!areBalanceItemsValid()) {
         return;
       }
-      const storageRecord = {
-        storageItems: storageItems,
+      const balanceRecord = {
+        balanceItems: balanceItems,
         date: new Date(),
       };
-      const response = await addStroageRecord(storageRecord);
+      const response = await addBalanceRecord(balanceRecord);
       displayResponse(response);
     }
   };
 
-  function areStorageItemsValid() {
-    for (const item of storageItems) {
-      if (!item.name || !item.value || !item.currency) {
+  function areBalanceItemsValid() {
+    for (const item of balanceItems) {
+      if (!item.itemName || !item.card || !item.cash) {
         setErrorMessage("Some fields are empty!");
         setTimeout(() => {
           setErrorMessage("");
         }, 4000);
         return false;
       }
-      if (isNaN(item.value)) {
-        setErrorMessage("Value field should be a number!");
+      if (isNaN(item.card) || isNaN(item.card)) {
+        setErrorMessage("Card and cash fields should be numbers!");
         setTimeout(() => {
           setErrorMessage("");
         }, 4000);
@@ -60,26 +60,26 @@ const AddStorageRecordModal = (props) => {
   }
 
   const handleFormChange = (event, index) => {
-    let data = [...storageItems];
+    let data = [...balanceItems];
     data[index][event.target.name] = event.target.value;
-    setStorageItems(data);
+    setBalanceItems(data);
   };
 
-  const addStorageItem = () => {
-    let item = { name: "", value: "", currency: "" };
-    setStorageItems([...storageItems, item]);
+  const addBalanceItem = () => {
+    let item = { itemName: "", card: "", cash: "" };
+    setBalanceItems([...balanceItems, item]);
   };
 
   const removeStorageItem = (removeIndex) => {
-    if (storageItems.length === 1) {
-      setErrorMessage("Storage record should have at least one entry!");
+    if (balanceItems.length === 1) {
+      setErrorMessage("Balance record should have at least one entry!");
       setTimeout(() => {
         setErrorMessage("");
       }, 4000);
       return;
     }
-    const data = storageItems.filter((_, index) => index !== removeIndex);
-    setStorageItems(data);
+    const data = balanceItems.filter((_, index) => index !== removeIndex);
+    setBalanceItems(data);
   };
 
   if (!props.show) return null;
@@ -88,47 +88,43 @@ const AddStorageRecordModal = (props) => {
     <div className="modal">
       <div className="modal-content">
         <div className="modal-header">
-          <h4 className="modal-title">Add Storage Record</h4>
+          <h4 className="modal-title">Add Balance Record</h4>
         </div>
         <div className="modal-body">
           <form onSubmit={handleSubmit}>
             <div className="input-container">
-              {storageItems.map((form, index) => {
+              {balanceItems.map((form, index) => {
                 return (
-                  <div className="storage-item" key={index}>
+                  <div className="balance-item" key={index}>
                     <div>
                       <label htmlFor="name">Name:</label>
                       <input
                         type="string"
-                        id="name"
-                        name="name"
-                        value={form.name}
+                        id="itemName"
+                        name="itemName"
+                        value={form.itemName}
                         onChange={(event) => handleFormChange(event, index)}
                       />
                     </div>
                     <div>
-                      <label htmlFor="value">Value:</label>
+                      <label htmlFor="value">Card:</label>
                       <input
                         type="string"
-                        id="value"
-                        name="value"
-                        value={form.value}
+                        id="card"
+                        name="card"
+                        value={form.card}
                         onChange={(event) => handleFormChange(event, index)}
                       />
                     </div>
                     <div>
-                      <label htmlFor="currency">Currency:</label>
-                      <select
-                        id="currency"
-                        name="currency"
-                        value={form.currency}
+                      <label htmlFor="value">Cash:</label>
+                      <input
+                        type="string"
+                        id="cash"
+                        name="cash"
+                        value={form.cash}
                         onChange={(event) => handleFormChange(event, index)}
-                      >
-                        <option></option>
-                        <option value="USD">USD</option>
-                        <option value="EUR">EUR</option>
-                        <option value="UAH">UAH</option>
-                      </select>
+                      />
                     </div>
                     <button
                       className="btn-delete"
@@ -150,7 +146,7 @@ const AddStorageRecordModal = (props) => {
             <button className="btn" onClick={props.onClose}>
               Close
             </button>
-            <button className="btn plus" onClick={addStorageItem}>
+            <button className="btn plus" onClick={addBalanceItem}>
               +
             </button>
           </form>
@@ -164,4 +160,4 @@ const AddStorageRecordModal = (props) => {
   );
 };
 
-export default AddStorageRecordModal;
+export default AddBalanceRecordModal;

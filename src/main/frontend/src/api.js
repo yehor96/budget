@@ -6,6 +6,7 @@ const EXPENSES = API_PATH + "/expenses";
 const CATEGORIES = API_PATH + "/categories";
 const INCOME_SOURCES = API_PATH + "/income-sources";
 const STORAGE = API_PATH + "/storage";
+const BALANCE = API_PATH + "/balance";
 const ESTIMATED_EXPENSES = API_PATH + "/estimated-expenses";
 
 export const GENERAL_API_ERROR_POST = "Error posting data to server";
@@ -140,5 +141,25 @@ export const getEstimatedExpenses = async () => {
   } catch (error) {
     console.error(GENERAL_API_ERROR_GET + ": ", error);
     throw error;
+  }
+};
+
+export const getLatestBalanceRecord = async () => {
+  try {
+    const response = await axios.get(BALANCE);
+    return response.data;
+  } catch (error) {
+    console.error(GENERAL_API_ERROR_GET + ": ", error);
+    throw error;
+  }
+};
+
+export const addBalanceRecord = async (balance) => {
+  try {
+    const response = await axios.post(BALANCE, balance);
+    return response;
+  } catch (error) {
+    console.error(GENERAL_API_ERROR_POST + ": ", error);
+    return error.response.data;
   }
 };

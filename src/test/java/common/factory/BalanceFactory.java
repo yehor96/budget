@@ -15,12 +15,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static common.factory.ActorFactory.DEFAULT_ACTOR_ID;
-import static common.factory.ActorFactory.SECOND_ACTOR_ID;
-import static common.factory.ActorFactory.defaultActor;
-import static common.factory.ActorFactory.defaultActorFullDto;
-import static common.factory.ActorFactory.secondActor;
-import static common.factory.ActorFactory.secondActorFullDto;
 import static common.factory.EstimatedExpenseFactory.defaultEstimatedExpenseFullDto;
 import static common.factory.IncomeSourceFactory.defaultIncomeSourceRecords;
 
@@ -145,7 +139,7 @@ public class BalanceFactory {
 
     public static BalanceItemLimitedDto defaultBalanceItemLimitedDto() {
         return BalanceItemLimitedDto.builder()
-                .actorId(DEFAULT_ACTOR_ID)
+                .itemName("actor1")
                 .card(BigDecimal.TEN)
                 .cash(new BigDecimal("50.00"))
                 .build();
@@ -153,7 +147,7 @@ public class BalanceFactory {
 
     public static BalanceItemLimitedDto secondBalanceItemLimitedDto() {
         return BalanceItemLimitedDto.builder()
-                .actorId(SECOND_ACTOR_ID)
+                .itemName("actor2")
                 .card(new BigDecimal("20.00"))
                 .cash(new BigDecimal("30.00"))
                 .build();
@@ -162,7 +156,7 @@ public class BalanceFactory {
     public static BalanceItemFullDto defaultBalanceItemFullDto() {
         return BalanceItemFullDto.builder()
                 .id(DEFAULT_BALANCE_ITEM_ID)
-                .actor(defaultActorFullDto())
+                .itemName("actor1")
                 .card(BigDecimal.TEN)
                 .cash(new BigDecimal("50.00"))
                 .build();
@@ -171,7 +165,7 @@ public class BalanceFactory {
     public static BalanceItemFullDto secondBalanceItemFullDto() {
         return BalanceItemFullDto.builder()
                 .id(20L)
-                .actor(secondActorFullDto())
+                .itemName("actor2")
                 .card(new BigDecimal("20.00"))
                 .cash(new BigDecimal("30.00"))
                 .build();
@@ -180,7 +174,7 @@ public class BalanceFactory {
     public static BalanceItemFullDto thirdBalanceItemFullDto() {
         return BalanceItemFullDto.builder()
                 .id(3L)
-                .actor(defaultActorFullDto())
+                .itemName("actor1")
                 .card(new BigDecimal("50.00"))
                 .cash(new BigDecimal("30.00"))
                 .build();
@@ -189,7 +183,7 @@ public class BalanceFactory {
     public static BalanceItemFullDto fourthBalanceItemFullDto() {
         return BalanceItemFullDto.builder()
                 .id(4L)
-                .actor(secondActorFullDto())
+                .itemName("actor2")
                 .card(new BigDecimal("10.00"))
                 .cash(new BigDecimal("20.00"))
                 .build();
@@ -198,7 +192,7 @@ public class BalanceFactory {
     public static BalanceItem defaultBalanceItem() {
         return BalanceItem.builder()
                 .id(DEFAULT_BALANCE_ITEM_ID)
-                .actor(defaultActor())
+                .itemName("actor1")
                 .card(BigDecimal.TEN)
                 .cash(new BigDecimal("50.00"))
                 .build();
@@ -207,7 +201,7 @@ public class BalanceFactory {
     public static BalanceItem secondBalanceItem() {
         return BalanceItem.builder()
                 .id(20L)
-                .actor(secondActor())
+                .itemName("actor2")
                 .card(new BigDecimal("20.00"))
                 .cash(new BigDecimal("30.00"))
                 .build();
@@ -216,7 +210,7 @@ public class BalanceFactory {
     public static BalanceItem thirdBalanceItem() {
         return BalanceItem.builder()
                 .id(3L)
-                .actor(defaultActor())
+                .itemName("actor1")
                 .card(BigDecimal.TEN)
                 .cash(new BigDecimal("30.00"))
                 .build();
@@ -225,7 +219,7 @@ public class BalanceFactory {
     public static BalanceItem fourthBalanceItem() {
         return BalanceItem.builder()
                 .id(4L)
-                .actor(secondActor())
+                .itemName("actor2")
                 .card(new BigDecimal("10.00"))
                 .cash(new BigDecimal("20.00"))
                 .build();

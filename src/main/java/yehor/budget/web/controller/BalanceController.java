@@ -6,24 +6,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.service.recording.BalanceRecordingService;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
-import yehor.budget.web.dto.limited.BalanceItemLimitedDto;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -50,8 +42,6 @@ public class BalanceController {
         try {
             dateManager.validateDateAfterStart(balanceRecordDto.getDate());
             validateBalanceItems(balanceRecordDto);
-            validateActors(balanceRecordDto);
-
             balanceRecordingService.save(balanceRecordDto);
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
@@ -91,16 +81,6 @@ public class BalanceController {
     private void validateBalanceItems(BalanceRecordLimitedDto balanceRecordDto) {
         if (CollectionUtils.isEmpty(balanceRecordDto.getBalanceItems())) {
             throw new IllegalArgumentException("Balance items are not provided");
-        }
-    }
-
-    private void validateActors(BalanceRecordLimitedDto balanceRecordDto) {
-        List<Long> notValidIds = balanceRecordDto.getBalanceItems().stream()
-                .map(BalanceItemLimitedDto::getActorId)
-                .filter(id -> Objects.isNull(id) || id < 1)
-                .toList();
-        if (!CollectionUtils.isEmpty(notValidIds)) {
-            throw new IllegalArgumentException("Provided actor ids are not valid: " + notValidIds);
         }
     }
 }

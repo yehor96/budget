@@ -5,11 +5,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.util.CollectionUtils;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.common.util.PageableHelper;
-import yehor.budget.entity.Actor;
 import yehor.budget.entity.recording.BalanceItem;
 import yehor.budget.entity.recording.BalanceRecord;
 import yehor.budget.entity.recording.IncomeSourceRecord;
-import yehor.budget.repository.ActorRepository;
 import yehor.budget.repository.recording.BalanceItemRepository;
 import yehor.budget.repository.recording.BalanceRecordRepository;
 import yehor.budget.repository.recording.IncomeSourceRecordRepository;
@@ -26,38 +24,18 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static common.factory.BalanceFactory.DEFAULT_BALANCE_RECORD_TOTAL;
-import static common.factory.BalanceFactory.balanceRecordWithNotSetExpensesAndIncome;
-import static common.factory.BalanceFactory.balanceRecordWithSetIncomes;
-import static common.factory.BalanceFactory.defaultBalanceEstimationDto;
-import static common.factory.BalanceFactory.defaultBalanceRecord;
-import static common.factory.BalanceFactory.defaultBalanceRecordFullDto;
-import static common.factory.BalanceFactory.defaultBalanceRecordLimitedDto;
-import static common.factory.BalanceFactory.secondBalanceRecord;
-import static common.factory.BalanceFactory.secondBalanceRecordFullDto;
+import static common.factory.BalanceFactory.*;
 import static common.factory.EstimatedExpenseFactory.defaultEstimatedExpenseFullDto;
-import static common.factory.IncomeSourceFactory.defaultIncomeSourceRecord;
-import static common.factory.IncomeSourceFactory.defaultTotalIncomeDto;
-import static common.factory.IncomeSourceFactory.secondIncomeSourceRecord;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static common.factory.IncomeSourceFactory.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class BalanceRecordingServiceTest {
 
     private final BalanceItemRepository balanceItemRepository = mock(BalanceItemRepository.class);
     private final BalanceRecordRepository balanceRecordRepository = mock(BalanceRecordRepository.class);
     private final BalanceConverter balanceConverter = mock(BalanceConverter.class);
-    private final ActorRepository actorRepository = mock(ActorRepository.class);
     private final IncomeSourceService incomeSourceService = mock(IncomeSourceService.class);
     private final EstimatedExpenseService estimatedExpenseService = mock(EstimatedExpenseService.class);
     private final PageableHelper pageableHelper = mock(PageableHelper.class);
@@ -69,7 +47,6 @@ class BalanceRecordingServiceTest {
             balanceItemRepository,
             balanceRecordRepository,
             balanceConverter,
-            actorRepository,
             incomeSourceService,
             estimatedExpenseService,
             pageableHelper,
@@ -159,7 +136,6 @@ class BalanceRecordingServiceTest {
         balanceRecord.setDate(LocalDate.of(2022, 10, 10));
 
         when(balanceRecordRepository.existsByDate(any())).thenReturn(false);
-        when(actorRepository.existsById(any())).thenReturn(true);
         when(balanceConverter.convert(any(BalanceRecordLimitedDto.class))).thenReturn(balanceRecord);
         when(estimatedExpenseService.getOne()).thenReturn(defaultEstimatedExpenseFullDto());
         when(incomeSourceService.getTotalIncome()).thenReturn(defaultTotalIncomeDto());
@@ -176,26 +152,6 @@ class BalanceRecordingServiceTest {
         verify(balanceRecordRepository, times(1)).save(balanceRecord);
         verify(balanceItemRepository, times(2)).save(any(BalanceItem.class));
         verify(incomeSourceRecordRepository, times(2)).save(any(IncomeSourceRecord.class));
-    }
-
-    @Test
-    void testTrySavingWithNotExistingActors() {
-        BalanceRecordLimitedDto recordLimitedDto = defaultBalanceRecordLimitedDto();
-        BalanceRecord balanceRecord = defaultBalanceRecord();
-        List<Long> invalidIds = balanceRecord.getBalanceItems().stream().map(BalanceItem::getActor).map(Actor::getId).toList();
-
-        when(actorRepository.existsById(any())).thenReturn(false);
-        when(balanceRecordRepository.existsByDate(any())).thenReturn(false);
-
-        try {
-            balanceRecordingService.save(recordLimitedDto);
-            fail("Exception was not thrown");
-        } catch (Exception exception) {
-            assertEquals(IllegalArgumentException.class, exception.getClass());
-            assertEquals("Provided actor ids do not exist: " + invalidIds, exception.getMessage());
-        }
-        verify(balanceRecordRepository, never()).save(balanceRecord);
-        verify(balanceItemRepository, never()).save(any(BalanceItem.class));
     }
 
     @Test
