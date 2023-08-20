@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Data
 @Builder
 public class BalanceItemLimitedDto {
-    private Long actorId;
+    private String itemName;
     private BigDecimal cash;
     private BigDecimal card;
 }

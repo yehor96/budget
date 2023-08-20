@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import yehor.budget.entity.Actor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,9 +31,8 @@ public class BalanceItem {
     @Column(name = "balance_item_id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "actor_id", nullable = false)
-    private Actor actor;
+    @Column(name = "item_name")
+    private String itemName;
 
     @ManyToOne
     @JoinColumn(name = "balance_record_id", nullable = false)

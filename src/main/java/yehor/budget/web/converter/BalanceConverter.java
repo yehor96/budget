@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import yehor.budget.entity.recording.BalanceItem;
 import yehor.budget.entity.recording.BalanceRecord;
-import yehor.budget.repository.ActorRepository;
 import yehor.budget.web.dto.full.BalanceItemFullDto;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
 import yehor.budget.web.dto.limited.BalanceItemLimitedDto;
@@ -15,9 +14,6 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class BalanceConverter {
-
-    private final ActorRepository actorRepository;
-    private final ActorConverter actorConverter;
 
     public BalanceRecord convert(BalanceRecordLimitedDto dto) {
         BalanceRecord balanceRecord = BalanceRecord.builder()
@@ -36,10 +32,10 @@ public class BalanceConverter {
 
     public BalanceItem convert(BalanceItemLimitedDto dto, BalanceRecord balanceRecord) {
         return BalanceItem.builder()
-                .actor(actorRepository.getById(dto.getActorId()))
                 .balanceRecord(balanceRecord)
                 .card(dto.getCard())
                 .cash(dto.getCash())
+                .itemName(dto.getItemName())
                 .build();
     }
 
@@ -60,9 +56,9 @@ public class BalanceConverter {
     public BalanceItemFullDto convert(BalanceItem item) {
         return BalanceItemFullDto.builder()
                 .id(item.getId())
-                .actor(actorConverter.convert(item.getActor()))
                 .card(item.getCard())
                 .cash(item.getCash())
+                .itemName(item.getItemName())
                 .build();
     }
 }

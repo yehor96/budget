@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Data
 public class BalanceItemFullDto {
     private Long id;
-    private ActorFullDto actor;
+    private String itemName;
     private BigDecimal cash;
     private BigDecimal card;
 }
