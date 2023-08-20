@@ -13,6 +13,7 @@ import ExpenseCell from "../../components/ExpenseCell/ExpenseCell";
 import DetailedCellModal from "../../modals/DetailedCellModal/DetailedCellModal";
 import IncomeSources from "../../components/IncomeSources/IncomeSources";
 import Storage from "../../components/Storage/Storage";
+import Balance from "../../components/Balance/Balance";
 import EstimatedExpenses from "../../components/EstimatedExpenses/EstimatedExpenses";
 
 const PAGE_NAME = "Expenses";
@@ -199,7 +200,8 @@ function Expenses() {
         <PageTitle pageName={"Planning"} />
         <IncomeSources />
         <Storage />
-        <EstimatedExpenses/>
+        <Balance />
+        <EstimatedExpenses />
       </div>
     </div>
   );
