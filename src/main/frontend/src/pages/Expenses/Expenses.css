@@ -35,7 +35,7 @@ table.expenses td {
   position: relative;
 }
 
-table.expenses td:hover {
+table.expenses td.cell:hover {
   background-color: hsl(169, 68%, 80%);
 }
 

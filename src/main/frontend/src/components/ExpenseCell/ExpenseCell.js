@@ -27,7 +27,10 @@ const ExpenseCell = (props) => {
     )
     .map((expense) => expense.value);
   let cellValue = expenseValues.reduce((val, newVal) => val + newVal, 0);
-  let classNames = expenseValues.length > 1 ? "multiple" : null;
+  let classNames = "cell";
+  if (expenseValues.length > 1) {
+    classNames += " multiple";
+  }
   return (
     <td key={column} className={classNames} onClick={() => handleCellClick()}>
       {cellValue === 0 ? null : cellValue}
