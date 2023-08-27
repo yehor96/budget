@@ -11,6 +11,7 @@ const Balance = () => {
     balanceItems: [],
     date: "",
     totalBalance: 0,
+    balanceEstimates: [],
   });
 
   useEffect(() => {
@@ -56,9 +57,38 @@ const Balance = () => {
           <span>{balanceRecord.totalBalance}</span>
           <span>UAH</span>
         </div>
-        <div className="balance-date">
+        <div className="date">
           <span>Record for {formatDate(balanceRecord.date)}</span>
         </div>
+      </div>
+      <div className="balance-estimates">
+        <div className="balance-estimates-title">Balance Estimates</div>
+        {balanceRecord.balanceEstimates.map((estimate) => {
+          return (
+            <div className="estimate">
+              <div className="estimate-row">
+                <span>Previous total</span>
+                <span>{estimate.previousTotal}</span>
+              </div>
+              <div className="estimate-row">
+                <span>Expenses by date</span>
+                <span>{estimate.expenseByEndOfMonth}</span>
+              </div>
+              <div className="estimate-row">
+                <span>Incomes by date</span>
+                <span>{estimate.incomeByEndOfMonth}</span>
+              </div>
+              <div className="estimate-row">
+                <span>Profit by date</span>
+                <span>{estimate.profitByEndOfMonth}</span>
+              </div>
+              <div className="date">
+                <span>Estimate for {formatDate(estimate.endOfMonthDate)}</span>
+              </div>
+              <hr></hr>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

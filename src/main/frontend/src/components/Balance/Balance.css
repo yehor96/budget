@@ -10,15 +10,21 @@
   margin-bottom: 5px;
 }
 
+.estimate {
+  margin-top: 10px;
+}
+
 .balance-item,
-.balance-total {
+.balance-total,
+.estimate-row {
   width: 100%;
   display: flex;
   justify-content: space-between;
 }
 
 .balance-item span,
-.balance-total span {
+.balance-total span,
+.estimate-row span {
   flex: 1;
   text-align: center;
 }
@@ -35,7 +41,17 @@
   justify-content: space-between;
 }
 
-.balance-table {
+.balance-estimates-title {
+  border: 1px solid #ddd;
+  background-color: #e6e6fa;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  padding: 5px;
+}
+
+.balance-table,
+.balance-estimates {
   border: 1px solid #ddd;
   padding: 10px 20px;
   display: flex;
@@ -64,7 +80,7 @@
   font-size: larger;
 }
 
-.balance-date {
+.date {
   display: flex;
   justify-content: center;
   align-items: center;
