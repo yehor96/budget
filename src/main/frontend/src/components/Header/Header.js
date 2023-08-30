@@ -2,7 +2,7 @@ import React from "react";
 import "./Header.css";
 
 const Header = (props) => {
-  const Button = ({ children, disabled }) => (
+  const Button = ({ children }) => (
     <button
       className={`btn ${props.selected === children ? "current-selected" : ""}`}
     >

@@ -48,6 +48,7 @@ const DetailedCellModal = (props) => {
                   <span>Expense #{expense.id}</span>
                   <div>value: {expense.value}</div>
                   <div>regular: {expense.isRegular.toString()}</div>
+                  {expense.note && <div>note: {expense.note}</div>}
                 </div>
                 <button
                   className="btn-delete"
