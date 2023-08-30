@@ -11,10 +11,6 @@ import NavigationBar from "../../components/NavigationBar/NavigationBar";
 import BottomSection from "../../components/BottomSection/BottomSection";
 import ExpenseCell from "../../components/ExpenseCell/ExpenseCell";
 import DetailedCellModal from "../../modals/DetailedCellModal/DetailedCellModal";
-import IncomeSources from "../../components/IncomeSources/IncomeSources";
-import Storage from "../../components/Storage/Storage";
-import Balance from "../../components/Balance/Balance";
-import EstimatedExpenses from "../../components/EstimatedExpenses/EstimatedExpenses";
 
 const PAGE_NAME = "Expenses";
 const MONTH_NAMES = [
@@ -195,13 +191,6 @@ function Expenses() {
           detailedCellInfo={detailedCellInfo}
         />
         <BottomSection categories={categories} statistics={statistics} />
-      </div>
-      <div className="planning-container">
-        <PageTitle pageName={"Planning"} />
-        <IncomeSources />
-        <Storage />
-        <Balance />
-        <EstimatedExpenses />
       </div>
     </div>
   );

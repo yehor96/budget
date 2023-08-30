@@ -4,9 +4,7 @@ import "./Header.css";
 const Header = (props) => {
   const Button = ({ children, disabled }) => (
     <button
-      className={`btn ${
-        props.selected === children ? "current-selected" : ""
-      } ${disabled ? "disabled" : ""}`}
+      className={`btn ${props.selected === children ? "current-selected" : ""}`}
     >
       {children}
     </button>
@@ -19,8 +17,12 @@ const Header = (props) => {
       </div>
       <div className="title">Budget App</div>
       <div className="btn-container-header">
-        <Button>Expenses</Button>
-        <Button disabled>Planning</Button>
+        <a href="/expenses">
+          <Button>Expenses</Button>
+        </a>
+        <a href="/planning">
+          <Button>Planning</Button>
+        </a>
         <a href="http://localhost:8080/swagger">
           <Button>API</Button>
         </a>
