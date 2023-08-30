@@ -30,6 +30,7 @@ const AddModal = (props) => {
       date: props.date,
       categoryId: props.category.id,
       isRegular: e.target.is_regular.checked,
+      note: e.target.note.value,
     };
     const response = await addExpense(newExpense);
     displayResponse(response, newExpense, e);
@@ -57,6 +58,10 @@ const AddModal = (props) => {
               <div>
                 <label htmlFor="category">Category:</label>
                 <span>{props.category.name}</span>
+              </div>
+              <div>
+                <label htmlFor="value">Note:</label>
+                <input type="string" id="note" name="note" />
               </div>
               <div>
                 <label htmlFor="is_regular">Is regular:</label>
