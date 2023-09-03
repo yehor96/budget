@@ -8,9 +8,7 @@ import yehor.budget.common.date.DateManager;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.service.ExpenseService;
 import yehor.budget.web.dto.ExpensesByTagDto;
-import yehor.budget.web.dto.full.CategoryFullDto;
 import yehor.budget.web.dto.full.ExpenseFullDto;
-import yehor.budget.web.dto.full.TagFullDto;
 import yehor.budget.web.dto.limited.ExpenseLimitedDto;
 
 import javax.persistence.EntityNotFoundException;
@@ -27,6 +25,7 @@ import static common.factory.ExpenseFactory.defaultExpenseFullDtoList;
 import static common.factory.ExpenseFactory.defaultExpenseLimitedDto;
 import static common.factory.TagFactory.DEFAULT_TAG_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -46,6 +45,8 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
     protected static final String EXPENSE_SUM_URL = EXPENSES_URL + "/sum";
     protected static final String EXPENSE_MONTHLY_URL = EXPENSES_URL + "/monthly";
     protected static final String EXPENSE_DAILY_URL = EXPENSES_URL + "/daily";
+
+    protected static final String EXPENSES_UPDATE_URL = BASE_URL.concat("/expenses/{id}");
     protected static final String EXPENSE_MONTHLY_SUM_BY_CATEGORY_URL = EXPENSE_MONTHLY_URL + "/category/{categoryId}";
     protected static final String EXPENSE_DAILY_BY_CATEGORY_URL = EXPENSE_DAILY_URL + "/category/{categoryId}";
 
@@ -193,83 +194,83 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
     @Test
     void testUpdateExpense() throws Exception {
         ExpenseFullDto expenseFullDto = defaultExpenseFullDto();
+        ExpenseLimitedDto expenseLimitedDto = defaultExpenseLimitedDto();
 
-        when(expenseService.update(expenseFullDto)).thenReturn(expenseFullDto);
+        when(expenseService.update(DEFAULT_EXPENSE_ID, expenseLimitedDto)).thenReturn(expenseFullDto);
 
-        String response = mockMvc.perform(put(EXPENSES_URL)
+        String response = mockMvc.perform(put(EXPENSES_UPDATE_URL, DEFAULT_EXPENSE_ID)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(expenseFullDto)))
+                        .content(objectMapper.writeValueAsString(expenseLimitedDto)))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
         ExpenseFullDto returnedExpense = objectMapper.readValue(response, ExpenseFullDto.class);
 
-        verify(expenseService, times(1)).update(expenseFullDto);
+        verify(expenseService, times(1)).update(DEFAULT_EXPENSE_ID, expenseLimitedDto);
         assertEquals(expenseFullDto, returnedExpense);
     }
 
     @Test
     void testTryUpdatingExpenseWithDateBeforeStart() throws Exception {
-        ExpenseFullDto expenseFullDto = defaultExpenseFullDto();
+        ExpenseLimitedDto expenseLimitedDto = defaultExpenseLimitedDto();
         String expectedErrorMessage = "expectedErrorMessage";
 
         doThrow(new IllegalArgumentException(expectedErrorMessage))
-                .when(dateManager).validateDateAfterStart(expenseFullDto.getDate());
+                .when(dateManager).validateDateAfterStart(expenseLimitedDto.getDate());
 
-        String response = mockMvc.perform(put(EXPENSES_URL)
+        String response = mockMvc.perform(put(EXPENSES_UPDATE_URL, DEFAULT_EXPENSE_ID)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(expenseFullDto)))
+                        .content(objectMapper.writeValueAsString(expenseLimitedDto)))
                 .andExpect(status().isBadRequest())
                 .andReturn().getResponse().getContentAsString();
 
-        verify(expenseService, never()).update(expenseFullDto);
+        verify(expenseService, never()).update(any(), any());
         verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
     }
 
     @Test
     void testTryUpdatingExpenseWithIllegalCategoryId() throws Exception {
-        ExpenseFullDto expenseFullDto = defaultExpenseFullDto();
-        expenseFullDto.setCategory(CategoryFullDto.builder().id(-1L).name("name").build());
+        ExpenseLimitedDto expenseLimitedDto = defaultExpenseLimitedDto();
+        expenseLimitedDto.setCategoryId(-1L);
         String expectedErrorMessage = "Provided category id is not valid - -1. Please provide valid category id";
 
-        String response = mockMvc.perform(put(EXPENSES_URL)
+        String response = mockMvc.perform(put(EXPENSES_UPDATE_URL, DEFAULT_EXPENSE_ID)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(expenseFullDto)))
+                        .content(objectMapper.writeValueAsString(expenseLimitedDto)))
                 .andExpect(status().isBadRequest())
                 .andReturn().getResponse().getContentAsString();
 
-        verify(expenseService, never()).update(expenseFullDto);
+        verify(expenseService, never()).update(DEFAULT_EXPENSE_ID, expenseLimitedDto);
         verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
     }
 
     @Test
     void testTryUpdatingExpenseWithIllegalTagId() throws Exception {
-        ExpenseFullDto expenseFullDto = defaultExpenseFullDto();
-        TagFullDto faultyTag = TagFullDto.builder().id(-1L).name("name").build();
-        expenseFullDto.setTags(Collections.singleton(faultyTag));
-        String expectedErrorMessage = "Tag ids cannot be negative or 0: [" + faultyTag + "]";
+        ExpenseLimitedDto expenseLimitedDto = defaultExpenseLimitedDto();
+        expenseLimitedDto.setTagIds(Collections.singleton(-1L));
+        String expectedErrorMessage = "Tag cannot be negative or 0: [-1]";
 
-        String response = mockMvc.perform(put(EXPENSES_URL)
+        String response = mockMvc.perform(put(EXPENSES_UPDATE_URL, DEFAULT_EXPENSE_ID)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(expenseFullDto)))
+                        .content(objectMapper.writeValueAsString(expenseLimitedDto)))
                 .andExpect(status().isBadRequest())
                 .andReturn().getResponse().getContentAsString();
 
-        verify(expenseService, never()).update(expenseFullDto);
+        verify(expenseService, never()).update(DEFAULT_EXPENSE_ID, expenseLimitedDto);
         verifyResponseErrorObject(response, BAD_REQUEST, expectedErrorMessage);
     }
 
     @Test
     void testTryUpdatingExpenseWhenObjectNotFound() throws Exception {
-        ExpenseFullDto expenseFullDto = defaultExpenseFullDto();
+        ExpenseLimitedDto expenseLimitedDto = defaultExpenseLimitedDto();
         String expectedErrorMessage = "expectedErrorMessage";
 
         doThrow(new ObjectNotFoundException(expectedErrorMessage))
-                .when(expenseService).update(expenseFullDto);
+                .when(expenseService).update(DEFAULT_EXPENSE_ID, expenseLimitedDto);
 
-        String response = mockMvc.perform(put(EXPENSES_URL)
+        String response = mockMvc.perform(put(EXPENSES_UPDATE_URL, DEFAULT_EXPENSE_ID)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(expenseFullDto)))
+                        .content(objectMapper.writeValueAsString(expenseLimitedDto)))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
 
@@ -278,10 +279,10 @@ class ExpenseWebMvcTest extends BaseWebMvcTest {
 
     @Test
     void testTryUpdatingExpenseWhenNoteIsTooLong() throws Exception {
-        ExpenseFullDto expenseLimitedDto = defaultExpenseFullDto();
+        ExpenseLimitedDto expenseLimitedDto = defaultExpenseLimitedDto();
         expenseLimitedDto.setNote("charscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharscharsrscharscharscharscharsrscharscharscharscharsrscharscharscharschars");
 
-        String response = mockMvc.perform(put(EXPENSES_URL)
+        String response = mockMvc.perform(put(EXPENSES_UPDATE_URL, DEFAULT_EXPENSE_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(expenseLimitedDto)))
                 .andExpect(status().isBadRequest())

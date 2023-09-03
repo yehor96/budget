@@ -79,12 +79,13 @@ public class ExpenseService {
     }
 
     @Transactional
-    public ExpenseFullDto update(ExpenseFullDto expenseDto) {
-        validateExists(expenseDto.getId());
-        validateCategoryWithIdExists(expenseDto.getCategory().getId());
-        validateTagsExist(expenseDto.getTags());
+    public ExpenseFullDto update(Long id, ExpenseLimitedDto expenseDto) {
+        validateExists(id);
+        validateCategoryWithIdExists(expenseDto.getCategoryId());
+        validateTagsWithIdsExist(expenseDto.getTagIds());
 
         Expense expense = expenseConverter.convert(expenseDto);
+        expense.setId(id);
         Expense savedExpense = expenseRepository.save(expense);
         log.info("Updated: {}", savedExpense);
         dateManager.updateBudgetDatesIfNecessary(savedExpense.getDate());
@@ -131,14 +132,6 @@ public class ExpenseService {
         for (Long tagId : tagIds) {
             if (!tagRepository.existsById(tagId)) {
                 throw new ObjectNotFoundException(String.format("Tag with id %s does not exist", tagId));
-            }
-        }
-    }
-
-    private void validateTagsExist(Set<TagFullDto> tags) {
-        for (TagFullDto tag : tags) {
-            if (!tagRepository.existsById(tag.getId())) {
-                throw new ObjectNotFoundException(String.format("Tag with id %s does not exist", tag.getId()));
             }
         }
     }

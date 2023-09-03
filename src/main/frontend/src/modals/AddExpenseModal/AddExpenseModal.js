@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { addExpense, GENERAL_API_ERROR_POST } from "../../api";
-import "./AddModal.css";
+import "./AddExpenseModal.css";
 import { formatDate } from "../../utils.js";
 
-const AddModal = (props) => {
+const AddExpenseModal = (props) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -85,4 +85,4 @@ const AddModal = (props) => {
   );
 };
 
-export default AddModal;
+export default AddExpenseModal;

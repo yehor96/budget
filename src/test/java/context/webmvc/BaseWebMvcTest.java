@@ -31,7 +31,6 @@ abstract class BaseWebMvcTest {
     protected static final String TAGS_URL = BASE_URL.concat("/tags");
     protected static final String ESTIMATED_EXPENSES_URL = BASE_URL.concat("/estimated-expenses");
     protected static final String INCOME_SOURCES_URL = BASE_URL.concat("/income-sources");
-    protected static final String ACTORS_URL = BASE_URL.concat("/actors");
     protected static final String BALANCE_URL = BASE_URL.concat("/balance");
     protected static final String STORAGE_URL = BASE_URL.concat("/storage");
 
