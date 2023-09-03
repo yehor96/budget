@@ -70,6 +70,17 @@ export const addExpense = async (expense) => {
   }
 };
 
+export const editExpense = async (expense) => {
+  try {
+    let editExpense = EXPENSES + '/' + expense.id;
+    const response = await axios.put(editExpense, expense);
+    return response;
+  } catch (error) {
+    console.error(GENERAL_API_ERROR_POST + ": ", error);
+    return error.response.data;
+  }
+};
+
 export const deleteExpense = async (expenseId) => {
   try {
     const response = await axios.delete(EXPENSES, {

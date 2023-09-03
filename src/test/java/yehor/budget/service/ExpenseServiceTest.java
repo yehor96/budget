@@ -253,7 +253,7 @@ class ExpenseServiceTest {
     void testUpdate() {
         LocalDate now = LocalDate.now();
         Expense expense = defaultExpense();
-        ExpenseFullDto expenseDto = defaultExpenseFullDto();
+        ExpenseLimitedDto expenseDto = defaultExpenseLimitedDto();
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(expense);
         when(expenseRepositoryMock.existsById(DEFAULT_EXPENSE_ID)).thenReturn(true);
@@ -261,7 +261,7 @@ class ExpenseServiceTest {
         when(tagRepositoryMock.existsById(DEFAULT_TAG_ID)).thenReturn(true);
         when(expenseRepositoryMock.save(expense)).thenReturn(expense);
 
-        expenseService.update(expenseDto);
+        expenseService.update(DEFAULT_EXPENSE_ID, expenseDto);
 
         verify(expenseRepositoryMock, times(1))
                 .save(expense);
@@ -272,30 +272,12 @@ class ExpenseServiceTest {
     @Test
     void testTryUpdatingWithNotExistingId() {
         Long id = DEFAULT_EXPENSE_ID;
-        ExpenseFullDto expenseDto = defaultExpenseFullDto();
+        ExpenseLimitedDto expenseDto = defaultExpenseLimitedDto();
 
         when(expenseRepositoryMock.existsById(id)).thenReturn(false);
 
         try {
-            expenseService.update(expenseDto);
-            fail("Exception was not thrown");
-        } catch (Exception e) {
-            assertEquals(ObjectNotFoundException.class, e.getClass());
-            ObjectNotFoundException exception = (ObjectNotFoundException) e;
-            assertEquals("Expense with id " + id + " does not exist", exception.getMessage());
-            verify(expenseRepositoryMock, never())
-                    .save(any());
-        }
-    }
-
-    @Test
-    void testTryUpdatingWithNullId() {
-        Long id = null;
-        ExpenseFullDto expenseDto = defaultExpenseFullDto();
-        expenseDto.setId(id);
-
-        try {
-            expenseService.update(expenseDto);
+            expenseService.update(DEFAULT_EXPENSE_ID, expenseDto);
             fail("Exception was not thrown");
         } catch (Exception e) {
             assertEquals(ObjectNotFoundException.class, e.getClass());
@@ -309,13 +291,13 @@ class ExpenseServiceTest {
     @Test
     void testTryUpdatingWithAbsentCategoryId() {
         Long categoryId = DEFAULT_CATEGORY_ID;
-        ExpenseFullDto expenseDto = defaultExpenseFullDto();
+        ExpenseLimitedDto expenseDto = defaultExpenseLimitedDto();
 
         when(expenseRepositoryMock.existsById(DEFAULT_EXPENSE_ID)).thenReturn(true);
         when(categoryRepositoryMock.findById(categoryId)).thenReturn(Optional.empty());
 
         try {
-            expenseService.update(expenseDto);
+            expenseService.update(DEFAULT_EXPENSE_ID, expenseDto);
             fail("Exception was not thrown");
         } catch (Exception e) {
             assertEquals(ObjectNotFoundException.class, e.getClass());
@@ -327,7 +309,7 @@ class ExpenseServiceTest {
     @Test
     void testTryUpdatingWithAbsentTagId() {
         Long tagId = DEFAULT_TAG_ID;
-        ExpenseFullDto expenseDto = defaultExpenseFullDto();
+        ExpenseLimitedDto expenseDto = defaultExpenseLimitedDto();
 
         when(expenseConverterMock.convert(expenseDto)).thenReturn(defaultExpense());
         when(expenseRepositoryMock.existsById(DEFAULT_EXPENSE_ID)).thenReturn(true);
@@ -335,7 +317,7 @@ class ExpenseServiceTest {
         when(tagRepositoryMock.existsById(tagId)).thenReturn(false);
 
         try {
-            expenseService.update(expenseDto);
+            expenseService.update(DEFAULT_EXPENSE_ID, expenseDto);
             fail("Exception was not thrown");
         } catch (Exception e) {
             assertEquals(ObjectNotFoundException.class, e.getClass());

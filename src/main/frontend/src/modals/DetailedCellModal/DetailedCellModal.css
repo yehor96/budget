@@ -17,11 +17,15 @@
   background-color: hsl(0, 70%, 85%);
 }
 
-.btn-delete {
+.btn-exp {
   margin-right: 10px;
   background-color: #e6e6fa;
   border: 1px solid #000;
   cursor: pointer;
+}
+
+.btn-exp.edit {
+  margin-right: 30px;
 }
 
 .modal-btns-container {

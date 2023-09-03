@@ -1,14 +1,17 @@
 import React, { useState } from "react";
-import AddModal from "../../modals/AddModal/AddModal";
+import AddExpenseModal from "../AddExpenseModal/AddExpenseModal";
 import "./DetailedCellModal.css";
 import { formatDate } from "../../utils.js";
 import { deleteExpense } from "../../api";
+import EditExpenseModal from "../EditExpenseModal/EditExpenseModal";
 
 const DetailedCellModal = (props) => {
   const { category, date } = props.detailedCellInfo;
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
+  const [showEditExpenseModal, setShowEditExpenseModal] = useState(false);
+  const [expenseForEdit, setExpenseForEdit] = useState(null);
 
-  // If user opens empty DetailedCellModal -> go straight to AddModal
+  // If user opens empty DetailedCellModal -> go straight to AddExpenseModal
   const [passthroughToAddExpense, setPassthroughToAddExpense] = useState(false);
 
   const executeDeleteExpense = async (id) => {
@@ -23,7 +26,7 @@ const DetailedCellModal = (props) => {
     props.detailedCellInfo.expenses.length === 0 &&
     !passthroughToAddExpense
   ) {
-    setShowAddModal(true);
+    setShowAddExpenseModal(true);
     setPassthroughToAddExpense(true);
   }
   return (
@@ -50,20 +53,32 @@ const DetailedCellModal = (props) => {
                   <div>regular: {expense.isRegular.toString()}</div>
                   {expense.note && <div>note: {expense.note}</div>}
                 </div>
-                <button
-                  className="btn-delete"
-                  onClick={(event) =>
-                    executeDeleteExpense(expense.id, event.target)
-                  }
-                >
-                  Delete
-                </button>
+                <div className="expense-btns-container">
+                  <button
+                    className="btn-exp edit"
+                    onClick={() => {
+                      expense.category = category;
+                      setExpenseForEdit(expense);
+                      setShowEditExpenseModal(true);
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="btn-exp delete"
+                    onClick={(event) =>
+                      executeDeleteExpense(expense.id, event.target)
+                    }
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             );
           })}
         </div>
         <div className="modal-btns-container">
-          <button className="btn" onClick={() => setShowAddModal(true)}>
+          <button className="btn" onClick={() => setShowAddExpenseModal(true)}>
             Add
           </button>
           <button className="btn" onClick={props.onClose}>
@@ -71,8 +86,8 @@ const DetailedCellModal = (props) => {
           </button>
         </div>
       </div>
-      <AddModal
-        show={showAddModal}
+      <AddExpenseModal
+        show={showAddExpenseModal}
         category={category}
         date={date}
         addNewExpense={(newExpense) => {
@@ -83,10 +98,27 @@ const DetailedCellModal = (props) => {
           setPassthroughToAddExpense(false);
         }}
         onClose={() => {
-          setShowAddModal(false);
+          setShowAddExpenseModal(false);
           if (passthroughToAddExpense) {
             props.onClose();
           }
+        }}
+      />
+      <EditExpenseModal
+        show={showEditExpenseModal}
+        expense={expenseForEdit}
+        date={date}
+        editExpense={(editedExpense) => {
+          props.detailedCellInfo.expenses = props.detailedCellInfo.expenses.map(
+            (exisingExpense) =>
+              exisingExpense.id === editedExpense.id
+                ? editedExpense
+                : exisingExpense
+          );
+        }}
+        onClose={() => {
+          setShowEditExpenseModal(false);
+          setExpenseForEdit(null);
         }}
       />
     </div>

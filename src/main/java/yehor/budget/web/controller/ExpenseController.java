@@ -75,17 +75,18 @@ public class ExpenseController {
         }
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     @Operation(summary = "Update expense by id")
-    public ResponseEntity<ExpenseFullDto> updateExpense(@RequestBody ExpenseFullDto expenseDto) {
+    public ResponseEntity<ExpenseFullDto> updateExpense(@PathVariable Long id,
+                                                        @RequestBody ExpenseLimitedDto expenseDto) {
         try {
             dateManager.validateDateAfterStart(expenseDto.getDate());
             validateValue(expenseDto.getValue());
-            validateCategory(expenseDto.getCategory());
+            validateCategoryId(expenseDto.getCategoryId());
             validateTagIds(expenseDto);
             validateNote(expenseDto.getNote());
 
-            ExpenseFullDto updated = expenseService.update(expenseDto);
+            ExpenseFullDto updated = expenseService.update(id, expenseDto);
             return new ResponseEntity<>(updated, HttpStatus.OK);
         } catch (ObjectNotFoundException exception) {
             throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
