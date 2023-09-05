@@ -1,4 +1,4 @@
-CREATE TABLE categories (
+CREATE TABLE IF NOT EXISTS categories (
                        category_id BIGSERIAL NOT NULL,
                        name VARCHAR(50),
 
@@ -6,7 +6,7 @@ CREATE TABLE categories (
                        CONSTRAINT categories_name_uq UNIQUE (name)
                        );
 
-CREATE TABLE row_estimated_expenses (
+CREATE TABLE IF NOT EXISTS row_estimated_expenses (
                         row_estimated_expense_id BIGSERIAL NOT NULL,
                         category_id BIGINT NOT NULL,
                         days_1_to_7 NUMERIC(11,2) NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE row_estimated_expenses (
                         CONSTRAINT category_id_uq UNIQUE (category_id)
                         );
 
-CREATE TABLE tags (
+CREATE TABLE IF NOT EXISTS tags (
                        tag_id BIGSERIAL NOT NULL,
                        name VARCHAR(50),
 
@@ -27,7 +27,7 @@ CREATE TABLE tags (
                        CONSTRAINT tags_name_uq UNIQUE (name)
                        );
 
-CREATE TABLE future_expenses (
+CREATE TABLE IF NOT EXISTS future_expenses (
                         future_expense_id BIGSERIAL NOT NULL,
                         date DATE NOT NULL,
                         value NUMERIC(11,2) NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE future_expenses (
                         CONSTRAINT future_expenses_pk PRIMARY KEY (future_expense_id)
                         );
 
-CREATE TABLE expenses (
+CREATE TABLE IF NOT EXISTS expenses (
     				   expense_id BIGSERIAL NOT NULL,
     				   date DATE NOT NULL,
     				   value NUMERIC(11,2) NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE expenses (
     				   CONSTRAINT expenses_to_categories_fk FOREIGN KEY (category_id) REFERENCES categories (category_id)
     				   );
 
-CREATE TABLE expenses_to_tags (
+CREATE TABLE IF NOT EXISTS expenses_to_tags (
                        expense_id BIGINT NOT NULL,
                        tag_id BIGINT NOT NULL,
 
@@ -56,7 +56,7 @@ CREATE TABLE expenses_to_tags (
                        CONSTRAINT expenses_to_tags_to_tags_fk FOREIGN KEY (tag_id) REFERENCES tags (tag_id)
                        );
 
-CREATE TABLE settings  (
+CREATE TABLE IF NOT EXISTS settings  (
                         settings_id SERIAL NOT NULL,
                         budget_start_date DATE NOT NULL,
                         budget_end_date DATE NOT NULL,
@@ -68,7 +68,7 @@ CREATE TABLE settings  (
                         CONSTRAINT settings_pk PRIMARY KEY (settings_id)
                         );
 
-CREATE TABLE income_sources (
+CREATE TABLE IF NOT EXISTS income_sources (
                             income_source_id BIGSERIAL NOT NULL,
                             name VARCHAR(50) NOT NULL,
                             value NUMERIC(11,2) NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE income_sources (
                             CONSTRAINT income_sources_name_uq UNIQUE (name)
                             );
 
-CREATE TABLE balance_records (
+CREATE TABLE IF NOT EXISTS balance_records (
                     balance_record_id BIGSERIAL NOT NULL,
                     date DATE NOT NULL,
                     total_expected_expenses_days_1_7 NUMERIC(11,2),
@@ -90,7 +90,7 @@ CREATE TABLE balance_records (
                     CONSTRAINT balance_record_pk PRIMARY KEY (balance_record_id)
                     );
 
-CREATE TABLE income_source_records (
+CREATE TABLE IF NOT EXISTS income_source_records (
                     income_source_record_id BIGSERIAL NOT NULL,
                     name VARCHAR(50) NOT NULL,
                     value NUMERIC(11,2) NOT NULL,
@@ -102,7 +102,7 @@ CREATE TABLE income_source_records (
                     CONSTRAINT income_source_records_to_balance_records_fk FOREIGN KEY (balance_record_id) REFERENCES balance_records (balance_record_id)
 );
 
-CREATE TABLE balance_items (
+CREATE TABLE IF NOT EXISTS balance_items (
                     balance_item_id BIGSERIAL NOT NULL,
                     item_name VARCHAR(255) NOT NULL,
                     balance_record_id BIGINT NOT NULL,
@@ -113,7 +113,7 @@ CREATE TABLE balance_items (
                     CONSTRAINT balance_items_to_balance_records_fk FOREIGN KEY (balance_record_id) REFERENCES balance_records (balance_record_id)
                     );
 
-CREATE TABLE storage_records (
+CREATE TABLE IF NOT EXISTS storage_records (
                     storage_record_id BIGSERIAL NOT NULL,
                     date DATE NOT NULL,
                     stored_in_total NUMERIC(11,2),
@@ -121,7 +121,7 @@ CREATE TABLE storage_records (
                     CONSTRAINT storage_record_pk PRIMARY KEY (storage_record_id)
                     );
 
-CREATE TABLE storage_items (
+CREATE TABLE IF NOT EXISTS storage_items (
                     storage_item_id BIGSERIAL NOT NULL,
                     storage_record_id BIGINT NOT NULL,
                     currency VARCHAR(3) NOT NULL,
