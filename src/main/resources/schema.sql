@@ -1,17 +1,3 @@
-DROP TABLE IF EXISTS expenses_to_tags;
-DROP TABLE IF EXISTS expenses;
-DROP TABLE IF EXISTS row_estimated_expenses;
-DROP TABLE IF EXISTS categories;
-DROP TABLE IF EXISTS settings;
-DROP TABLE IF EXISTS tags;
-DROP TABLE IF EXISTS income_sources;
-DROP TABLE IF EXISTS income_source_records;
-DROP TABLE IF EXISTS balance_items;
-DROP TABLE IF EXISTS balance_records;
-DROP TABLE IF EXISTS storage_items;
-DROP TABLE IF EXISTS storage_records;
-DROP TABLE IF EXISTS future_expenses;;
-
 CREATE TABLE categories (
                        category_id BIGSERIAL NOT NULL,
                        name VARCHAR(50),

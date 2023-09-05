@@ -1,2 +1,3 @@
 docker pull yehor96/budget:latest
+mvn clean package -D'maven.test.skip'
 docker-compose up --build
