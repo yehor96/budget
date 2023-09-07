@@ -17,7 +17,9 @@ const Balance = () => {
   useEffect(() => {
     async function setupData() {
       const response = await getLatestBalanceRecord();
-      setBalanceRecord(response);
+      if (response.status !== 404) {
+        setBalanceRecord(response);
+      }
     }
     setupData();
   }, []);
@@ -58,7 +60,12 @@ const Balance = () => {
           <span>UAH</span>
         </div>
         <div className="date">
-          <span>Record for {formatDate(balanceRecord.date)}</span>
+          <span>
+            Record{" "}
+            {!balanceRecord.date
+              ? "is not provided"
+              : "for " + formatDate(balanceRecord.date)}
+          </span>
         </div>
       </div>
       <div className="balance-estimates">
