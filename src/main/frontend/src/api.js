@@ -72,7 +72,7 @@ export const addExpense = async (expense) => {
 
 export const editExpense = async (expense) => {
   try {
-    let editExpense = EXPENSES + '/' + expense.id;
+    let editExpense = EXPENSES + "/" + expense.id;
     const response = await axios.put(editExpense, expense);
     return response;
   } catch (error) {
@@ -130,6 +130,9 @@ export const getLatestStorageRecord = async () => {
     const response = await axios.get(STORAGE);
     return response.data;
   } catch (error) {
+    if (error.response.status === 404) {
+      return error.response;
+    }
     console.error(GENERAL_API_ERROR_GET + ": ", error);
     throw error;
   }
@@ -160,6 +163,9 @@ export const getLatestBalanceRecord = async () => {
     const response = await axios.get(BALANCE);
     return response.data;
   } catch (error) {
+    if (error.response.status === 404) {
+      return error.response;
+    }
     console.error(GENERAL_API_ERROR_GET + ": ", error);
     throw error;
   }

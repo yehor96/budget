@@ -8,7 +8,7 @@ const Storage = () => {
   const [showAddStorageRecordModal, setShowAddStorageRecordModal] =
     useState(false);
   const [storageRecord, setStorageRecord] = useState({
-    storageItems: [],
+    storageItems: [""],
     date: "",
     storedInTotal: 0,
   });
@@ -16,7 +16,9 @@ const Storage = () => {
   useEffect(() => {
     async function setupData() {
       const response = await getLatestStorageRecord();
-      setStorageRecord(response);
+      if (response.status !== 404) {
+        setStorageRecord(response);
+      }
     }
     setupData();
   }, []);
@@ -44,8 +46,8 @@ const Storage = () => {
         />
       </div>
       <div className="storage-table">
-        {storageRecord.storageItems.map((item) => (
-          <div className="storage-item" key={item.id}>
+        {storageRecord.storageItems.map((item, index) => (
+          <div className="storage-item" key={index}>
             <span>{item.name}</span>
             <span>{item.value}</span>
             <span>{item.currency}</span>
@@ -57,7 +59,12 @@ const Storage = () => {
           <span>USD</span>
         </div>
         <div className="storage-date">
-          <span>Record for {formatDate(storageRecord.date)}</span>
+          <span>
+            Record{" "}
+            {!storageRecord.date
+              ? "is not provided"
+              : "for " + formatDate(storageRecord.date)}
+          </span>
         </div>
       </div>
     </div>
