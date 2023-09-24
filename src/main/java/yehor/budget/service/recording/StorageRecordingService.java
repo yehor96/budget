@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import yehor.budget.common.Currency;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.common.util.PageableHelper;
+import yehor.budget.entity.StorageItem;
 import yehor.budget.entity.StorageRecord;
 import yehor.budget.repository.StorageItemRepository;
 import yehor.budget.repository.StorageRecordRepository;
@@ -18,6 +19,7 @@ import yehor.budget.web.dto.limited.StorageRecordLimitedDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,18 +39,24 @@ public class StorageRecordingService {
     @Transactional(readOnly = true)
     public Optional<StorageRecordFullDto> getLatest() {
         Optional<StorageRecord> latestOpt = pageableHelper.getLatestByDate(storageRecordRepository);
-        return latestOpt.isEmpty() ? Optional.empty() : Optional.of(storageConverter.convert(latestOpt.get()));
+        return latestOpt.map(storageConverter::convert);
     }
 
     @Transactional
-    public void save(StorageRecordLimitedDto storageRecordDto) {
+    public StorageRecordFullDto save(StorageRecordLimitedDto storageRecordDto) {
         validateRecordWithDateNotExists(storageRecordDto.getDate());
         StorageRecord storageRecord = storageConverter.convert(storageRecordDto);
         setStoredInTotal(storageRecord);
-        storageRecordRepository.save(storageRecord);
-        log.info("Saved: {}", storageRecord);
-        storageRecord.getStorageItems().forEach(storageItemRepository::save);
-        log.info("List of saved storage items: {}", storageRecord.getStorageItems());
+
+        StorageRecord savedRecord = storageRecordRepository.save(storageRecord);
+
+        List<StorageItem> savedItems = new ArrayList<>();
+        savedRecord.getStorageItems().forEach(item -> savedItems.add(storageItemRepository.save(item)));
+        savedRecord.setStorageItems(savedItems);
+
+        StorageRecordFullDto saved = storageConverter.convert(savedRecord);
+        log.info("Saved: {}", saved);
+        return saved;
     }
 
     @Transactional(readOnly = true)

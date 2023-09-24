@@ -142,6 +142,9 @@ class BalanceRecordingServiceTest {
         when(incomeSourceConverter.convert(any(), any()))
                 .thenReturn(defaultIncomeSourceRecord())
                 .thenReturn(secondIncomeSourceRecord());
+        when(balanceConverter.convertToDtoWithNoEstimates(any()))
+                .thenReturn(balanceRecordFullDtoWithoutEstimates());
+        when(balanceRecordRepository.save(balanceRecord)).thenReturn(balanceRecord);
 
         balanceRecordingService.save(recordLimitedDto);
 

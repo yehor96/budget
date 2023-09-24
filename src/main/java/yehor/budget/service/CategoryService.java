@@ -31,11 +31,12 @@ public class CategoryService {
                 .toList();
     }
 
-    public void save(CategoryLimitedDto categoryDto) {
+    public CategoryFullDto save(CategoryLimitedDto categoryDto) {
         Category category = categoryConverter.convert(categoryDto);
         validateNotExists(category);
-        categoryRepository.save(category);
-        log.info("Saved: {}", category);
+        CategoryFullDto saved = categoryConverter.convert(categoryRepository.save(category));
+        log.info("Saved: {}", saved);
+        return saved;
     }
 
     public void delete(Long id) {
@@ -50,11 +51,12 @@ public class CategoryService {
     }
 
     @Transactional
-    public void update(CategoryFullDto categoryDto) {
+    public CategoryFullDto update(CategoryFullDto categoryDto) {
         validateExists(categoryDto.getId());
         Category category = categoryConverter.convert(categoryDto);
-        categoryRepository.save(category);
-        log.info("Updated: {}", category);
+        CategoryFullDto updated = categoryConverter.convert(categoryRepository.save(category));
+        log.info("Updated: {}", updated);
+        return updated;
     }
 
     private void validateNotExists(Category category) {

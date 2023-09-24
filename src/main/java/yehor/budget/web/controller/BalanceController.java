@@ -12,6 +12,7 @@ import yehor.budget.common.date.DateManager;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.service.recording.BalanceRecordingService;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
+import yehor.budget.web.dto.full.BalanceRecordFullDtoWithoutEstimates;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 
 import java.time.LocalDate;
@@ -38,15 +39,15 @@ public class BalanceController {
 
     @PostMapping
     @Operation(summary = "Save balance")
-    public ResponseEntity<BalanceRecordLimitedDto> save(@RequestBody BalanceRecordLimitedDto balanceRecordDto) {
+    public ResponseEntity<BalanceRecordFullDtoWithoutEstimates> save(@RequestBody BalanceRecordLimitedDto balanceRecordDto) {
         try {
             dateManager.validateDateAfterStart(balanceRecordDto.getDate());
             validateBalanceItems(balanceRecordDto);
-            balanceRecordingService.save(balanceRecordDto);
+            BalanceRecordFullDtoWithoutEstimates saved = balanceRecordingService.save(balanceRecordDto);
+            return new ResponseEntity<>(saved, HttpStatus.OK);
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping

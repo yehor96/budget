@@ -13,7 +13,6 @@ import yehor.budget.repository.TagRepository;
 import yehor.budget.web.converter.ExpenseConverter;
 import yehor.budget.web.dto.ExpensesByTagDto;
 import yehor.budget.web.dto.full.ExpenseFullDto;
-import yehor.budget.web.dto.full.TagFullDto;
 import yehor.budget.web.dto.limited.ExpenseLimitedDto;
 
 import java.math.BigDecimal;

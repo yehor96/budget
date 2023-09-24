@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.common.util.PageableHelper;
+import yehor.budget.entity.recording.BalanceItem;
 import yehor.budget.entity.recording.BalanceRecord;
 import yehor.budget.repository.recording.BalanceItemRepository;
 import yehor.budget.repository.recording.BalanceRecordRepository;
@@ -17,11 +18,13 @@ import yehor.budget.web.converter.BalanceConverter;
 import yehor.budget.web.converter.IncomeSourceConverter;
 import yehor.budget.web.dto.full.BalanceEstimateDto;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
+import yehor.budget.web.dto.full.BalanceRecordFullDtoWithoutEstimates;
 import yehor.budget.web.dto.full.EstimatedExpenseFullDto;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,16 +50,21 @@ public class BalanceRecordingService {
     }
 
     @Transactional
-    public void save(BalanceRecordLimitedDto balanceRecordDto) {
+    public BalanceRecordFullDtoWithoutEstimates save(BalanceRecordLimitedDto balanceRecordDto) {
         validateRecordWithDateNotExists(balanceRecordDto.getDate());
         BalanceRecord balanceRecord = balanceConverter.convert(balanceRecordDto);
 
         saveEstimatedExpenses(balanceRecord);
-        balanceRecordRepository.save(balanceRecord);
-        log.info("Saved: {}", balanceRecord);
+        BalanceRecord savedRecord = balanceRecordRepository.save(balanceRecord);
         saveIncomeSourceRecords(balanceRecord);
-        balanceRecord.getBalanceItems().forEach(balanceItemRepository::save);
-        log.info("List of saved balance items: {}", balanceRecord.getBalanceItems());
+
+        List<BalanceItem> savedItems = new ArrayList<>();
+        savedRecord.getBalanceItems().forEach(item -> savedItems.add(balanceItemRepository.save(item)));
+        savedRecord.setBalanceItems(savedItems);
+
+        BalanceRecordFullDtoWithoutEstimates saved = balanceConverter.convertToDtoWithNoEstimates(savedRecord);
+        log.info("Saved: {}", saved);
+        return saved;
     }
 
     @Transactional(readOnly = true)

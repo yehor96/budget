@@ -8,7 +8,7 @@ import java.util.function.BooleanSupplier;
 
 @UtilityClass
 @Slf4j
-public class WaiterUtil { // todo: add tests
+public class WaiterUtil {
 
     private static final int DEFAULT_WAIT_LIMIT_IN_SECONDS = 15;
 

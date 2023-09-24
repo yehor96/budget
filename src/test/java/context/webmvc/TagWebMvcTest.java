@@ -12,21 +12,12 @@ import yehor.budget.web.dto.limited.TagLimitedDto;
 
 import java.util.List;
 
-import static common.factory.TagFactory.DEFAULT_TAG_ID;
-import static common.factory.TagFactory.defaultTagFullDto;
-import static common.factory.TagFactory.defaultTagLimitedDto;
-import static common.factory.TagFactory.secondTagFullDto;
+import static common.factory.TagFactory.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class TagWebMvcTest extends BaseWebMvcTest {
@@ -57,13 +48,20 @@ class TagWebMvcTest extends BaseWebMvcTest {
     @Test
     void testSaveTag() throws Exception {
         TagLimitedDto tagLimitedDto = defaultTagLimitedDto();
+        TagFullDto expectedTagDto = defaultTagFullDto();
 
-        mockMvc.perform(post(TAGS_URL)
+        when(tagService.save(tagLimitedDto)).thenReturn(expectedTagDto);
+
+        String response = mockMvc.perform(post(TAGS_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tagLimitedDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        TagFullDto actualTagDto = objectMapper.readValue(response, TagFullDto.class);
 
         verify(tagService, times(1)).save(tagLimitedDto);
+        assertEquals(expectedTagDto, actualTagDto);
     }
 
     @Test
@@ -130,12 +128,18 @@ class TagWebMvcTest extends BaseWebMvcTest {
     void testUpdateTag() throws Exception {
         TagFullDto tag = defaultTagFullDto();
 
-        mockMvc.perform(put(TAGS_URL)
+        when(tagService.update(tag)).thenReturn(tag);
+
+        String response = mockMvc.perform(put(TAGS_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(tag)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        TagFullDto actualTagDto = objectMapper.readValue(response, TagFullDto.class);
 
         verify(tagService, times(1)).update(tag);
+        assertEquals(tag, actualTagDto);
     }
 
     @Test

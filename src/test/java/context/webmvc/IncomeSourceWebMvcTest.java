@@ -10,21 +10,12 @@ import yehor.budget.web.dto.TotalIncomeDto;
 import yehor.budget.web.dto.full.IncomeSourceFullDto;
 import yehor.budget.web.dto.limited.IncomeSourceLimitedDto;
 
-import static common.factory.IncomeSourceFactory.DEFAULT_INCOME_SOURCE_ID;
-import static common.factory.IncomeSourceFactory.defaultIncomeSourceFullDto;
-import static common.factory.IncomeSourceFactory.defaultIncomeSourceLimitedDto;
-import static common.factory.IncomeSourceFactory.defaultTotalIncomeDto;
+import static common.factory.IncomeSourceFactory.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class IncomeSourceWebMvcTest extends BaseWebMvcTest {
@@ -54,13 +45,20 @@ class IncomeSourceWebMvcTest extends BaseWebMvcTest {
     @Test
     void testSaveTotalIncome() throws Exception {
         IncomeSourceLimitedDto incomeSourceLimitedDto = defaultIncomeSourceLimitedDto();
+        IncomeSourceFullDto expectedIncomeSourceDto = defaultIncomeSourceFullDto();
 
-        mockMvc.perform(post(INCOME_SOURCES_URL)
+        when(incomeSourceService.save(incomeSourceLimitedDto)).thenReturn(expectedIncomeSourceDto);
+
+        String response = mockMvc.perform(post(INCOME_SOURCES_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(incomeSourceLimitedDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        IncomeSourceFullDto actualIncomeSourceDto = objectMapper.readValue(response, IncomeSourceFullDto.class);
 
         verify(incomeSourceService, times(1)).save(incomeSourceLimitedDto);
+        assertEquals(expectedIncomeSourceDto, actualIncomeSourceDto);
     }
 
     @Test
@@ -112,12 +110,18 @@ class IncomeSourceWebMvcTest extends BaseWebMvcTest {
     void testUpdateIncomeSource() throws Exception {
         IncomeSourceFullDto incomeSourceDto = defaultIncomeSourceFullDto();
 
-        mockMvc.perform(put(INCOME_SOURCES_URL)
+        when(incomeSourceService.update(incomeSourceDto)).thenReturn(incomeSourceDto);
+
+        String response = mockMvc.perform(put(INCOME_SOURCES_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(incomeSourceDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        IncomeSourceFullDto actualIncomeSourceDto = objectMapper.readValue(response, IncomeSourceFullDto.class);
 
         verify(incomeSourceService, times(1)).update(incomeSourceDto);
+        assertEquals(incomeSourceDto, actualIncomeSourceDto);
     }
 
     @Test
