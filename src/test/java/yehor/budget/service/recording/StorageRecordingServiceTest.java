@@ -112,6 +112,7 @@ class StorageRecordingServiceTest {
         when(currencyRateService.getValueInCurrency(any(), any()))
                 .thenReturn(new BigDecimal("50.00"))
                 .thenReturn(new BigDecimal("50.00"));
+        when(storageRecordRepository.save(storageRecord)).thenReturn(storageRecord);
 
         storageRecordingService.save(recordLimitedDto);
 

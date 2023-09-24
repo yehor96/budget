@@ -5,14 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.exception.ObjectAlreadyExistsException;
@@ -44,17 +37,17 @@ public class IncomeSourceController {
 
     @PostMapping
     @Operation(summary = "Save income source")
-    public ResponseEntity<IncomeSourceLimitedDto> saveIncomeSource(@RequestBody IncomeSourceLimitedDto incomeSourceDto) {
+    public ResponseEntity<IncomeSourceFullDto> saveIncomeSource(@RequestBody IncomeSourceLimitedDto incomeSourceDto) {
         try {
             if (isNull(incomeSourceDto.getAccrualDayOfMonth())) {
                 incomeSourceDto.setAccrualDayOfMonth(1);
             }
             dateManager.validateDayOfMonth(incomeSourceDto.getAccrualDayOfMonth());
-            incomeSourceService.save(incomeSourceDto);
+            IncomeSourceFullDto saved = incomeSourceService.save(incomeSourceDto);
+            return new ResponseEntity<>(saved, HttpStatus.OK);
         } catch (ObjectAlreadyExistsException | IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping
@@ -70,12 +63,12 @@ public class IncomeSourceController {
 
     @PutMapping
     @Operation(summary = "Update income source by id")
-    public ResponseEntity<IncomeSourceFullDto> updateTag(@RequestBody IncomeSourceFullDto incomeSourceDto) {
+    public ResponseEntity<IncomeSourceFullDto> updateIncomeSource(@RequestBody IncomeSourceFullDto incomeSourceDto) {
         try {
-            incomeSourceService.update(incomeSourceDto);
+            IncomeSourceFullDto updated = incomeSourceService.update(incomeSourceDto);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
         } catch (ObjectNotFoundException exception) {
             throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

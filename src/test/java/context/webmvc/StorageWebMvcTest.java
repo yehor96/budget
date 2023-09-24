@@ -15,21 +15,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static common.factory.StorageFactory.DEFAULT_STORAGE_RECORD_ID;
-import static common.factory.StorageFactory.defaultStorageRecordFullDto;
-import static common.factory.StorageFactory.defaultStorageRecordLimitedDto;
+import static common.factory.StorageFactory.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class StorageWebMvcTest extends BaseWebMvcTest {
@@ -76,13 +68,20 @@ class StorageWebMvcTest extends BaseWebMvcTest {
     @Test
     void testSaveSuccessfully() throws Exception {
         StorageRecordLimitedDto storageRecordDto = defaultStorageRecordLimitedDto();
+        StorageRecordFullDto expectedStorageRecordFullDto = defaultStorageRecordFullDto();
 
-        mockMvc.perform(post(STORAGE_URL)
+        when(storageRecordingService.save(storageRecordDto)).thenReturn(expectedStorageRecordFullDto);
+
+        String response = mockMvc.perform(post(STORAGE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(storageRecordDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        StorageRecordFullDto actualStorageRecordFullDto = objectMapper.readValue(response, StorageRecordFullDto.class);
 
         verify(storageRecordingService, times(1)).save(storageRecordDto);
+        assertEquals(expectedStorageRecordFullDto, actualStorageRecordFullDto);
     }
 
     @Test

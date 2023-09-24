@@ -22,7 +22,7 @@ public class StorageConverter {
                 .build();
     }
 
-    private StorageItemFullDto convert(StorageItem storageItem) {
+    public StorageItemFullDto convert(StorageItem storageItem) {
         return StorageItemFullDto.builder()
                 .id(storageItem.getId())
                 .name(storageItem.getName())
@@ -31,7 +31,7 @@ public class StorageConverter {
                 .build();
     }
 
-    private List<StorageItemFullDto> convert(List<StorageItem> storageItems) {
+    public List<StorageItemFullDto> convert(List<StorageItem> storageItems) {
         return storageItems.stream().map(this::convert).toList();
     }
 

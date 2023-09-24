@@ -208,34 +208,16 @@ public class ExpenseController {
         }
     }
 
-    // todo add tests
     private void validateValue(BigDecimal value) {
         if (value.compareTo(BigDecimal.ONE) < 0) {
             throw new IllegalArgumentException("Value cannot be negative or zero!");
         }
     }
 
-    private void validateCategory(CategoryFullDto category) {
-        if (Objects.isNull(category)) {
-            throw new IllegalArgumentException("Category is not provided. Please provide a category");
-        }
-        validateCategoryId(category.getId());
-    }
-
     private void validateCategoryId(Long categoryId) {
         if (Objects.isNull(categoryId) || categoryId < 1) {
             throw new IllegalArgumentException("Provided category id is not valid - " + categoryId + ". " +
                     "Please provide valid category id");
-        }
-    }
-
-    private void validateTagIds(ExpenseFullDto expenseDto) {
-        Set<TagFullDto> tags = expenseDto.getTags();
-        if (Objects.isNull(tags)) {
-            tags = Collections.emptySet();
-            expenseDto.setTags(tags);
-        } else if (tags.stream().map(TagFullDto::getId).anyMatch(id -> id < 1)) {
-            throw new IllegalArgumentException("Tag ids cannot be negative or 0: " + tags);
         }
     }
 

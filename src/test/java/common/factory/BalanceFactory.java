@@ -4,10 +4,7 @@ import lombok.experimental.UtilityClass;
 import yehor.budget.entity.recording.BalanceItem;
 import yehor.budget.entity.recording.BalanceRecord;
 import yehor.budget.entity.recording.IncomeSourceRecord;
-import yehor.budget.web.dto.full.BalanceEstimateDto;
-import yehor.budget.web.dto.full.BalanceItemFullDto;
-import yehor.budget.web.dto.full.BalanceRecordFullDto;
-import yehor.budget.web.dto.full.EstimatedExpenseFullDto;
+import yehor.budget.web.dto.full.*;
 import yehor.budget.web.dto.limited.BalanceItemLimitedDto;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 
@@ -47,6 +44,14 @@ public class BalanceFactory {
                 .date(LocalDate.now())
                 .balanceItems(defaultBalanceItemFullDtoList())
                 .balanceEstimates(List.of(defaultBalanceEstimationDto()))
+                .build();
+    }
+
+    public static BalanceRecordFullDtoWithoutEstimates balanceRecordFullDtoWithoutEstimates() {
+        return BalanceRecordFullDtoWithoutEstimates.builder()
+                .id(DEFAULT_BALANCE_RECORD_ID)
+                .date(LocalDate.now())
+                .balanceItems(defaultBalanceItemFullDtoList())
                 .build();
     }
 

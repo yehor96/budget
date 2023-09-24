@@ -35,19 +35,19 @@ public class TagController {
 
     @GetMapping
     @Operation(summary = "Get all tags")
-    public List<TagFullDto> getAllTags() { //todo: make it pageable
+    public List<TagFullDto> getAllTags() {
         return tagService.getAll();
     }
 
     @PostMapping
     @Operation(summary = "Save tag")
-    public ResponseEntity<TagLimitedDto> saveTag(@RequestBody TagLimitedDto tagDto) {
+    public ResponseEntity<TagFullDto> saveTag(@RequestBody TagLimitedDto tagDto) {
         try {
-            tagService.save(tagDto);
+            TagFullDto saved = tagService.save(tagDto);
+            return new ResponseEntity<>(saved, HttpStatus.OK);
         } catch (ObjectAlreadyExistsException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping
@@ -67,10 +67,10 @@ public class TagController {
     @Operation(summary = "Update tag by id")
     public ResponseEntity<TagFullDto> updateTag(@RequestBody TagFullDto tagDto) {
         try {
-            tagService.update(tagDto);
+            TagFullDto updated = tagService.update(tagDto);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
         } catch (ObjectNotFoundException exception) {
             throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

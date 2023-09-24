@@ -5,14 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.common.exception.ObjectAlreadyExistsException;
 import yehor.budget.common.exception.ObjectNotFoundException;
@@ -41,13 +34,13 @@ public class CategoryController {
 
     @PostMapping
     @Operation(summary = "Save category")
-    public ResponseEntity<CategoryLimitedDto> saveCategory(@RequestBody CategoryLimitedDto categoryDto) {
+    public ResponseEntity<CategoryFullDto> saveCategory(@RequestBody CategoryLimitedDto categoryDto) {
         try {
-            categoryService.save(categoryDto);
+            CategoryFullDto saved = categoryService.save(categoryDto);
+            return new ResponseEntity<>(saved, HttpStatus.OK);
         } catch (ObjectAlreadyExistsException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping
@@ -67,10 +60,10 @@ public class CategoryController {
     @Operation(summary = "Update category by id")
     public ResponseEntity<CategoryFullDto> updateCategory(@RequestBody CategoryFullDto categoryDto) {
         try {
-            categoryService.update(categoryDto);
+            CategoryFullDto updated = categoryService.update(categoryDto);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
         } catch (ObjectNotFoundException exception) {
             throw new ResponseStatusException(NOT_FOUND, exception.getMessage());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

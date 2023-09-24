@@ -6,6 +6,7 @@ import yehor.budget.entity.recording.BalanceItem;
 import yehor.budget.entity.recording.BalanceRecord;
 import yehor.budget.web.dto.full.BalanceItemFullDto;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
+import yehor.budget.web.dto.full.BalanceRecordFullDtoWithoutEstimates;
 import yehor.budget.web.dto.limited.BalanceItemLimitedDto;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 
@@ -41,6 +42,14 @@ public class BalanceConverter {
 
     public BalanceRecordFullDto convert(BalanceRecord balanceRecord) {
         return BalanceRecordFullDto.builder()
+                .id(balanceRecord.getId())
+                .date(balanceRecord.getDate())
+                .balanceItems(convert(balanceRecord.getBalanceItems()))
+                .build();
+    }
+
+    public BalanceRecordFullDtoWithoutEstimates convertToDtoWithNoEstimates(BalanceRecord balanceRecord) {
+        return BalanceRecordFullDtoWithoutEstimates.builder()
                 .id(balanceRecord.getId())
                 .date(balanceRecord.getDate())
                 .balanceItems(convert(balanceRecord.getBalanceItems()))

@@ -6,13 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import yehor.budget.common.date.DateManager;
 import yehor.budget.common.exception.ObjectNotFoundException;
@@ -44,15 +38,15 @@ public class StorageController {
 
     @PostMapping
     @Operation(summary = "Save storage record")
-    public ResponseEntity<StorageRecordLimitedDto> save(@RequestBody StorageRecordLimitedDto storageRecord) {
+    public ResponseEntity<StorageRecordFullDto> save(@RequestBody StorageRecordLimitedDto storageRecord) {
         try {
             dateManager.validateDateAfterStart(storageRecord.getDate());
             validateStorageItems(storageRecord);
-            storageRecordingService.save(storageRecord);
+            StorageRecordFullDto saved = storageRecordingService.save(storageRecord);
+            return new ResponseEntity<>(saved, HttpStatus.OK);
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(BAD_REQUEST, exception.getMessage());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping

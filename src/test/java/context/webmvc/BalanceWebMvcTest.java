@@ -8,6 +8,7 @@ import yehor.budget.common.date.DateManager;
 import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.service.recording.BalanceRecordingService;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
+import yehor.budget.web.dto.full.BalanceRecordFullDtoWithoutEstimates;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 
 import java.time.LocalDate;
@@ -15,22 +16,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static common.factory.BalanceFactory.DEFAULT_BALANCE_RECORD_ID;
-import static common.factory.BalanceFactory.balanceRecordFullDtoWithEstimates;
-import static common.factory.BalanceFactory.defaultBalanceRecordFullDto;
-import static common.factory.BalanceFactory.defaultBalanceRecordLimitedDto;
+import static common.factory.BalanceFactory.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class BalanceWebMvcTest extends BaseWebMvcTest {
@@ -77,13 +69,21 @@ class BalanceWebMvcTest extends BaseWebMvcTest {
     @Test
     void testSaveSuccessfully() throws Exception {
         BalanceRecordLimitedDto balanceRecordDto = defaultBalanceRecordLimitedDto();
+        BalanceRecordFullDtoWithoutEstimates expectedBalanceRecordDto = balanceRecordFullDtoWithoutEstimates();
 
-        mockMvc.perform(post(BALANCE_URL)
+        when(balanceRecordingService.save(balanceRecordDto)).thenReturn(expectedBalanceRecordDto);
+
+        String response = mockMvc.perform(post(BALANCE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(balanceRecordDto)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        BalanceRecordFullDtoWithoutEstimates actualBalanceRecordFullDto = objectMapper.readValue(
+                response, BalanceRecordFullDtoWithoutEstimates.class);
 
         verify(balanceRecordingService, times(1)).save(balanceRecordDto);
+        assertEquals(expectedBalanceRecordDto, actualBalanceRecordFullDto);
     }
 
     @Test

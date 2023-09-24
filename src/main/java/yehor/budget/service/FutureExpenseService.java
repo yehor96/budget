@@ -31,10 +31,10 @@ public class FutureExpenseService {
                 .toList();
     }
 
-    public void save(FutureExpenseLimitedDto futureExpenseDto) {
-        FutureExpense futureExpense = futureExpenseConverter.convert(futureExpenseDto);
-        futureExpenseRepository.save(futureExpense);
-        log.info("Saved: {}", futureExpense);
+    public FutureExpenseFullDto save(FutureExpenseLimitedDto futureExpenseDto) {
+        FutureExpense saved = futureExpenseRepository.save(futureExpenseConverter.convert(futureExpenseDto));
+        log.info("Saved: {}", saved);
+        return futureExpenseConverter.convert(saved);
     }
 
     public void delete(Long id) {

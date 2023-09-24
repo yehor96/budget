@@ -31,11 +31,12 @@ public class TagService {
                 .toList();
     }
 
-    public void save(TagLimitedDto tagDto) {
+    public TagFullDto save(TagLimitedDto tagDto) {
         Tag tag = tagConverter.convert(tagDto);
         validateNotExists(tag);
-        tagRepository.save(tag);
-        log.info("Saved: {}", tag);
+        Tag saved = tagRepository.save(tag);
+        log.info("Saved: {}", saved);
+        return tagConverter.convert(saved);
     }
 
     public void delete(Long id) {
@@ -50,11 +51,12 @@ public class TagService {
     }
 
     @Transactional
-    public void update(TagFullDto tagDto) {
+    public TagFullDto update(TagFullDto tagDto) {
         validateExists(tagDto.getId());
         Tag tag = tagConverter.convert(tagDto);
-        tagRepository.save(tag);
-        log.info("Updated: {}", tag);
+        Tag saved = tagRepository.save(tag);
+        log.info("Updated: {}", saved);
+        return tagConverter.convert(saved);
     }
 
     private void validateNotExists(Tag tag) {

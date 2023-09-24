@@ -12,21 +12,12 @@ import yehor.budget.web.dto.limited.CategoryLimitedDto;
 
 import java.util.List;
 
-import static common.factory.CategoryFactory.DEFAULT_CATEGORY_ID;
-import static common.factory.CategoryFactory.defaultCategoryFullDto;
-import static common.factory.CategoryFactory.defaultCategoryFullDtoList;
-import static common.factory.CategoryFactory.defaultCategoryLimitedDto;
+import static common.factory.CategoryFactory.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class CategoryWebMvcTest extends BaseWebMvcTest {
@@ -57,13 +48,20 @@ class CategoryWebMvcTest extends BaseWebMvcTest {
     @Test
     void testSaveCategory() throws Exception {
         CategoryLimitedDto category = defaultCategoryLimitedDto();
+        CategoryFullDto expectedCategoryDto = defaultCategoryFullDto();
 
-        mockMvc.perform(post(CATEGORIES_URL)
+        when(categoryService.save(category)).thenReturn(expectedCategoryDto);
+
+        String response = mockMvc.perform(post(CATEGORIES_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(category)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        CategoryFullDto actualCategoryDto = objectMapper.readValue(response, CategoryFullDto.class);
 
         verify(categoryService, times(1)).save(category);
+        assertEquals(expectedCategoryDto, actualCategoryDto);
     }
 
     @Test
@@ -130,12 +128,18 @@ class CategoryWebMvcTest extends BaseWebMvcTest {
     void testUpdateCategory() throws Exception {
         CategoryFullDto category = defaultCategoryFullDto();
 
-        mockMvc.perform(put(CATEGORIES_URL)
+        when(categoryService.update(category)).thenReturn(category);
+
+        String response = mockMvc.perform(put(CATEGORIES_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(category)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        CategoryFullDto actualCategoryDto = objectMapper.readValue(response, CategoryFullDto.class);
 
         verify(categoryService, times(1)).update(category);
+        assertEquals(category, actualCategoryDto);
     }
 
     @Test

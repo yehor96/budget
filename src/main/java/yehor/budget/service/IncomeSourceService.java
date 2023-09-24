@@ -51,11 +51,12 @@ public class IncomeSourceService {
                 .build();
     }
 
-    public void save(IncomeSourceLimitedDto incomeSourceDto) {
+    public IncomeSourceFullDto save(IncomeSourceLimitedDto incomeSourceDto) {
         IncomeSource incomeSource = incomeSourceConverter.convert(incomeSourceDto);
         validateNotExists(incomeSource);
-        incomeSourceRepository.save(incomeSource);
-        log.info("Saved: {}", incomeSource);
+        IncomeSourceFullDto saved = incomeSourceConverter.convert(incomeSourceRepository.save(incomeSource));
+        log.info("Saved: {}", saved);
+        return saved;
     }
 
     public void delete(Long id) {
@@ -68,11 +69,12 @@ public class IncomeSourceService {
     }
 
     @Transactional
-    public void update(IncomeSourceFullDto incomeSourceDto) {
+    public IncomeSourceFullDto update(IncomeSourceFullDto incomeSourceDto) {
         validateExists(incomeSourceDto.getId());
         IncomeSource incomeSource = incomeSourceConverter.convert(incomeSourceDto);
-        incomeSourceRepository.save(incomeSource);
-        log.info("Updated: {}", incomeSource);
+        IncomeSourceFullDto updated = incomeSourceConverter.convert(incomeSourceRepository.save(incomeSource));
+        log.info("Updated: {}", updated);
+        return updated;
     }
 
     private void validateNotExists(IncomeSource incomeSource) {
