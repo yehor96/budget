@@ -9,12 +9,16 @@ import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.common.util.PageableHelper;
 import yehor.budget.entity.recording.BalanceItem;
 import yehor.budget.entity.recording.BalanceRecord;
+import yehor.budget.entity.recording.ExpectedExpenseRecord;
+import yehor.budget.entity.recording.IncomeSourceRecord;
 import yehor.budget.repository.recording.BalanceItemRepository;
 import yehor.budget.repository.recording.BalanceRecordRepository;
+import yehor.budget.repository.recording.ExpectedExpenseRecordRepository;
 import yehor.budget.repository.recording.IncomeSourceRecordRepository;
 import yehor.budget.service.EstimatedExpenseService;
 import yehor.budget.service.IncomeSourceService;
 import yehor.budget.web.converter.BalanceConverter;
+import yehor.budget.web.converter.EstimatedExpenseConverter;
 import yehor.budget.web.converter.IncomeSourceConverter;
 import yehor.budget.web.dto.full.BalanceEstimateDto;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
@@ -42,6 +46,8 @@ public class BalanceRecordingService {
     private final IncomeSourceRecordRepository incomeSourceRecordRepository;
     private final IncomeSourceConverter incomeSourceConverter;
     private final BalanceEstimationService balanceEstimationService;
+    private final EstimatedExpenseConverter estimatedExpenseConverter;
+    private final ExpectedExpenseRecordRepository expectedExpenseRecordRepository;
 
     @Transactional(readOnly = true)
     public Optional<BalanceRecordFullDto> getLatest() {
@@ -54,16 +60,16 @@ public class BalanceRecordingService {
         validateRecordWithDateNotExists(balanceRecordDto.getDate());
         BalanceRecord balanceRecord = balanceConverter.convert(balanceRecordDto);
 
-        saveEstimatedExpenses(balanceRecord);
         BalanceRecord savedRecord = balanceRecordRepository.save(balanceRecord);
         saveIncomeSourceRecords(balanceRecord);
+        saveEstimatedExpenses(balanceRecord);
 
         List<BalanceItem> savedItems = new ArrayList<>();
         savedRecord.getBalanceItems().forEach(item -> savedItems.add(balanceItemRepository.save(item)));
         savedRecord.setBalanceItems(savedItems);
 
         BalanceRecordFullDtoWithoutEstimates saved = balanceConverter.convertToDtoWithNoEstimates(savedRecord);
-        log.info("Saved: {}", saved);
+        log.info("Saved: {}", savedRecord);
         return saved;
     }
 
@@ -99,20 +105,26 @@ public class BalanceRecordingService {
     }
 
     private void saveIncomeSourceRecords(BalanceRecord balanceRecord) {
+        List<IncomeSourceRecord> incomeSourceRecords = new ArrayList<>();
         incomeSourceService.getTotalIncome().getIncomeSources().stream()
+                .map(existingIncomeSource -> {
+                    existingIncomeSource.setId(null); // in order to create new entity with the same fields but new id
+                    return existingIncomeSource;
+                })
                 .map(incomeSource -> incomeSourceConverter.convert(incomeSource, balanceRecord))
                 .forEach(incSourceRec -> {
                     incomeSourceRecordRepository.save(incSourceRec);
+                    incomeSourceRecords.add(incSourceRec);
                     log.info("Saved: {}", incSourceRec);
                 });
+        balanceRecord.setIncomeSourceRecords(incomeSourceRecords);
     }
 
     private void saveEstimatedExpenses(BalanceRecord balanceRecord) {
         EstimatedExpenseFullDto estimatedExpenses = estimatedExpenseService.getOne();
-        balanceRecord.setTotal1to7(estimatedExpenses.getTotal1to7());
-        balanceRecord.setTotal8to14(estimatedExpenses.getTotal8to14());
-        balanceRecord.setTotal15to21(estimatedExpenses.getTotal15to21());
-        balanceRecord.setTotal22to31(estimatedExpenses.getTotal22to31());
+        ExpectedExpenseRecord expectedExpenseRecord = estimatedExpenseConverter.convert(estimatedExpenses, balanceRecord);
+        balanceRecord.setExpectedExpenseRecord(expectedExpenseRecord);
+        expectedExpenseRecordRepository.save(expectedExpenseRecord);
     }
 
     private void setTotalBalance(BalanceRecordFullDto balanceRecordDto) {

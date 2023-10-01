@@ -82,10 +82,6 @@ CREATE TABLE IF NOT EXISTS income_sources (
 CREATE TABLE IF NOT EXISTS balance_records (
                     balance_record_id BIGSERIAL NOT NULL,
                     date DATE NOT NULL,
-                    total_expected_expenses_days_1_7 NUMERIC(11,2),
-                    total_expected_expenses_days_8_14 NUMERIC(11,2),
-                    total_expected_expenses_days_15_21 NUMERIC(11,2),
-                    total_expected_expenses_days_22_31 NUMERIC(11,2),
 
                     CONSTRAINT balance_record_pk PRIMARY KEY (balance_record_id)
                     );
@@ -111,6 +107,18 @@ CREATE TABLE IF NOT EXISTS balance_items (
 
                     CONSTRAINT balance_item_pk PRIMARY KEY (balance_item_id),
                     CONSTRAINT balance_items_to_balance_records_fk FOREIGN KEY (balance_record_id) REFERENCES balance_records (balance_record_id)
+                    );
+
+CREATE TABLE IF NOT EXISTS expected_expense_records (
+                    expected_expense_record_id BIGSERIAL NOT NULL,
+                    total_expected_expenses_days_1_7 NUMERIC(11,2),
+                    total_expected_expenses_days_8_14 NUMERIC(11,2),
+                    total_expected_expenses_days_15_21 NUMERIC(11,2),
+                    total_expected_expenses_days_22_31 NUMERIC(11,2),
+                    balance_record_id BIGINT NOT NULL,
+
+                    CONSTRAINT expected_expense_records_pk PRIMARY KEY (expected_expense_record_id),
+                    CONSTRAINT expected_expense_records_to_balance_records_fk FOREIGN KEY (balance_record_id) REFERENCES balance_records (balance_record_id)
                     );
 
 CREATE TABLE IF NOT EXISTS storage_records (

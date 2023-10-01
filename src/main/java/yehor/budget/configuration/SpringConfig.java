@@ -9,7 +9,7 @@ import yehor.budget.common.date.DateManager;
 import yehor.budget.service.SettingsService;
 import yehor.budget.service.client.currency.CurrencyRateClient;
 import yehor.budget.service.client.currency.CurrencyRateSimulator;
-import yehor.budget.service.client.currency.ExchangeRateClient;
+import yehor.budget.service.client.currency.RatesOracleClient;
 import yehor.budget.service.worker.EstimatedExpenseWorker;
 
 @Configuration
@@ -38,7 +38,7 @@ public class SpringConfig {
             log.info("Using currency rate simulator");
             return new CurrencyRateSimulator();
         } else {
-            return new ExchangeRateClient();
+            return new RatesOracleClient();
         }
     }
 
