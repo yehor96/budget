@@ -1,15 +1,15 @@
 package context;
 
-import common.response.exchangerate.ExchangeRateResponseProvider;
+import common.response.exchangerate.RatesOracleResponseProvider;
 import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.springtest.MockServerTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import yehor.budget.BudgetApplication;
-import yehor.budget.common.exception.InternalClientException;
 import yehor.budget.common.Currency;
-import yehor.budget.service.client.currency.ExchangeRateClient;
+import yehor.budget.common.exception.InternalClientException;
+import yehor.budget.service.client.currency.RatesOracleClient;
 
 import java.math.BigDecimal;
 
@@ -25,20 +25,20 @@ import static yehor.budget.common.Currency.UAH;
 import static yehor.budget.common.Currency.USD;
 
 @SpringBootTest(classes = BudgetApplication.class)
-@MockServerTest({"api.exchangerate.host.url=http://localhost:${mockServerPort}"})
-class ExchangeRateClientTest {
+@MockServerTest({"rates.oracle.host.url=http://localhost:${mockServerPort}"})
+class RatesOracleClientTest {
 
     private MockServerClient mockServerClient;
 
     @Autowired
-    private ExchangeRateClient exchangeRateClient;
+    private RatesOracleClient ratesOracleClient;
 
     @Test
     void testSuccessClientResponseInProcessed() {
         Currency from = UAH;
         Currency to = USD;
         BigDecimal value = BigDecimal.valueOf(35.5);
-        String body = ExchangeRateResponseProvider.responseBody(from.toString(), to.toString(), value);
+        String body = RatesOracleResponseProvider.responseBody(from.toString(), to.toString(), value);
 
         mockServerClient
                 .when(request()
@@ -49,7 +49,7 @@ class ExchangeRateClientTest {
                         .withContentType(APPLICATION_JSON)
                         .withBody(body));
 
-        BigDecimal rate = exchangeRateClient.rate(from, to);
+        BigDecimal rate = ratesOracleClient.rate(from, to);
         assertEquals(rate, value);
     }
 
@@ -65,7 +65,7 @@ class ExchangeRateClientTest {
                 .respond(response()
                         .withStatusCode(INTERNAL_SERVER_ERROR_500.code()));
         try {
-            exchangeRateClient.rate(from, to);
+            ratesOracleClient.rate(from, to);
             fail("Exception was not thrown");
         } catch (Exception e) {
             assertEquals(InternalClientException.class, e.getClass());
@@ -89,7 +89,7 @@ class ExchangeRateClientTest {
                         .withContentType(APPLICATION_JSON)
                         .withBody(invalidBody));
         try {
-            exchangeRateClient.rate(from, to);
+            ratesOracleClient.rate(from, to);
             fail("Exception was not thrown");
         } catch (Exception e) {
             assertEquals(InternalClientException.class, e.getClass());

@@ -3,8 +3,12 @@ package common.factory;
 import lombok.experimental.UtilityClass;
 import yehor.budget.entity.recording.BalanceItem;
 import yehor.budget.entity.recording.BalanceRecord;
+import yehor.budget.entity.recording.ExpectedExpenseRecord;
 import yehor.budget.entity.recording.IncomeSourceRecord;
-import yehor.budget.web.dto.full.*;
+import yehor.budget.web.dto.full.BalanceEstimateDto;
+import yehor.budget.web.dto.full.BalanceItemFullDto;
+import yehor.budget.web.dto.full.BalanceRecordFullDto;
+import yehor.budget.web.dto.full.BalanceRecordFullDtoWithoutEstimates;
 import yehor.budget.web.dto.limited.BalanceItemLimitedDto;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 
@@ -12,7 +16,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static common.factory.EstimatedExpenseFactory.defaultEstimatedExpenseFullDto;
 import static common.factory.IncomeSourceFactory.defaultIncomeSourceRecords;
 
 @UtilityClass
@@ -20,6 +23,7 @@ public class BalanceFactory {
 
     public static final long DEFAULT_BALANCE_RECORD_ID = 1L;
     public static final long DEFAULT_BALANCE_ITEM_ID = 10L;
+    public static final long DEFAULT_EXPECTED_EXPENSE_RECORD_ID = 100L;
     public static final BigDecimal DEFAULT_BALANCE_RECORD_TOTAL = new BigDecimal("110.00");
 
     public static BalanceRecordFullDto defaultBalanceRecordFullDto() {
@@ -65,41 +69,29 @@ public class BalanceFactory {
     }
 
     public static BalanceRecord defaultBalanceRecord() {
-        EstimatedExpenseFullDto estimatedExpenseFullDto = defaultEstimatedExpenseFullDto();
         return BalanceRecord.builder()
                 .id(DEFAULT_BALANCE_RECORD_ID)
                 .date(LocalDate.now())
                 .balanceItems(defaultBalanceItemList())
-                .total1to7(estimatedExpenseFullDto.getTotal1to7())
-                .total8to14(estimatedExpenseFullDto.getTotal8to14())
-                .total15to21(estimatedExpenseFullDto.getTotal15to21())
-                .total22to31(estimatedExpenseFullDto.getTotal22to31())
+                .expectedExpenseRecord(defautExpectedExpenseRecord())
                 .build();
     }
 
     public static BalanceRecord secondBalanceRecord() {
-        EstimatedExpenseFullDto estimatedExpenseFullDto = defaultEstimatedExpenseFullDto();
         return BalanceRecord.builder()
                 .id(2L)
                 .date(LocalDate.now().plusDays(5))
                 .balanceItems(secondBalanceItemList())
-                .total1to7(estimatedExpenseFullDto.getTotal1to7())
-                .total8to14(estimatedExpenseFullDto.getTotal8to14())
-                .total15to21(estimatedExpenseFullDto.getTotal15to21())
-                .total22to31(estimatedExpenseFullDto.getTotal22to31())
+                .expectedExpenseRecord(defautExpectedExpenseRecord())
                 .build();
     }
 
     public static BalanceRecord balanceRecordWithSetIncomes() {
-        EstimatedExpenseFullDto estimatedExpenseFullDto = defaultEstimatedExpenseFullDto();
         BalanceRecord balanceRecord = BalanceRecord.builder()
                 .id(DEFAULT_BALANCE_RECORD_ID)
                 .date(LocalDate.now())
                 .balanceItems(defaultBalanceItemList())
-                .total1to7(estimatedExpenseFullDto.getTotal1to7())
-                .total8to14(estimatedExpenseFullDto.getTotal8to14())
-                .total15to21(estimatedExpenseFullDto.getTotal15to21())
-                .total22to31(estimatedExpenseFullDto.getTotal22to31())
+                .expectedExpenseRecord(defautExpectedExpenseRecord())
                 .build();
         List<IncomeSourceRecord> incomeSourceRecords = defaultIncomeSourceRecords();
         incomeSourceRecords.forEach(i -> i.setBalanceRecord(balanceRecord));
@@ -227,6 +219,16 @@ public class BalanceFactory {
                 .itemName("actor2")
                 .card(new BigDecimal("10.00"))
                 .cash(new BigDecimal("20.00"))
+                .build();
+    }
+
+    public static ExpectedExpenseRecord defautExpectedExpenseRecord() {
+        return ExpectedExpenseRecord.builder()
+                .id(DEFAULT_EXPECTED_EXPENSE_RECORD_ID)
+                .total1to7(new BigDecimal("51.00"))
+                .total8to14(new BigDecimal("105.00"))
+                .total15to21(new BigDecimal("220.00"))
+                .total22to31(new BigDecimal("40.00"))
                 .build();
     }
 

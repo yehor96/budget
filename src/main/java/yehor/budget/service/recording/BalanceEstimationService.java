@@ -7,6 +7,7 @@ import yehor.budget.common.date.DateManager;
 import yehor.budget.common.date.MonthWeek;
 import yehor.budget.entity.FutureExpense;
 import yehor.budget.entity.recording.BalanceRecord;
+import yehor.budget.entity.recording.ExpectedExpenseRecord;
 import yehor.budget.repository.FutureExpenseRepository;
 import yehor.budget.service.client.currency.CurrencyRateService;
 import yehor.budget.web.dto.full.BalanceEstimateDto;
@@ -32,11 +33,12 @@ public class BalanceEstimationService {
     public List<BalanceEstimateDto> getBalanceEstimation(BalanceRecord balanceRecord,
                                                          LocalDate currentDate,
                                                          BigDecimal currentTotal) {
+        ExpectedExpenseRecord expectedExpenseRecord = balanceRecord.getExpectedExpenseRecord();
         Map<MonthWeek, BigDecimal> estimatedExpensePerWeek = Map.of(
-                MonthWeek.DAYS_1_TO_7, balanceRecord.getTotal1to7(),
-                MonthWeek.DAYS_8_TO_14, balanceRecord.getTotal8to14(),
-                MonthWeek.DAYS_15_TO_21, balanceRecord.getTotal15to21(),
-                MonthWeek.DAYS_22_TO_31, balanceRecord.getTotal22to31()
+                MonthWeek.DAYS_1_TO_7, expectedExpenseRecord.getTotal1to7(),
+                MonthWeek.DAYS_8_TO_14, expectedExpenseRecord.getTotal8to14(),
+                MonthWeek.DAYS_15_TO_21, expectedExpenseRecord.getTotal15to21(),
+                MonthWeek.DAYS_22_TO_31, expectedExpenseRecord.getTotal22to31()
         );
 
         List<BalanceEstimateDto> estimates = new ArrayList<>();

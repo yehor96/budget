@@ -7,16 +7,20 @@ import yehor.budget.common.exception.ObjectNotFoundException;
 import yehor.budget.common.util.PageableHelper;
 import yehor.budget.entity.recording.BalanceItem;
 import yehor.budget.entity.recording.BalanceRecord;
+import yehor.budget.entity.recording.ExpectedExpenseRecord;
 import yehor.budget.entity.recording.IncomeSourceRecord;
 import yehor.budget.repository.recording.BalanceItemRepository;
 import yehor.budget.repository.recording.BalanceRecordRepository;
+import yehor.budget.repository.recording.ExpectedExpenseRecordRepository;
 import yehor.budget.repository.recording.IncomeSourceRecordRepository;
 import yehor.budget.service.EstimatedExpenseService;
 import yehor.budget.service.IncomeSourceService;
 import yehor.budget.web.converter.BalanceConverter;
+import yehor.budget.web.converter.EstimatedExpenseConverter;
 import yehor.budget.web.converter.IncomeSourceConverter;
 import yehor.budget.web.dto.full.BalanceEstimateDto;
 import yehor.budget.web.dto.full.BalanceRecordFullDto;
+import yehor.budget.web.dto.full.EstimatedExpenseFullDto;
 import yehor.budget.web.dto.limited.BalanceRecordLimitedDto;
 
 import java.math.BigDecimal;
@@ -24,12 +28,33 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static common.factory.BalanceFactory.*;
+import static common.factory.BalanceFactory.DEFAULT_BALANCE_RECORD_TOTAL;
+import static common.factory.BalanceFactory.balanceRecordFullDtoWithoutEstimates;
+import static common.factory.BalanceFactory.balanceRecordWithNotSetExpensesAndIncome;
+import static common.factory.BalanceFactory.balanceRecordWithSetIncomes;
+import static common.factory.BalanceFactory.defaultBalanceEstimationDto;
+import static common.factory.BalanceFactory.defaultBalanceRecord;
+import static common.factory.BalanceFactory.defaultBalanceRecordFullDto;
+import static common.factory.BalanceFactory.defaultBalanceRecordLimitedDto;
+import static common.factory.BalanceFactory.defautExpectedExpenseRecord;
+import static common.factory.BalanceFactory.secondBalanceRecord;
+import static common.factory.BalanceFactory.secondBalanceRecordFullDto;
 import static common.factory.EstimatedExpenseFactory.defaultEstimatedExpenseFullDto;
-import static common.factory.IncomeSourceFactory.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static common.factory.IncomeSourceFactory.defaultIncomeSourceRecord;
+import static common.factory.IncomeSourceFactory.defaultTotalIncomeDto;
+import static common.factory.IncomeSourceFactory.secondIncomeSourceRecord;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class BalanceRecordingServiceTest {
 
@@ -42,6 +67,8 @@ class BalanceRecordingServiceTest {
     private final IncomeSourceRecordRepository incomeSourceRecordRepository = mock(IncomeSourceRecordRepository.class);
     private final IncomeSourceConverter incomeSourceConverter = mock(IncomeSourceConverter.class);
     private final BalanceEstimationService balanceEstimationService = mock(BalanceEstimationService.class);
+    private final EstimatedExpenseConverter estimatedExpenseConverter = mock(EstimatedExpenseConverter.class);
+    private final ExpectedExpenseRecordRepository expectedExpenseRecordRepository = mock(ExpectedExpenseRecordRepository.class);
 
     private final BalanceRecordingService balanceRecordingService = new BalanceRecordingService(
             balanceItemRepository,
@@ -52,7 +79,9 @@ class BalanceRecordingServiceTest {
             pageableHelper,
             incomeSourceRecordRepository,
             incomeSourceConverter,
-            balanceEstimationService
+            balanceEstimationService,
+            estimatedExpenseConverter,
+            expectedExpenseRecordRepository
     );
 
     @Test
@@ -145,16 +174,20 @@ class BalanceRecordingServiceTest {
         when(balanceConverter.convertToDtoWithNoEstimates(any()))
                 .thenReturn(balanceRecordFullDtoWithoutEstimates());
         when(balanceRecordRepository.save(balanceRecord)).thenReturn(balanceRecord);
+        when(estimatedExpenseConverter.convert(any(EstimatedExpenseFullDto.class), any(BalanceRecord.class)))
+                .thenReturn(defautExpectedExpenseRecord());
 
         balanceRecordingService.save(recordLimitedDto);
 
-        assertNotNull(balanceRecord.getTotal1to7());
-        assertNotNull(balanceRecord.getTotal8to14());
-        assertNotNull(balanceRecord.getTotal15to21());
-        assertNotNull(balanceRecord.getTotal22to31());
+        ExpectedExpenseRecord expectedExpenseRecord = balanceRecord.getExpectedExpenseRecord();
+        assertNotNull(expectedExpenseRecord.getTotal1to7());
+        assertNotNull(expectedExpenseRecord.getTotal8to14());
+        assertNotNull(expectedExpenseRecord.getTotal15to21());
+        assertNotNull(expectedExpenseRecord.getTotal22to31());
         verify(balanceRecordRepository, times(1)).save(balanceRecord);
         verify(balanceItemRepository, times(2)).save(any(BalanceItem.class));
         verify(incomeSourceRecordRepository, times(2)).save(any(IncomeSourceRecord.class));
+        verify(expectedExpenseRecordRepository, times(1)).save(any(ExpectedExpenseRecord.class));
     }
 
     @Test

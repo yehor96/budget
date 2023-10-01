@@ -13,9 +13,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -44,15 +44,7 @@ public class BalanceRecord {
     @Cascade(CascadeType.DELETE)
     private List<IncomeSourceRecord> incomeSourceRecords;
 
-    @Column(name = "total_expected_expenses_days_1_7")
-    private BigDecimal total1to7;
-
-    @Column(name = "total_expected_expenses_days_8_14")
-    private BigDecimal total8to14;
-
-    @Column(name = "total_expected_expenses_days_15_21")
-    private BigDecimal total15to21;
-
-    @Column(name = "total_expected_expenses_days_22_31")
-    private BigDecimal total22to31;
+    @OneToOne(mappedBy = "balanceRecord")
+    @Cascade(CascadeType.DELETE)
+    private ExpectedExpenseRecord expectedExpenseRecord;
 }
