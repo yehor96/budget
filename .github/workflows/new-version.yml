@@ -9,6 +9,7 @@ jobs:
   create-tag:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Check if milestone name exists
         id: check_milestone
         run: |
