@@ -50,6 +50,6 @@ jobs:
           mvn clean package -Dmaven.test.skip=true
           docker build -t yehor96/budget:"$version_name" .
           docker push yehor96/budget:"$version_name"
-          docker tag yehor96/budget:"$version_name" yehor96/budget:latest-test
-          docker push yehor96/budget:latest-test
+          docker tag yehor96/budget:"$version_name" yehor96/budget:latest
+          docker push yehor96/budget:latest
         shell: bash
