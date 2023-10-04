@@ -1,9 +1,0 @@
-IMAGE_VERSION=""; #version format 'v0.0'
-echo "Pushing image with version ${IMAGE_VERSION}"
-
-mvn clean package -D'maven.test.skip'
-
-docker build -t yehor96/budget:"${IMAGE_VERSION}" .
-docker push yehor96/budget:"${IMAGE_VERSION}"
-docker tag yehor96/budget:"${IMAGE_VERSION}" yehor96/budget:latest
-docker push yehor96/budget:latest
