@@ -1,4 +1,4 @@
-name: Create New Version
+name: new-version-workflow
 
 on:
   milestone:
@@ -9,18 +9,39 @@ jobs:
   create-tag:
     runs-on: ubuntu-latest
     steps:
+    
       - uses: actions/checkout@v3
+      
       - name: Check if milestone name exists
         id: check_milestone
         run: |
           milestone_name="${{ github.event.milestone.title }}"
-          echo "::set-output name=tag_exists::$(if [[ -n $(git tag -l "$milestone_name") ]]; then echo "true"; else echo "false"; fi)"
+          echo "::set-output name=already_exists::$(if [[ -n $(git tag -l "$milestone_name") ]]; then echo "true"; else echo "false"; fi)"
         shell: bash
 
       - name: Create Tag
-        if: steps.check_milestone.outputs.tag_exists == 'false'
+        if: steps.check_milestone.outputs.already_exists == 'false'
         run: |
           milestone_name="${{ github.event.milestone.title }}"
-          git tag "$milestone_name"
+          git tag "$milestone_name" "${{ github.event.milestone.commit_sha }}"
           git push origin "$milestone_name"
+        shell: bash
+
+      - name: Login to Docker Hub
+        if: steps.check_milestone.outputs.already_exists == 'false'
+        run: |
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Docker Image
+        if: steps.check_milestone.outputs.already_exists == 'false'
+        run: |
+          version_name="${{ github.event.milestone.title }}"
+          mvn clean package -Dmaven.test.skip=true
+          docker build -t yehor96/budget:"$version_name" .
+          docker push yehor96/budget:"$version_name"
+          docker tag yehor96/budget:"$version_name" yehor96/budget:latest
+          docker push yehor96/budget:latest
         shell: bash
