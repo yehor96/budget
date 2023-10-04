@@ -23,7 +23,7 @@ jobs:
         if: steps.check_milestone.outputs.already_exists == 'false'
         run: |
           milestone_name="${{ github.event.milestone.title }}"
-          git tag "$milestone_name" "${{ github.event.milestone.commit_sha }}"
+          git tag "$milestone_name"
           git push origin "$milestone_name"
         shell: bash
 
@@ -42,6 +42,6 @@ jobs:
           mvn clean package -Dmaven.test.skip=true
           docker build -t yehor96/budget:"$version_name" .
           docker push yehor96/budget:"$version_name"
-          docker tag yehor96/budget:"$version_name" yehor96/budget:latest
-          docker push yehor96/budget:latest
+          docker tag yehor96/budget:"$version_name" yehor96/budget:latest-test
+          docker push yehor96/budget:latest-test
         shell: bash
