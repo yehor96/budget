@@ -1,5 +1,6 @@
 import React from "react";
 import Header from "../../components/Header/Header";
+import Footer from "../../components/Footer/Footer";
 import PageTitle from "../../components/PageTitle/PageTitle";
 import IncomeSources from "../../components/IncomeSources/IncomeSources";
 import Storage from "../../components/Storage/Storage";
@@ -17,6 +18,7 @@ function Planning() {
       <Storage />
       <Balance />
       <EstimatedExpenses />
+      <Footer />
     </div>
   );
 }
