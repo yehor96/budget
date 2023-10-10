@@ -5,6 +5,7 @@ import {
   getMonthyStatistics,
 } from "../../api";
 import Header from "../../components/Header/Header";
+import Footer from "../../components/Footer/Footer";
 import PageTitle from "../../components/PageTitle/PageTitle";
 import "./Expenses.css";
 import NavigationBar from "../../components/NavigationBar/NavigationBar";
@@ -192,6 +193,8 @@ function Expenses() {
         />
         <BottomSection categories={categories} statistics={statistics} />
       </div>
+
+      <Footer />
     </div>
   );
 }
