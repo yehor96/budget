@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="createCategoriesTable" author="yehor96">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="categories"/>
+            </not>
+        </preConditions>
+        <createTable tableName="categories">
+            <column name="category_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="categories_pk"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="true" unique="true" uniqueConstraintName="categories_name_uq"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createRowEstimatedExpensesTable" author="yehor96">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="row_estimated_expenses"/>
+            </not>
+        </preConditions>
+        <createTable tableName="row_estimated_expenses">
+            <column name="row_estimated_expense_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="row_estimated_expenses_pk"/>
+            </column>
+            <column name="category_id" type="BIGINT">
+                <constraints nullable="false" unique="true" uniqueConstraintName="category_id_uq"
+                             foreignKeyName="row_estimated_expenses_to_categories_fk" referencedTableName="categories"
+                             referencedColumnNames="category_id"/>
+            </column>
+            <column name="days_1_to_7" type="NUMERIC(11,2)" defaultValueNumeric="0.00">
+                <constraints nullable="false"/>
+            </column>
+            <column name="days_8_to_14" type="NUMERIC(11,2)" defaultValueNumeric="0.00">
+                <constraints nullable="false"/>
+            </column>
+            <column name="days_15_to_21" type="NUMERIC(11,2)" defaultValueNumeric="0.00">
+                <constraints nullable="false"/>
+            </column>
+            <column name="days_22_to_31" type="NUMERIC(11,2)" defaultValueNumeric="0.00">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createTagsTable" author="yehor96">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="tags"/>
+            </not>
+        </preConditions>
+        <createTable tableName="tags">
+            <column name="tag_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="tags_pk"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints unique="true" uniqueConstraintName="tags_name_uq"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createFutureExpensesTable" author="yehor96">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="future_expenses"/>
+            </not>
+        </preConditions>
+        <createTable tableName="future_expenses">
+            <column name="future_expense_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="future_expenses_pk"/>
+            </column>
+            <column name="date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="NUMERIC(11,2)" defaultValueNumeric="0.00">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createExpensesTable" author="yehor96">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="expenses"/>
+            </not>
+        </preConditions>
+        <createTable tableName="expenses">
+            <column name="expense_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="expenses_pk"/>
+            </column>
+            <column name="date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="NUMERIC(11,2)" defaultValueNumeric="0.00">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_regular" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="category_id" type="BIGINT">
+                <constraints nullable="false"
+                             foreignKeyName="expenses_to_categories_fk" referencedTableName="categories"
+                             referencedColumnNames="category_id"/>
+            </column>
+            <column name="note" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createExpensesToTagsTable" author="yehor96">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="expenses_to_tags"/>
+            </not>
+        </preConditions>
+        <createTable tableName="expenses_to_tags">
+            <column name="expense_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="expenses_to_tags_to_expenses_fk" referencedTableName="expenses" referencedColumnNames="expense_id"/>
+            </column>
+            <column name="tag_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="expenses_to_tags_to_tags_fk" referencedTableName="tags" referencedColumnNames="tag_id"/>
+            </column>
+        </createTable>
+        <addPrimaryKey
+                columnNames="expense_id, tag_id"
+                constraintName="expenses_to_tags_pk"
+                schemaName="public"
+                tableName="expenses_to_tags"/>
+    </changeSet>
+
+    <changeSet id="createSettingsTable" author="yehor96">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="settings"/>
+            </not>
+        </preConditions>
+        <createTable tableName="settings">
+            <column name="settings_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="settings_pk"/>
+            </column>
+            <column name="budget_start_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="budget_end_date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="budget_date_validation" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="estimated_expense_worker_init_delay" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="estimated_expense_worker_period" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="estimated_expense_worker_end_date_scope_pattern" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createIncomeSourcesTable" author="yehor96">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="income_sources"/>
+            </not>
+        </preConditions>
+        <createTable tableName="income_sources">
+            <column name="income_source_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="income_sources_pk"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="income_sources_name_uq"/>
+            </column>
+            <column name="value" type="NUMERIC(11,2)" defaultValueNumeric="0.00">
+                <constraints nullable="false"/>
+            </column>
+            <column name="currency" type="VARCHAR(3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="accrual_day" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createBalanceRecordsTable" author="yehor96">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="balance_records"/>
+            </not>
+        </preConditions>
+        <createTable tableName="balance_records">
+            <column name="balance_record_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="balance_record_pk"/>
+            </column>
+            <column name="date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createIncomeSourceRecordsTable" author="yehor96">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="income_source_records"/>
+            </not>
+        </preConditions>
+        <createTable tableName="income_source_records">
+            <column name="income_source_record_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="income_source_records_pk"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="NUMERIC(11,2)" defaultValueNumeric="0.00">
+                <constraints nullable="false"/>
+            </column>
+            <column name="currency" type="VARCHAR(3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="accrual_day" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="balance_record_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="income_source_records_to_balance_records_fk"
+                             referencedTableName="balance_records" referencedColumnNames="balance_record_id"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createBalanceItemsTable" author="yehor96">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="balance_items"/>
+            </not>
+        </preConditions>
+        <createTable tableName="balance_items">
+            <column name="balance_item_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="balance_item_pk"/>
+            </column>
+            <column name="item_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="balance_record_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="balance_items_to_balance_records_fk"
+                             referencedTableName="balance_records" referencedColumnNames="balance_record_id"/>
+            </column>
+            <column name="cash" type="NUMERIC(11,2)" defaultValueNumeric="0.00">
+                <constraints nullable="false"/>
+            </column>
+            <column name="card" type="NUMERIC(11,2)" defaultValueNumeric="0.00">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createExpectedExpenseRecordsTable" author="yehor96">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="expected_expense_records"/>
+            </not>
+        </preConditions>
+        <createTable tableName="expected_expense_records">
+            <column name="expected_expense_record_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="expected_expense_records_pk"/>
+            </column>
+            <column name="total_expected_expenses_days_1_7" type="NUMERIC(11,2)" defaultValueNumeric="0.00"/>
+            <column name="total_expected_expenses_days_8_14" type="NUMERIC(11,2)" defaultValueNumeric="0.00"/>
+            <column name="total_expected_expenses_days_15_21" type="NUMERIC(11,2)" defaultValueNumeric="0.00"/>
+            <column name="total_expected_expenses_days_22_31" type="NUMERIC(11,2)" defaultValueNumeric="0.00"/>
+            <column name="balance_record_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="expected_expense_records_to_balance_records_fk"
+                             referencedTableName="balance_records" referencedColumnNames="balance_record_id"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createStorageRecordsTable" author="yehor96">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="storage_records"/>
+            </not>
+        </preConditions>
+        <createTable tableName="storage_records">
+            <column name="storage_record_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="storage_record_pk"/>
+            </column>
+            <column name="date" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stored_in_total" type="NUMERIC(11,2)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="createStorageItemsTable" author="yehor96">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="storage_items"/>
+            </not>
+        </preConditions>
+        <createTable tableName="storage_items">
+            <column name="storage_item_id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="storage_item_pk"/>
+            </column>
+            <column name="storage_record_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="storage_items_to_storage_records_fk"
+                             referencedTableName="storage_records" referencedColumnNames="storage_record_id"/>
+            </column>
+            <column name="currency" type="VARCHAR(3)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="NUMERIC(11,2)" defaultValueNumeric="0.00">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
