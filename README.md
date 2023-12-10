@@ -7,9 +7,13 @@
 Application that provides functionality for counting one's budget and financial information.
 Stack: Java 17, React, Spring Boot, Spring Data, Hibernate, PostgreSQL, Maven, Swagger, Docker, Lombok, Mockito
 
-Setup:
+## Setup
+
 - Make sure Docker is up and running
 - Clone repository 
  `git clone git@github.com:yehor96/budget.git budget-app`
 - Enter project root folder and install the application `bash install_app`
 - Access application at http://localhost:8080
+
+## Guidelines
+Feel free to check basic guidelines of the application: https://github.com/yehor96/budget-app/wiki/Guidelines
